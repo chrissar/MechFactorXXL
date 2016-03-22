@@ -9,6 +9,11 @@ public class TerrainSplatReader : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        //ExportSplatMap();
+    }
+
+    void ExportSplatMap()
+    {
         Texture2D splatTexture;
         splatTexture = splat;
 
@@ -18,13 +23,13 @@ public class TerrainSplatReader : MonoBehaviour {
 
         try
         {
-            
+
             if (splat == null)
             {
                 Debug.Log("Apparently your selection is either void, of a format that can't be cast as texture2D, or who knows what. Aborting...");
                 return;
             }
-            
+
             /*
             if (splat.width != splat.width || splat.height != splat.height)
             {
@@ -56,11 +61,11 @@ public class TerrainSplatReader : MonoBehaviour {
                 for (int j = 0; j < splat.height; j++)
                 {
 
-                    tex.SetPixel(i, 
-                        j, 
-                        new Vector4(splat.GetPixel(i, j).r, 
-                        splat.GetPixel(i, j).g, 
-                        splat.GetPixel(i, j).b, 
+                    tex.SetPixel(i,
+                        j,
+                        new Vector4(splat.GetPixel(i, j).r,
+                        splat.GetPixel(i, j).g,
+                        splat.GetPixel(i, j).b,
                         1));
                 }
             }
