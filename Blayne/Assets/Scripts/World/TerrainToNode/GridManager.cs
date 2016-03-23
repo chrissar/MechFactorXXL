@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum influence_map
 {
@@ -13,12 +14,19 @@ public enum influence_map
 public class GridManager : MonoBehaviour {
     public Texture2D heightMap;
 
+    public Terrain terrain;
+
+    public float[,] cover_influence_map;
+    public float[,] security_influence_map;
+    public float[,] proximity_influence_map;
+    public float[,] control_influence_map;
+    public float[,] visibility_influence_map;
+
     int width = 0;
     int height = 0;
 
-
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 	
 	}
 	
@@ -40,36 +48,73 @@ public class GridManager : MonoBehaviour {
         }
     }
 
-    public float[,] CreateInfluenceMap(influence_map _map)
+    public void InitInfluenceMaps()
     {
-        float[,] grid = new float[heightMap.width, heightMap.height];
-        switch (_map)
-        {
-            case influence_map.visibility:
-                for (int i=0; i < heightMap.width; i++)
-                {
-                    for (int j=0; j < heightMap.height; j++)
-                    {
-                        // scale value to be between 0 and 1.
-                        float height = heightMap.GetPixel(i, j).r / 255;
-                        grid[i, j] = height;
-                    }
-                }
-                break;
-            case influence_map.control:
-                for (int i = 0; i < width; i++)
-                {
-                    for (int j = 0; j < height; j++)
-                    {
-                           
-                    }
-                }
-                break;
-        }
+        width = terrain.terrainData.alphamapTextures[0].width;
+        height = terrain.terrainData.alphamapTextures[0].height;
 
-        return grid;
+        cover_influence_map = new float[width, height];
+        security_influence_map = new float[width, height];
+        proximity_influence_map = new float[width, height];
+        control_influence_map = new float[width, height];
+        visibility_influence_map = new float[width, height];
     }
 
+    /// <summary>
+    /// Initializes the visilibility grid based on the
+    /// height map, from a scale of 0.0f to 1.0f.
+    /// </summary>
+    public void setVisibilityMap()
+    {
+
+        for (int i=0; i < heightMap.width; i++)
+        {
+            for (int j=0; j < heightMap.height; j++)
+            {
+                // scale value to be between 0 and 1.
+                float height = heightMap.GetPixel(i, j).r / 255;
+                visibility_influence_map[i, j] = height;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initializes the cover influence map.
+    /// </summary>
+    void FindAllCoverPoints()
+    {
+        List<GameObject> covers = new List<GameObject>(GameObject.FindGameObjectsWithTag("cover"));
+        List<TreeInstance> trees = new List<TreeInstance>(terrain.terrainData.treeInstances);
+        int new_x = 0;
+        int new_y = 0;
+        foreach (GameObject cover_point in covers)
+        {
+            Vector2 coord = CoordFromWorldPoint(cover_point.transform.position);
+            for (int x = -1; x < 2; x++)
+            {
+                for (int y = -1; y < 2; y++)
+                {                    
+                    new_x = (int)coord.x + x;
+                    new_y = (int)coord.y + y;
+                    if (inBounds(new_x, new_y))
+                    {
+                        // make this point in cover grid = to 1.
+                        cover_influence_map[new_x, new_y] = 1.0f;
+                    }
+                }
+            }
+            // The cover point itself should not be considered under any circumstance.
+            cover_influence_map[(int)coord.x, (int)coord.y] = -1.0f;
+        }
+    }
+
+    /// <summary>
+    /// Converts an X,Y grid coordinate to its corresponding 
+    /// world space coord.
+    /// </summary>
+    /// <param name="x">A point along the horizontal x-axis.</param>
+    /// <param name="y">A point along the vertical y-axis.</param>
+    /// <returns>A Vector3 corresponding to World Space coordinate.</returns>
     Vector3 CoordToWorldPoint(int x, int y)
     {
         return new Vector3(-width / 2 + .5f + x, 2, -height / 2 + .5f + y);
