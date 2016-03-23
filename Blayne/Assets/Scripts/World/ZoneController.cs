@@ -54,6 +54,14 @@ public class ZoneController : MonoBehaviour {
         controlMap = new float[mapWidth, mapHeight];
 
         //ExportHeightMapToPNG();
+        TestGetTrees();
+    }
+
+    void TestGetTrees()
+    {
+        Debug.Log(terrain.terrainData.treeInstanceCount);
+        TreeInstance tree = terrain.terrainData.GetTreeInstance(0);
+        Debug.Log(tree.position);        
     }
 
     void createPNG()
