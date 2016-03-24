@@ -128,7 +128,11 @@ public class ZoneController : MonoBehaviour {
     {
         Debug.Log(terrain.terrainData.treeInstanceCount);
         TreeInstance tree = terrain.terrainData.GetTreeInstance(0);
-        Debug.Log(tree.position);        
+        Debug.Log(tree.position);
+        Debug.Log(terrain.terrainData.size);
+
+        Vector3 theTree = Vector3.Scale(tree.position, terrain.terrainData.size) + terrain.transform.position;
+        Debug.Log(theTree);
     }
 
     void createPNG()
