@@ -61,7 +61,6 @@ public class ZoneController : MonoBehaviour {
         mapHeight = 0;
 
         //ExportHeightMapToPNG();
-        TestGetTrees();
     }
 
     public void InitInfluenceMaps()
@@ -100,7 +99,6 @@ public class ZoneController : MonoBehaviour {
     void FindAllCoverPoints()
     {
         List<GameObject> covers = new List<GameObject>(GameObject.FindGameObjectsWithTag("cover"));
-        List<TreeInstance> trees = new List<TreeInstance>(terrain.terrainData.treeInstances);
         int new_x = 0;
         int new_y = 0;
         foreach (GameObject cover_point in covers)
@@ -121,6 +119,28 @@ public class ZoneController : MonoBehaviour {
             }
             // The cover point itself should not be considered under any circumstance.
             coverMap[(int)coord.x, (int)coord.y] = -1.0f;
+        }
+
+        foreach (TreeInstance tree in terrain.terrainData.treeInstances)
+        {
+            Vector3 treePos = Vector3.Scale(tree.position, terrain.terrainData.size) + terrain.transform.position;
+            Vector2 coord = CoordFromWorldPoint(treePos);
+            for (int x = -1; x < 2; x++)
+            {
+                for (int y = -1; y < 2; y++)
+                {
+                    new_x = (int)coord.x + x;
+                    new_y = (int)coord.y + y;
+                    if (inBounds(new_x, new_y))
+                    {
+                        // make this point in cover grid = to 1.
+                        coverMap[new_x, new_y] = 1.0f;
+                    }
+                }
+            }
+            // The cover point itself should not be considered under any circumstance.
+            coverMap[(int)coord.x, (int)coord.y] = -1.0f;
+
         }
     }
 
