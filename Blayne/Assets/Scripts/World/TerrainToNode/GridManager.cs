@@ -2,15 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum influence_map
-{
-    visibility,
-    security,
-    control,
-    proximity,
-    cover
-};
-
 public class GridManager : MonoBehaviour {
     public Texture2D heightMap;
 

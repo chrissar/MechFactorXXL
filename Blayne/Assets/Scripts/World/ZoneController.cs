@@ -3,6 +3,15 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
+public enum influence_map
+{
+    visibility,
+    security,
+    control,
+    proximity,
+    cover
+};
+
 /// <summary>
 /// The Zone Contoller class manages a "Zone" which is a 2D grid of nodes wherein each node has cell information.
 /// A cell's information is derived as the following information at it's coordinate in the following maps:
@@ -10,6 +19,7 @@ using System.Collections.Generic;
 /// </summary>
 public class ZoneController : MonoBehaviour {
 
+    bool isDebug = false;
     /*
         A 2D grid of "nodes" that possess information
         about a particular 1 by 1 square meter area 
@@ -30,9 +40,11 @@ public class ZoneController : MonoBehaviour {
     public float[,] visibilityMap;
     public float[,] proximityMap;
     public float[,] controlMap;
+    public float[,] coverMap;
 
     public Terrain terrain;
 
+    Texture2D heightMap;
     Texture2D splatMap;
     Texture2D influenceTexture;
 
@@ -48,13 +60,68 @@ public class ZoneController : MonoBehaviour {
         mapWidth = 0;
         mapHeight = 0;
 
+        //ExportHeightMapToPNG();
+        TestGetTrees();
+    }
+
+    public void InitInfluenceMaps()
+    {
+        mapWidth = terrain.terrainData.alphamapTextures[0].width;
+        mapHeight = terrain.terrainData.alphamapTextures[0].height;
+
         securityMap = new float[mapWidth, mapHeight];
         visibilityMap = new float[mapWidth, mapHeight];
         proximityMap = new float[mapWidth, mapHeight];
         controlMap = new float[mapWidth, mapHeight];
+        coverMap = new float[mapWidth, mapHeight];
+    }
 
-        //ExportHeightMapToPNG();
-        TestGetTrees();
+    /// <summary>
+    /// Initializes the visilibility grid based on the
+    /// height map, from a scale of 0.0f to 1.0f.
+    /// </summary>
+    public void setVisibilityMap()
+    {
+        for (int i = 0; i < heightMap.width; i++)
+        {
+            for (int j = 0; j < heightMap.height; j++)
+            {
+                // scale value to be between 0 and 1.
+                float height = heightMap.GetPixel(i, j).r / 255;
+                visibilityMap[i, j] = height;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Initializes the cover influence map.
+    /// </summary>
+    void FindAllCoverPoints()
+    {
+        List<GameObject> covers = new List<GameObject>(GameObject.FindGameObjectsWithTag("cover"));
+        List<TreeInstance> trees = new List<TreeInstance>(terrain.terrainData.treeInstances);
+        int new_x = 0;
+        int new_y = 0;
+        foreach (GameObject cover_point in covers)
+        {
+            Vector2 coord = CoordFromWorldPoint(cover_point.transform.position);
+            for (int x = -1; x < 2; x++)
+            {
+                for (int y = -1; y < 2; y++)
+                {
+                    new_x = (int)coord.x + x;
+                    new_y = (int)coord.y + y;
+                    if (inBounds(new_x, new_y))
+                    {
+                        // make this point in cover grid = to 1.
+                        coverMap[new_x, new_y] = 1.0f;
+                    }
+                }
+            }
+            // The cover point itself should not be considered under any circumstance.
+            coverMap[(int)coord.x, (int)coord.y] = -1.0f;
+        }
     }
 
     void TestGetTrees()
@@ -194,11 +261,61 @@ public class ZoneController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Converts an X,Y grid coordinate to its corresponding 
+    /// world space coord.
+    /// </summary>
+    /// <param name="x">A point along the horizontal x-axis.</param>
+    /// <param name="y">A point along the vertical y-axis.</param>
+    /// <returns>A Vector3 corresponding to World Space coordinate.</returns>
+    Vector3 CoordToWorldPoint(int x, int y)
+    {
+        return new Vector3(-mapWidth / 2 + .5f + x, 2, -mapHeight / 2 + .5f + y);
+    }
+
+    /// <summary>
+    /// Converts an Vector2 comprising a X, Y grid coordinate to its corresponding 
+    /// world space coord.
+    /// </summary>
+    /// <param name="x">A point along the horizontal x-axis.</param>
+    /// <param name="y">A point along the vertical y-axis.</param>
+    /// <returns>A Vector3 corresponding to World Space coordinate.</returns>
+    Vector3 CoordToWorldPoint(Vector2 coord)
+    {
+        return new Vector3(-mapWidth / 2 + .5f + coord.x, 2, -mapHeight / 2 + .5f + coord.y);
+    }
+
+    public Vector2 CoordFromWorldPoint(Vector3 worldPosition)
+    {
+        float percentX = (worldPosition.x + mapWidth / 2) / mapWidth;
+        float percentY = (worldPosition.z + mapHeight / 2) / mapHeight;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+
+        int x = Mathf.RoundToInt((mapWidth - 1) * percentX);
+        int y = Mathf.RoundToInt((mapHeight - 1) * percentY);
+
+        return new Vector2(x, y);
+    }
+
+    /// <summary>
+    /// Returns the node in a given 2D vector direction relative to a current coordinate.
+    /// </summary>
+    /// <param name="direction">A Vector2 containing one of eight directions.</param>
+    /// <returns>A node at a determined coordinate.</returns>
     node getNodeInDirection(Vector2 direction)
     {
+        // A Direction can be from any point from -1,-1 to +1,+1
+        // relative to a given coordinate.
         return influenceMap[(int)direction.x, (int)direction.y];
     }
 
+    /// <summary>
+    /// A coordinate is in bounds if it isn't outside of our grid.
+    /// </summary>
+    /// <param name="x">Horizontal x-axis coordinate.</param>
+    /// <param name="y">Vertical y-axis coordinate.</param>
+    /// <returns>A boolean.</returns>
     bool inBounds (int x, int y)
     {
         // return x >= 0 && x < width && y >= 0 && y < height;
@@ -212,10 +329,15 @@ public class ZoneController : MonoBehaviour {
         }      
     }
 
-    bool inBounds(Vector2 direction)
+    /// <summary>
+    /// A coordinate is in bounds if it isn't outside of our grid.
+    /// </summary>
+    /// <param name="direction">A Vector2 containing our x,y coordinates.</param>
+    /// <returns>A boolean.</returns>
+    bool inBounds(Vector2 coordinate)
     {
         // return x >= 0 && x < width && y >= 0 && y < height;
-        if ((direction.x < mapWidth) && (direction.x >= 0) && (direction.y < mapHeight) && (direction.y >= 0))
+        if ((coordinate.x < mapWidth) && (coordinate.x >= 0) && (coordinate.y < mapHeight) && (coordinate.y >= 0))
         {
             return true;
         }
@@ -225,6 +347,9 @@ public class ZoneController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// We take our height map and converter it to a 2D Texture for visualization purposes.
+    /// </summary>
     void ExportHeightMapToPNG()
     {
         TerrainData terraindata = terrain.terrainData;
@@ -247,12 +372,14 @@ public class ZoneController : MonoBehaviour {
         }
         // Apply all SetPixel calls
         duplicateHeightMap.Apply();
-
+        heightMap = duplicateHeightMap;
         /// make it a PNG and save it to the Assets folder
         myBytes = duplicateHeightMap.EncodeToPNG();
         string filename = "DupeHeightMap.png";
         File.WriteAllBytes(Application.dataPath + "/" + filename, myBytes);
-        Debug.Log("Heightmap Duplicated " + "Saved as PNG in Assets/ as: " + filename);
+
+        if (isDebug)
+            Debug.Log("Heightmap Duplicated " + "Saved as PNG in Assets/ as: " + filename);
     }
 
     // Update is called once per frame
