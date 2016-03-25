@@ -52,9 +52,11 @@ public class ZoneController : MonoBehaviour {
     int mapHeight;
 
     public List<node> allNodes;
+    // Control points to be captured.
+    public List<GameObject> controls;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         allNodes = new List<node>();
         splatMap = terrain.terrainData.alphamapTextures[0];
         mapWidth = 0;
@@ -65,14 +67,14 @@ public class ZoneController : MonoBehaviour {
 
     public void InitInfluenceMaps()
     {
-        mapWidth = terrain.terrainData.alphamapTextures[0].width;
+        mapWidth  = terrain.terrainData.alphamapTextures[0].width;
         mapHeight = terrain.terrainData.alphamapTextures[0].height;
 
-        securityMap = new float[mapWidth, mapHeight];
+        securityMap   = new float[mapWidth, mapHeight];
         visibilityMap = new float[mapWidth, mapHeight];
-        proximityMap = new float[mapWidth, mapHeight];
-        controlMap = new float[mapWidth, mapHeight];
-        coverMap = new float[mapWidth, mapHeight];
+        proximityMap  = new float[mapWidth, mapHeight];
+        controlMap    = new float[mapWidth, mapHeight];
+        coverMap      = new float[mapWidth, mapHeight];
     }
 
     /// <summary>
@@ -86,21 +88,43 @@ public class ZoneController : MonoBehaviour {
             for (int j = 0; j < heightMap.height; j++)
             {
                 // scale value to be between 0 and 1.
-                float height = heightMap.GetPixel(i, j).r / 255;
+                float height        = heightMap.GetPixel(i, j).r / 255;
                 visibilityMap[i, j] = height;
             }
         }
     }
 
+    void FindAllControlPoints()
+    {
+        controls = new List<GameObject>(GameObject.FindGameObjectsWithTag("control"));
+
+        foreach (GameObject controlPoint in controls)
+        {
+            initControlGrid(controlPoint);
+        }
+    }
+
+    void initControlGrid(GameObject _controlPoint)
+    {
+
+    }
 
     /// <summary>
     /// Initializes the cover influence map.
     /// </summary>
     void FindAllCoverPoints()
     {
+        // List of all game objects that serve as "cover", they are tagged accordingly.
         List<GameObject> covers = new List<GameObject>(GameObject.FindGameObjectsWithTag("cover"));
+
+        // Initializing temp coordinates.
         int new_x = 0;
         int new_y = 0;
+
+        /*
+            We wanna iterate over every tagged cover point and every tree,
+            and then set the surrounding squares cover property to "1".
+        */
         foreach (GameObject cover_point in covers)
         {
             Vector2 coord = CoordFromWorldPoint(cover_point.transform.position);
@@ -112,8 +136,14 @@ public class ZoneController : MonoBehaviour {
                     new_y = (int)coord.y + y;
                     if (inBounds(new_x, new_y))
                     {
-                        // make this point in cover grid = to 1.
-                        coverMap[new_x, new_y] = 1.0f;
+                        // If the cover map has a value other than zero, i.e -1.
+                        // Then it itself is a cover point, and this is how we
+                        // handle walls.
+                        if (coverMap[new_x, new_y] == 0.0f)
+                        {
+                            // make this point in cover grid = to 1.
+                            coverMap[new_x, new_y] = 1.0f;
+                        }
                     }
                 }
             }
@@ -124,7 +154,7 @@ public class ZoneController : MonoBehaviour {
         foreach (TreeInstance tree in terrain.terrainData.treeInstances)
         {
             Vector3 treePos = Vector3.Scale(tree.position, terrain.terrainData.size) + terrain.transform.position;
-            Vector2 coord = CoordFromWorldPoint(treePos);
+            Vector2 coord   = CoordFromWorldPoint(treePos);
             for (int x = -1; x < 2; x++)
             {
                 for (int y = -1; y < 2; y++)
@@ -144,21 +174,15 @@ public class ZoneController : MonoBehaviour {
         }
     }
 
-    void TestGetTrees()
+    /// <summary>
+    /// Creates a PNG image from a texture.
+    /// </summary>
+    /// <param name="tex">Texture to output.</param>
+    /// <param name="filename">Custom filename for png.</param>
+    void createPNG(Texture2D tex, string filename)
     {
-        Debug.Log(terrain.terrainData.treeInstanceCount);
-        TreeInstance tree = terrain.terrainData.GetTreeInstance(0);
-        Debug.Log(tree.position);
-        Debug.Log(terrain.terrainData.size);
-
-        Vector3 theTree = Vector3.Scale(tree.position, terrain.terrainData.size) + terrain.transform.position;
-        Debug.Log(theTree);
-    }
-
-    void createPNG()
-    {
-        byte[] bytes = influenceTexture.EncodeToPNG();
-        File.WriteAllBytes(Application.dataPath + "/splatmap.png", bytes);
+        byte[] bytes = tex.EncodeToPNG();
+        File.WriteAllBytes(Application.dataPath + filename + ".PNG", bytes);
     }
 
     /// <summary>
@@ -172,18 +196,26 @@ public class ZoneController : MonoBehaviour {
         File.WriteAllBytes(Application.dataPath + output, bytes);
     }
 
-    void createTexture()
+    /// <summary>
+    /// Creates a texture from a 2D grid of floats.
+    /// </summary>
+    /// <param name="grid">A 2D grid of nodes.</param>
+    /// <returns>A Texture2D to turn into a png or be stored.</returns>
+    Texture2D createTexture(node[,] grid)
     {
+        Texture2D tex = new Texture2D(mapWidth, mapHeight);
         for (int i = 0; i < mapWidth; i++)
         {
             for (int j = 0; j < mapHeight; j++)
             {
-                influenceTexture.SetPixel(i, j, influenceMap[i, j].influence);
+                tex.SetPixel(i, j, grid[i, j].influence);
             }
         }
 
-        influenceTexture.Apply();
+        tex.Apply();
+        return tex;
     }
+
 
     void setInfluenceMap()
     {
@@ -194,7 +226,9 @@ public class ZoneController : MonoBehaviour {
         setNodeNeighbours();
     }
 
-    // 
+    /// <summary>
+    /// Iterate over our node grid and link the nodes together with all surrounding neighbours.
+    /// </summary>
     void setNodeNeighbours()
     {
         Vector2 north;
@@ -206,6 +240,10 @@ public class ZoneController : MonoBehaviour {
         Vector2 west;
         Vector2 northwest;
 
+        // As long as each coordinate checked is within the bounds
+        // of our grid, it is okay to link.
+        // Since the nodes are initialized with default nodes,
+        // we do not need to worry about null nodes.
         for (int i=0; i < mapWidth; i++)
         {
             for (int j = 0; j < mapHeight; j++)
@@ -279,6 +317,9 @@ public class ZoneController : MonoBehaviour {
             }
         }
 
+        // Go to each node that now has neighbours 
+        // and have each node instantiate its own
+        // list of all surrounding neighbours.
         foreach (node nodeToProcess in allNodes)
         {
             nodeToProcess.SetNeighbours();
@@ -309,6 +350,11 @@ public class ZoneController : MonoBehaviour {
         return new Vector3(-mapWidth / 2 + .5f + coord.x, 2, -mapHeight / 2 + .5f + coord.y);
     }
 
+    /// <summary>
+    /// Converts a world coordinate location to a x,y grid coordinate.
+    /// </summary>
+    /// <param name="worldPosition">World Coordinate location.</param>
+    /// <returns>x,y 2D grid coordinate.</returns>
     public Vector2 CoordFromWorldPoint(Vector3 worldPosition)
     {
         float percentX = (worldPosition.x + mapWidth / 2) / mapWidth;
@@ -402,8 +448,79 @@ public class ZoneController : MonoBehaviour {
         string filename = "DupeHeightMap.png";
         File.WriteAllBytes(Application.dataPath + "/" + filename, myBytes);
 
+        // Initialize our visibility map.
+        setVisibilityMap();
+
         if (isDebug)
             Debug.Log("Heightmap Duplicated " + "Saved as PNG in Assets/ as: " + filename);
+    }
+
+    /// <summary>
+    /// Returns a list of tiles within a circular area.
+    /// </summary>
+    /// <param name="startX">Given point x coordinate.</param>
+    /// <param name="startY">Given point y coordinate.</param>
+    /// <param name="radius">Given radius.</param>
+    /// <returns>Returns a list of coordinates.</returns>
+    List<Coord> GetRegionTiles(int startX, int startY, int radius)
+    {
+        List<Coord> tiles = new List<Coord>();
+        //int[,] mapFlags = new int[0, 0];
+        //int tileType = map[startX, startY];
+
+        Queue<Coord> queue = new Queue<Coord>();
+        queue.Enqueue(new Coord(startX, startY));
+        //mapFlags[startX, startY] = 1;
+
+        while (queue.Count > 0)
+        {
+            Coord tile = queue.Dequeue();
+            tiles.Add(tile);
+
+            for (int x = tile.tileX - 1; x <= tile.tileX + 1; x++)
+            {
+                for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++)
+                {
+                    if (inBounds(x, y) && insideCircle(x, y, radius))
+                    {                        
+                        queue.Enqueue(new Coord(x, y));
+                    }
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+    /// <summary>
+    /// Helper function for determining if a point is inside of a circle.
+    /// </summary>
+    /// <param name="x">Given point x.</param>
+    /// <param name="y">Given point y.</param>
+    /// <param name="r">Given radius.</param>
+    /// <returns>Whether the point is inside the circle or on the boundary.</returns>
+    bool insideCircle(int x, int y, int r)
+    {
+        if (Mathf.Pow(x, 2) + Mathf.Pow(y, 2) <= Mathf.Pow(r, 2))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public struct Coord
+    {
+        public int tileX;
+        public int tileY;
+
+        public Coord(int x, int y)
+        {
+            tileX = x;
+            tileY = y;
+        }
     }
 
     // Update is called once per frame
