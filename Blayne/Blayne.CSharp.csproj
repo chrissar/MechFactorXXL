@@ -112,6 +112,7 @@
     <Compile Include="Assets\Scripts\World\TerrainToNode\GridManager.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\TerrainSplatReader.cs" />
     <Compile Include="Assets\Scripts\World\ZoneController.cs" />
+    <Compile Include="Assets\Scripts\World\bfAsset.cs" />
     <Compile Include="Assets\Scripts\World\node.cs" />
     <Compile Include="Assets\Scripts\World\worldDebug.cs" />
     <Compile Include="Assets\UnityChan\Scripts\CameraController.cs" />

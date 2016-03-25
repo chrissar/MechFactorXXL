@@ -104,9 +104,33 @@ public class ZoneController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Find the area a control points has influence over.
+    /// </summary>
+    /// <param name="_controlPoint">Given control point.</param>
     void initControlGrid(GameObject _controlPoint)
     {
+        Vector2 coord = CoordFromWorldPoint(_controlPoint.transform.position);
+        Coord origin = new Coord((int)coord.x, (int)coord.y);
+        List<Coord> coords = GetRegionTiles((int)coord.x, (int)coord.y, 25);
 
+        float power = _controlPoint.GetComponent<bfAsset>().power; // Need to get power of unit.
+        foreach (Coord coordinate in coords)
+        {
+            coverMap[coordinate.tileX, coordinate.tileY] = linearInfluenceAtPoint(power, origin, coordinate);
+        }
+    }
+
+    /// <summary>
+    /// Determine influence/power at any particular point X,Y.
+    /// </summary>
+    /// <param name="originalPower">Power of unit/building at distance = 0.</param>
+    /// <param name="origin">Original point.</param>
+    /// <param name="destination">Given point.</param>
+    /// <returns>Power at point as float.</returns>
+    float linearInfluenceAtPoint(float originalPower, Coord origin, Coord destination)
+    {
+        return originalPower / (1 + (GetDistance(origin, destination)));
     }
 
     /// <summary>
@@ -418,6 +442,27 @@ public class ZoneController : MonoBehaviour {
     }
 
     /// <summary>
+    /// Returns the distance between to coordinates times 10.
+    /// </summary>
+    /// <param name="pointA">Origin point.</param>
+    /// <param name="pointB">Destination point.</param>
+    /// <returns>Integer distance (times 10).</returns>
+    int GetDistance(Coord pointA, Coord pointB)
+    {
+        int dstX = (int)Mathf.Abs(pointA.tileX - pointB.tileX);
+        int dstY = (int)Mathf.Abs(pointA.tileY - pointB.tileY);
+
+        if (dstX > dstY)
+        {
+            return 14 * dstY + 10 * (dstX - dstY);
+        }
+        else
+        {
+            return 14 * dstX + 10 * (dstY - dstX);
+        }
+    }
+
+    /// <summary>
     /// We take our height map and converter it to a 2D Texture for visualization purposes.
     /// </summary>
     void ExportHeightMapToPNG()
@@ -481,7 +526,7 @@ public class ZoneController : MonoBehaviour {
             {
                 for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++)
                 {
-                    if (inBounds(x, y) && insideCircle(x, y, radius))
+                    if (inBounds(x, y) && insideCircle(x, startX, y, startY, radius))
                     {                        
                         queue.Enqueue(new Coord(x, y));
                     }
@@ -499,9 +544,9 @@ public class ZoneController : MonoBehaviour {
     /// <param name="y">Given point y.</param>
     /// <param name="r">Given radius.</param>
     /// <returns>Whether the point is inside the circle or on the boundary.</returns>
-    bool insideCircle(int x, int y, int r)
+    bool insideCircle(int x, int h, int y, int k, int r)
     {
-        if (Mathf.Pow(x, 2) + Mathf.Pow(y, 2) <= Mathf.Pow(r, 2))
+        if (Mathf.Pow(x - h, 2) + Mathf.Pow(y - k, 2) <= Mathf.Pow(r, 2))
         {
             return true;
         }
