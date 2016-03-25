@@ -113,6 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1080012445}
+  controls: []
 --- !u!4 &113022436
 Transform:
   m_ObjectHideFlags: 0
@@ -315,6 +316,23 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 414748, guid: 7b2eaa70dfbd3bb4480c780fdd727a98, type: 2}
   m_PrefabInternal: {fileID: 1075822849}
+--- !u!1 &1075822851 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 134240, guid: 7b2eaa70dfbd3bb4480c780fdd727a98, type: 2}
+  m_PrefabInternal: {fileID: 1075822849}
+--- !u!114 &1075822852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1075822851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c652d4f7b781e342b3dd74707ec6426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  power: 10
+  maxRadius: 25
 --- !u!1 &1080012443
 GameObject:
   m_ObjectHideFlags: 0
