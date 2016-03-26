@@ -55,11 +55,13 @@ public class ZoneController : MonoBehaviour {
     // Control points to be captured.
     public List<GameObject> controls;
 
+    public List<GameObject> units = new List<GameObject>();
+
     // Use this for initialization
     void Start () {
-        allNodes = new List<node>();
-        splatMap = terrain.terrainData.alphamapTextures[0];
-        mapWidth = 0;
+        allNodes  = new List<node>();
+        splatMap  = terrain.terrainData.alphamapTextures[0];
+        mapWidth  = 0;
         mapHeight = 0;
 
         //ExportHeightMapToPNG();
@@ -75,6 +77,73 @@ public class ZoneController : MonoBehaviour {
         proximityMap  = new float[mapWidth, mapHeight];
         controlMap    = new float[mapWidth, mapHeight];
         coverMap      = new float[mapWidth, mapHeight];
+    }
+
+    /// <summary>
+    /// Reset proximity map to all zeroes.
+    /// </summary>
+    public void resetProximityMap()
+    {
+        proximityMap = new float[mapWidth, mapHeight];
+    }
+
+    /// <summary>
+    /// Sets proximity for all units.
+    /// </summary>
+    public void setProximityMap()
+    {
+        /*
+            Go through each unit for a area defined by a given radius, and set influence accordingly.
+            Here the value from power is arbitrary. So long as we have a relative measurement of
+            "how close" two units are that is a gradual and linear value.
+
+            This needs to be updated at least for proximity checks or once every while.
+
+            Proximity is useful for units seeking cover to avoid places too close to another unit.
+        */
+        List<Coord> coords;
+        Coord coord;
+        foreach (GameObject unit in units)
+        {
+            float power = unit.GetComponent<bfAsset>().power;
+            coord = CoordFromWorldPoint(unit.transform.position);
+            coords = GetRegionTiles(coord.tileX, coord.tileY, 10);
+            foreach (Coord tile in coords)
+            {
+                // Two units close to each other should have overlapping tiles with high
+                // influence between them, thus the unit should prefer tiles for cover
+                // away from such tiles unless its literally all thats available.
+                proximityMap[tile.tileX, tile.tileY] = proximityMap[tile.tileX, tile.tileY] +
+                                                       linearInfluenceAtPoint(power, coord, tile);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Find best tile to use as cover, which is the best cover tile minus proximity value.
+    /// </summary>
+    /// <param name="unit">Current unit looking for cover.</param>
+    /// <returns>A given tile candidate.</returns>
+    public Coord findClosestCover(GameObject unit)
+    {
+        Coord origin = CoordFromWorldPoint(unit.transform.position);
+        List<Coord> tiles = GetRegionTiles(origin.tileX, origin.tileY, 25);
+
+        Queue<Coord> tilesToSort = new Queue<Coord>(tiles);
+        Coord best = tilesToSort.Dequeue();
+        while (tilesToSort.Count > 0)
+        {
+            Coord next = tilesToSort.Dequeue();
+            //float testTile = coverMap[best.tileX, best.tileY] - proximityMap[best.tileX, best.tileY];
+            float testTileValue = coverMap[next.tileX, next.tileY] - proximityMap[next.tileX, next.tileY];
+            float bestTileValue = coverMap[best.tileX, best.tileY] - proximityMap[best.tileX, best.tileY];
+            if (testTileValue > bestTileValue)
+            {
+                best = next;
+            }
+        }
+
+        return best;
     }
 
     /// <summary>
@@ -110,9 +179,8 @@ public class ZoneController : MonoBehaviour {
     /// <param name="_controlPoint">Given control point.</param>
     void initControlGrid(GameObject _controlPoint)
     {
-        Vector2 coord = CoordFromWorldPoint(_controlPoint.transform.position);
-        Coord origin = new Coord((int)coord.x, (int)coord.y);
-        List<Coord> coords = GetRegionTiles((int)coord.x, (int)coord.y, 25);
+        Coord origin = CoordFromWorldPoint(_controlPoint.transform.position);
+        List<Coord> coords = GetRegionTiles(origin.tileX, origin.tileY, 25);
 
         float power = _controlPoint.GetComponent<bfAsset>().power; // Need to get power of unit.
         foreach (Coord coordinate in coords)
@@ -151,13 +219,13 @@ public class ZoneController : MonoBehaviour {
         */
         foreach (GameObject cover_point in covers)
         {
-            Vector2 coord = CoordFromWorldPoint(cover_point.transform.position);
+            Coord coord = CoordFromWorldPoint(cover_point.transform.position);
             for (int x = -1; x < 2; x++)
             {
                 for (int y = -1; y < 2; y++)
                 {
-                    new_x = (int)coord.x + x;
-                    new_y = (int)coord.y + y;
+                    new_x = coord.tileX + x;
+                    new_y = coord.tileY + y;
                     if (inBounds(new_x, new_y))
                     {
                         // If the cover map has a value other than zero, i.e -1.
@@ -172,19 +240,19 @@ public class ZoneController : MonoBehaviour {
                 }
             }
             // The cover point itself should not be considered under any circumstance.
-            coverMap[(int)coord.x, (int)coord.y] = -1.0f;
+            coverMap[coord.tileX, coord.tileY] = -1.0f;
         }
 
         foreach (TreeInstance tree in terrain.terrainData.treeInstances)
         {
             Vector3 treePos = Vector3.Scale(tree.position, terrain.terrainData.size) + terrain.transform.position;
-            Vector2 coord   = CoordFromWorldPoint(treePos);
+            Coord coord   = CoordFromWorldPoint(treePos);
             for (int x = -1; x < 2; x++)
             {
                 for (int y = -1; y < 2; y++)
                 {
-                    new_x = (int)coord.x + x;
-                    new_y = (int)coord.y + y;
+                    new_x = coord.tileX + x;
+                    new_y = coord.tileY + y;
                     if (inBounds(new_x, new_y))
                     {
                         // make this point in cover grid = to 1.
@@ -193,7 +261,7 @@ public class ZoneController : MonoBehaviour {
                 }
             }
             // The cover point itself should not be considered under any circumstance.
-            coverMap[(int)coord.x, (int)coord.y] = -1.0f;
+            coverMap[coord.tileX, coord.tileY] = -1.0f;
 
         }
     }
@@ -379,7 +447,7 @@ public class ZoneController : MonoBehaviour {
     /// </summary>
     /// <param name="worldPosition">World Coordinate location.</param>
     /// <returns>x,y 2D grid coordinate.</returns>
-    public Vector2 CoordFromWorldPoint(Vector3 worldPosition)
+    public Vector2 Vector2DFromWorldPoint(Vector3 worldPosition)
     {
         float percentX = (worldPosition.x + mapWidth / 2) / mapWidth;
         float percentY = (worldPosition.z + mapHeight / 2) / mapHeight;
@@ -390,6 +458,24 @@ public class ZoneController : MonoBehaviour {
         int y = Mathf.RoundToInt((mapHeight - 1) * percentY);
 
         return new Vector2(x, y);
+    }
+
+    /// <summary>
+    /// Converts a world coordinate location to a x,y grid coordinate.
+    /// </summary>
+    /// <param name="worldPosition">World Coordinate location.</param>
+    /// <returns>x,y 2D grid Coord struct.</returns>
+    public Coord CoordFromWorldPoint(Vector3 worldPosition)
+    {
+        float percentX = (worldPosition.x + mapWidth / 2) / mapWidth;
+        float percentY = (worldPosition.z + mapHeight / 2) / mapHeight;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+
+        int x = Mathf.RoundToInt((mapWidth - 1) * percentX);
+        int y = Mathf.RoundToInt((mapHeight - 1) * percentY);
+
+        return new Coord(x, y);
     }
 
     /// <summary>
@@ -501,6 +587,73 @@ public class ZoneController : MonoBehaviour {
     }
 
     /// <summary>
+    /// Returns a list of tiles within a conic area.
+    /// </summary>
+    /// <param name="startX">Given point x coordinate.</param>
+    /// <param name="startY">Given point y coordinate.</param>
+    /// <param name="radius">Given radius.</param>
+    /// <param name="angle">Given angle of cone.</param>
+    /// <returns>Returns a list of coordinates.</returns>
+    List<Coord> GetConicTiles(int startX, int startY, int distance, Vector3 forward, float angle)
+    {
+        /*
+            This algorithm works by having a Queue of tiles to check, only
+            adding new tiles to the queue if they meet our criteria, so
+            any tiles outside of our radius do not get added to the queue.
+            And thus it terminates after all such tiles are iterated over.
+
+            We avoid scanning unnecessary tiles this way.
+        */
+        List<Coord> tiles = new List<Coord>();
+        Queue<Coord> queue = new Queue<Coord>();
+        Coord origin = new Coord(startX, startY);
+        queue.Enqueue(new Coord(startX, startY));
+
+        while (queue.Count > 0)
+        {
+            Coord tile = queue.Dequeue();
+            tiles.Add(tile);
+
+            for (int x = tile.tileX - 1; x <= tile.tileX + 1; x++)
+            {
+                for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++)
+                {
+                    if (inBounds(x, y) && insideCone(origin, new Coord(x, y), forward, angle, distance))
+                    {
+                        queue.Enqueue(new Coord(x, y));
+                    }
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+    /// <summary>
+    /// Checks if the tile is inside an area defined as being a cone.
+    /// </summary>
+    /// <param name="origin">Tile corresponding to our unit.</param>
+    /// <param name="dest">Tile we are checking.</param>
+    /// <param name="forward">Direction the unit is facing.</param>
+    /// <param name="angle">Angle of our cone in degrees.</param>
+    /// <param name="distance">We want to stop our cone at a distance.</param>
+    /// <returns>Whether the tile is inside our cone.</returns>
+    bool insideCone(Coord origin, Coord dest, Vector3 forward, float angle, int distance)
+    {
+        Vector3 VectorToMeasure = new Vector3(dest.tileX, 0, dest.tileY) - new Vector3(origin.tileX, 0, origin.tileY);
+        float resultAngle = Vector3.Angle(forward, VectorToMeasure);
+
+        if (resultAngle <= angle && GetDistance(origin, dest) <= distance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Returns a list of tiles within a circular area.
     /// </summary>
     /// <param name="startX">Given point x coordinate.</param>
@@ -509,13 +662,17 @@ public class ZoneController : MonoBehaviour {
     /// <returns>Returns a list of coordinates.</returns>
     List<Coord> GetRegionTiles(int startX, int startY, int radius)
     {
-        List<Coord> tiles = new List<Coord>();
-        //int[,] mapFlags = new int[0, 0];
-        //int tileType = map[startX, startY];
+        /*
+            This algorithm works by having a Queue of tiles to check, only
+            adding new tiles to the queue if they meet our criteria, so
+            any tiles outside of our radius do not get added to the queue.
+            And thus it terminates after all such tiles are iterated over.
 
+            We avoid scanning unnecessary tiles this way.
+        */
+        List<Coord> tiles = new List<Coord>();
         Queue<Coord> queue = new Queue<Coord>();
         queue.Enqueue(new Coord(startX, startY));
-        //mapFlags[startX, startY] = 1;
 
         while (queue.Count > 0)
         {
