@@ -90,7 +90,7 @@ public class ZoneController : MonoBehaviour {
     /// <summary>
     /// Sets proximity for all units.
     /// </summary>
-    public void setProximityMap()
+    public void setProximityMapForAllUnits()
     {
         /*
             Go through each unit for a area defined by a given radius, and set influence accordingly.
@@ -119,6 +119,25 @@ public class ZoneController : MonoBehaviour {
         }
     }
 
+    public void setLocalProximityMap(GameObject unit)
+    {
+        List<Coord> coords;
+        Coord coord;
+        float power = unit.GetComponent<bfAsset>().power;
+        unit.GetComponent<bfAsset>().setNewProximityMap(mapWidth, mapHeight);
+        coord = CoordFromWorldPoint(unit.transform.position);
+        coords = GetRegionTiles(coord.tileX, coord.tileY, 10);
+
+        foreach (Coord tile in coords)
+        {
+            // Two units close to each other should have overlapping tiles with high
+            // influence between them, thus the unit should prefer tiles for cover
+            // away from such tiles unless its literally all thats available.
+            unit.GetComponent<bfAsset>().localProximityMap[tile.tileX, tile.tileY] = linearInfluenceAtPoint(power, coord, tile);
+        }
+
+    }
+
     /// <summary>
     /// Find best tile to use as cover, which is the best cover tile minus proximity value.
     /// </summary>
@@ -134,9 +153,8 @@ public class ZoneController : MonoBehaviour {
         while (tilesToSort.Count > 0)
         {
             Coord next = tilesToSort.Dequeue();
-            //float testTile = coverMap[best.tileX, best.tileY] - proximityMap[best.tileX, best.tileY];
-            float testTileValue = coverMap[next.tileX, next.tileY] - proximityMap[next.tileX, next.tileY];
-            float bestTileValue = coverMap[best.tileX, best.tileY] - proximityMap[best.tileX, best.tileY];
+            float testTileValue = coverMap[next.tileX, next.tileY] + unit.GetComponent<bfAsset>().localProximityMap[next.tileX, next.tileY];
+            float bestTileValue = coverMap[best.tileX, best.tileY] + unit.GetComponent<bfAsset>().localProximityMap[best.tileX, best.tileY];
             if (testTileValue > bestTileValue)
             {
                 best = next;
