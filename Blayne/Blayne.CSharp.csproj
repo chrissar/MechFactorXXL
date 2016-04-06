@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -92,10 +86,20 @@
     <Compile Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\SepiaToneEffect.cs" />
     <Compile Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\TwirlEffect.cs" />
     <Compile Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\VortexEffect.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\Ally.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\AllyGameController.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\Command.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\FireTeam.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\FireTeamAlly.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\ICommandable.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\TeamList.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\AimingState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\FiringState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\IdlingCombatState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\ReloadingState.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\Command.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\MoveFireTeamCommand.cs" />
     <Compile Include="Assets\Scripts\AI\IAction.cs" />
     <Compile Include="Assets\Scripts\AI\ICombat.cs" />
     <Compile Include="Assets\Scripts\AI\IDecision.cs" />
@@ -112,6 +116,7 @@
     <Compile Include="Assets\Scripts\AI\StatusStates\AlertState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\EaseState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\SuppressedState.cs" />
+    <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\GridManager.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\TerrainSplatReader.cs" />
     <Compile Include="Assets\Scripts\World\ZoneController.cs" />
