@@ -42,11 +42,10 @@ public class FireTeamAlly : Ally
 
 	public void PlaceInFireTeam(FireTeam newfireTeam)
 	{
-		if (newfireTeam != null) 
-		{
+		if (newfireTeam != null) {
 			fireTeam = newfireTeam;
 			fireTeam.AddFireTeamAlly (this);
-		}
+		} 
 	}
 
 	protected void Initialize()

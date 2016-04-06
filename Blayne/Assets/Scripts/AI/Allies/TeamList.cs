@@ -13,10 +13,9 @@ public class TeamList
 
 	public void AddTeamToListWithNumber(FireTeam teamToAdd, int teamNumber)
 	{
-		if (teamToAdd != null && teamNumber >= 0) 
-		{
+		if (teamToAdd != null && teamNumber >= 0) {
 			teamList.Add (teamNumber, teamToAdd);
-		}
+		} 
 	}
 
 	public FireTeam getTeamWithNumber(int teamNumber)

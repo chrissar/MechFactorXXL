@@ -20,9 +20,8 @@ public class MoveFireTeamCommand : Command
 		if (ally is FireTeamAlly) 
 		{
 			FireTeamAlly fireTeamAlly = (FireTeamAlly)ally;
-			// If the fire team ally is the leader, set the destination of the leader's
-			// fire team to the move target.
-			fireTeamAlly.fireTeam.destination = mMoveTarget;
+			// Set the destination of the ally's fire team.
+			fireTeamAlly.fireTeam.setDestination(mMoveTarget);
 		}
 	}
 }
