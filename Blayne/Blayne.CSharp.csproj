@@ -98,6 +98,7 @@
     <Compile Include="Assets\Scripts\AI\CombatStates\IdlingCombatState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\ReloadingState.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\Command.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\FireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\MoveFireTeamCommand.cs" />
     <Compile Include="Assets\Scripts\AI\IAction.cs" />
