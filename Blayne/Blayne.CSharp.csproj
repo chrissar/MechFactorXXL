@@ -88,10 +88,8 @@
     <Compile Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\VortexEffect.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\Ally.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\AllyGameController.cs" />
-    <Compile Include="Assets\Scripts\AI\Allies\Command.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\FireTeam.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\FireTeamAlly.cs" />
-    <Compile Include="Assets\Scripts\AI\Allies\ICommandable.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\TeamList.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\AimingState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\FiringState.cs" />
