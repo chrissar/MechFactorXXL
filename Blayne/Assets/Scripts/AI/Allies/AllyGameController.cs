@@ -8,7 +8,7 @@ public class AllyGameController : MonoBehaviour
 {
 	private TeamList teamList;
 	private int testedFireTeamNumber;
-	private FireTeamAlly fireTeamLeaderAlly;
+	private FireTeamAlly mFireTeamLeaderAlly;
 
 	void Start()
 	{
@@ -20,7 +20,7 @@ public class AllyGameController : MonoBehaviour
 		teamList.AddTeamToListWithNumber (fireTeam, fireTeam.teamNumber);
 
 		// Add the NPCs to the fire team.
-		fireTeamLeaderAlly = null;
+		mFireTeamLeaderAlly = null;
 		GameObject[] npcGameObjects = GameObject.FindGameObjectsWithTag("NPC");
 		foreach (GameObject npcGameObject in npcGameObjects) 
 		{
@@ -28,10 +28,10 @@ public class AllyGameController : MonoBehaviour
 			if (fireTeamAlly != null) 
 			{
 				// Set one of the fire team allies to be the team leader.
-				if (fireTeamLeaderAlly == null) 
+				if (mFireTeamLeaderAlly == null) 
 				{
 					fireTeamAlly.fireTeamRole = FireTeamRole.LEADER;
-					fireTeamLeaderAlly = fireTeamAlly;
+					mFireTeamLeaderAlly = fireTeamAlly;
 				}
 				// Place the fire team ally into the fire team in the team list.
 				fireTeamAlly.fireTeamNumber = testedFireTeamNumber;
@@ -41,15 +41,17 @@ public class AllyGameController : MonoBehaviour
 
 		// Set formation of the fire team
 		FireTeamFormationCommand wedgeCommand = new FireTeamFormationCommand(FireTeamFormation.WEDGE);
-		fireTeamLeaderAlly.executeCommand (wedgeCommand);
+		mFireTeamLeaderAlly.executeCommand (wedgeCommand);
 		// Move team to default location.
 		MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (Vector3.zero);
-		fireTeamLeaderAlly.executeCommand (moveCommand);
+		mFireTeamLeaderAlly.executeCommand (moveCommand);
 	}
 
 	void Update()
 	{
-		acceptInput ();
+		if (mFireTeamLeaderAlly != null) {
+			acceptInput ();
+		}
 		// Update the fire team's movement.
 		FireTeam fireTeam = teamList.getTeamWithNumber(testedFireTeamNumber);
 		fireTeam.UpdateAnchor();
@@ -62,36 +64,57 @@ public class AllyGameController : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.W)) 
 		{
 			MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (new Vector3 (0, 0.5f, 10));
-			fireTeamLeaderAlly.executeCommand (moveCommand);
+			mFireTeamLeaderAlly.executeCommand (moveCommand);
 		} 
 		else if (Input.GetKeyDown (KeyCode.S)) 
 		{
 			// Give the move command to the leader.
 			MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (new Vector3 (0, 0.5f, -10));
-			fireTeamLeaderAlly.executeCommand (moveCommand);
+			mFireTeamLeaderAlly.executeCommand (moveCommand);
 		} 
 		else if (Input.GetKeyDown (KeyCode.A)) 
 		{
 			// Give the move command to the leader.
 			MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (new Vector3 (-10, 0.5f, 0));
-			fireTeamLeaderAlly.executeCommand (moveCommand);
+			mFireTeamLeaderAlly.executeCommand (moveCommand);
 		} 
 		else if (Input.GetKeyDown (KeyCode.D)) 
 		{
 			// Give the move command to the leader.
 			MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (new Vector3 (10, 0.5f, 0));
-			fireTeamLeaderAlly.executeCommand (moveCommand);
+			mFireTeamLeaderAlly.executeCommand (moveCommand);
 		}
+
 		// Give the formation change command to the leader if a movement button is pressed. 
 		// For demonstration  purposes right now.
 		if(Input.GetKeyDown(KeyCode.E)){
 			// Give the set wedge formation command to the leader.
 			FireTeamFormationCommand wedgeCommand = new FireTeamFormationCommand(FireTeamFormation.WEDGE);
-			fireTeamLeaderAlly.executeCommand (wedgeCommand);
+			mFireTeamLeaderAlly.executeCommand (wedgeCommand);
 		} else if(Input.GetKeyDown(KeyCode.Q)){
 			// Give the set file formation command to the leader.
 			FireTeamFormationCommand fileCommand = new FireTeamFormationCommand(FireTeamFormation.FILE);
-			fireTeamLeaderAlly.executeCommand (fileCommand);
+			mFireTeamLeaderAlly.executeCommand (fileCommand);
+		}
+
+		// Accept inputs for testing the disabling of the leader.
+		if(Input.GetKeyDown(KeyCode.R)){
+			FireTeam fireTeam = teamList.getTeamWithNumber(testedFireTeamNumber);
+			FireTeamAlly replacementLeader = fireTeam.RemoveFireTeamAlly (mFireTeamLeaderAlly);
+			// Remove the old team leader from the scene.
+			Destroy(mFireTeamLeaderAlly.gameObject);
+			mFireTeamLeaderAlly = replacementLeader;
+		}
+
+		// Accept inputs for testing the disabling of the member at slot position 1.
+		if(Input.GetKeyDown(KeyCode.T)){
+			FireTeam fireTeam = teamList.getTeamWithNumber(testedFireTeamNumber);
+			FireTeamAlly slotPosition1Ally = fireTeam.GetAllyAtSlotPosition(1);
+			if (slotPosition1Ally != null) {
+				fireTeam.RemoveFireTeamAlly (slotPosition1Ally);
+				// Remove the removed team member from the scene.
+				Destroy (slotPosition1Ally.gameObject);
+			}
 		}
 	}
 }
