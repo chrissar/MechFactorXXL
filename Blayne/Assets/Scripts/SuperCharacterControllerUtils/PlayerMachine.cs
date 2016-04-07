@@ -75,6 +75,7 @@ public class PlayerMachine : SuperStateMachine {
         //animator.applyRootMotion = true;
         animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
+        animator.SetLayerWeight(1, 1);
     }
 
     protected override void EarlyGlobalSuperUpdate()
