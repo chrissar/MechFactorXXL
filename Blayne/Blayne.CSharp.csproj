@@ -61,6 +61,9 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="CoherentNoise">
+      <HintPath>Assets\WorldBuilder\Scripts\Helpers\CoherentNoise.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Blayne.CSharp.Plugins.csproj">
@@ -117,6 +120,31 @@
     <Compile Include="Assets\Scripts\AI\StatusStates\SuppressedState.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\BSPTree.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\BruteForceMesh.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\RPGController\RPGMesh.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\RPGController\RPGTriangleTree.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\SuperCharacterController.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\SuperCollider.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\SuperCollisionType.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\SuperMath.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Core\SuperStateMachine.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\DebugDraw.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterController\Math3d.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Gravity.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\CustomController.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\Easing.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\LayersManager.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\MoodiePlayerCamera.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\MoodiePlayerMachine.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\MoverDetails.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\MoverDetailsContainer.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\PlatformMover.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\PlayerCamera.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\PlayerInputController.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\PlayerMachine.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\PlayerMachineDebug.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\SimpleStateMachine.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\GridManager.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\TerrainSplatReader.cs" />
     <Compile Include="Assets\Scripts\World\ZoneController.cs" />
@@ -186,6 +214,7 @@
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_DepthOfField\TiltShift.shader" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\frag_ao.cginc" />
+    <None Include="Assets\Scripts\SuperCharacterController\README.txt" />
     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />
