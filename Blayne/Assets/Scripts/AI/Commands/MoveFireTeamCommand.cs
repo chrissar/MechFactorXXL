@@ -21,7 +21,9 @@ public class MoveFireTeamCommand : Command
 		{
 			FireTeamAlly fireTeamAlly = (FireTeamAlly)ally;
 			// Set the destination of the ally's fire team.
-			fireTeamAlly.fireTeam.SetDestination(mMoveTarget);
+			if (fireTeamAlly.fireTeam != null) {
+				fireTeamAlly.fireTeam.SetDestination (mMoveTarget);
+			}
 		}
 	}
 }

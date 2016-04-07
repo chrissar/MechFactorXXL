@@ -34,10 +34,11 @@ public class FireTeamAlly : Ally
 	void Update()
 	{
 		// Move to position marked by slot position
-		if (fireTeam != null) 
-		{
+		if (fireTeam != null) {
 			mNavMeshAgent.destination = fireTeam.getSlotPosition (slotPosition);
-		} 
+		} else {
+			mNavMeshAgent.destination = transform.position;
+		}
 	}
 
 	public void PlaceInFireTeam(FireTeam newfireTeam)
