@@ -13,6 +13,7 @@ public class PlayerMachine : SuperStateMachine {
     Animator animator;
 
     public float WalkSpeed = 4.0f;
+    public float RotateSpeed = 10.0f;
     [HideInInspector]public float forwardAmount = 0;
     [HideInInspector]public float sidewaysAmount = 0;
     [HideInInspector]public float rotateAmount = 0;
@@ -79,7 +80,7 @@ public class PlayerMachine : SuperStateMachine {
     protected override void EarlyGlobalSuperUpdate()
     {
 		// Rotate out facing direction horizontally based on mouse input
-        lookDirection = Quaternion.AngleAxis(input.Current.MouseInput.x, controller.up) * lookDirection;
+        lookDirection = Quaternion.AngleAxis(input.Current.MouseInput.x * RotateSpeed, controller.up) * lookDirection;
         // Put any code in here you want to run BEFORE the state's update function.
         // This is run regardless of what state you're in
     }
