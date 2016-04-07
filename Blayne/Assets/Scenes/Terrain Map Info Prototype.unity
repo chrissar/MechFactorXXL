@@ -1100,8 +1100,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ded0ea888fa27f4e8fa24127954a075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Distance: 3
+  Distance: 2
   Height: 2
+  horizontalOffset: 1
   PlayerTarget: {fileID: 601247881}
 --- !u!1 &1487365307
 GameObject:

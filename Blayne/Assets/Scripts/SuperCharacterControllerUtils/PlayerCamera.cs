@@ -5,6 +5,7 @@ public class PlayerCamera : MonoBehaviour {
 
     public float Distance = 3.0f;
     public float Height = 2.0f;
+    public float horizontalOffset = 2.0f;
 
     public GameObject PlayerTarget;    
 
@@ -36,5 +37,8 @@ public class PlayerCamera : MonoBehaviour {
 
         transform.position -= transform.forward * Distance;
         transform.position += controller.up * Height;
-	}
+        transform.position += transform.rotation * ( new Vector3(horizontalOffset, 0, 0));
+        
+
+    }
 }
