@@ -10,7 +10,12 @@ public class PlayerMachine : SuperStateMachine {
 
     public Transform AnimatedMesh;
 
+    Animator animator;
+
     public float WalkSpeed = 4.0f;
+    [HideInInspector]public float forwardAmount = 0;
+    [HideInInspector]public float sidewaysAmount = 0;
+    [HideInInspector]public float rotateAmount = 0;
     public float WalkAcceleration = 30.0f;
     public float JumpAcceleration = 5.0f;
     public float JumpHeight = 3.0f;
@@ -28,7 +33,9 @@ public class PlayerMachine : SuperStateMachine {
 
     private PlayerInputController input;
 
-	void Start () {
+    private Quaternion previousRotation;
+
+    void Start () {
 	    // Put any code here you want to run ONCE, when the object is initialized
 
         input = gameObject.GetComponent<PlayerInputController>();
@@ -41,7 +48,33 @@ public class PlayerMachine : SuperStateMachine {
 
         // Set our currentState to idle on startup
         currentState = PlayerStates.Idle;
-	}
+
+        animator = GetComponentInChildren<Animator>();
+
+        SetUpAnimator();
+    }
+
+    void SetUpAnimator()
+    {
+        animator = GetComponent<Animator>();
+
+        foreach (var childAnimator in GetComponentsInChildren<Animator>())
+        {
+            if (childAnimator != animator)
+            {
+                animator.avatar = childAnimator.avatar;
+                Destroy(childAnimator);
+                break;
+            }
+        }
+    }
+
+    void UpdateAnimator()
+    {
+        //animator.applyRootMotion = true;
+        animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
+        animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
+    }
 
     protected override void EarlyGlobalSuperUpdate()
     {
@@ -59,8 +92,15 @@ public class PlayerMachine : SuperStateMachine {
         // Move the player by our velocity every frame
         transform.position += moveDirection * controller.deltaTime;
 
+        previousRotation = AnimatedMesh.rotation;
+
         // Rotate our mesh to face where we are "looking"
         AnimatedMesh.rotation = Quaternion.LookRotation(lookDirection, controller.up);
+
+        rotateAmount = Input.GetAxis("Mouse X") * 0.1f;
+        Debug.Log(rotateAmount);
+
+        UpdateAnimator();
     }
 
     private bool AcquiringGround()
@@ -87,15 +127,18 @@ public class PlayerMachine : SuperStateMachine {
         Vector3 right = Vector3.Cross(controller.up, lookDirection);
 
         Vector3 local = Vector3.zero;
+        forwardAmount = 0;
 
         if (input.Current.MoveInput.x != 0)
         {
             local += right * input.Current.MoveInput.x;
+            //forwardAmount = input.Current.MoveInput.x;
         }
 
         if (input.Current.MoveInput.z != 0)
         {
             local += lookDirection * input.Current.MoveInput.z;
+            forwardAmount = input.Current.MoveInput.z;
         }
 
         return local.normalized;
@@ -147,6 +190,7 @@ public class PlayerMachine : SuperStateMachine {
 
         // Apply friction to slow us to a halt
         moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, 10.0f * controller.deltaTime);
+        //UpdateAnimator();
     }
 
     void Idle_ExitState()
@@ -158,12 +202,14 @@ public class PlayerMachine : SuperStateMachine {
     {
         if (input.Current.JumpInput)
         {
+            forwardAmount = 0;
             currentState = PlayerStates.Jump;
             return;
         }
 
         if (!MaintainingGround())
         {
+            forwardAmount = 0;
             currentState = PlayerStates.Fall;
             return;
         }
@@ -171,9 +217,11 @@ public class PlayerMachine : SuperStateMachine {
         if (input.Current.MoveInput != Vector3.zero)
         {
             moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * WalkSpeed, WalkAcceleration * controller.deltaTime);
+            //UpdateAnimator();
         }
         else
         {
+            forwardAmount = 0;
             currentState = PlayerStates.Idle;
             return;
         }
