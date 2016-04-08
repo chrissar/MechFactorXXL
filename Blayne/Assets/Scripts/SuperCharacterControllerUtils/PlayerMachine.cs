@@ -89,6 +89,7 @@ public class PlayerMachine : SuperStateMachine {
         
         animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
+        animator.SetBool("Aim", aim);
         animator.SetLayerWeight(1, 1);
     }
 
