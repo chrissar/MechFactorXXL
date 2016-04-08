@@ -22,6 +22,10 @@ public class PlayerMachine : SuperStateMachine {
     public float JumpHeight = 3.0f;
     public float Gravity = 25.0f;
 
+    public bool aim;
+    public float aimingWeight;
+    float cameraSpeedOffset;
+
     // Add more states by comma separating them
     enum PlayerStates { Idle, Walk, Jump, Fall }
 
@@ -36,8 +40,15 @@ public class PlayerMachine : SuperStateMachine {
 
     private Quaternion previousRotation;
 
+    private Transform cam; //reference to our case
+
     void Start () {
-	    // Put any code here you want to run ONCE, when the object is initialized
+        // Put any code here you want to run ONCE, when the object is initialized
+        //Setup our camera reference
+        if (Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
 
         input = gameObject.GetComponent<PlayerInputController>();
 
@@ -84,6 +95,16 @@ public class PlayerMachine : SuperStateMachine {
         lookDirection = Quaternion.AngleAxis(input.Current.MouseInput.x * RotateSpeed, controller.up) * lookDirection;
         // Put any code in here you want to run BEFORE the state's update function.
         // This is run regardless of what state you're in
+        aim = Input.GetMouseButton(1);
+
+        aimingWeight = Mathf.MoveTowards(aimingWeight, (aim) ? 1.0f : 0.0f, Time.deltaTime * 5);
+
+        Vector3 normalState = new Vector3(0, 0, 0);
+        Vector3 aimingState = new Vector3(0, 0, 1.0f);
+
+        Vector3 pos = Vector3.Lerp(normalState, aimingState, aimingWeight);
+
+        cam.transform.localPosition = pos;
     }
 
     protected override void LateGlobalSuperUpdate()
@@ -100,7 +121,6 @@ public class PlayerMachine : SuperStateMachine {
         AnimatedMesh.rotation = Quaternion.LookRotation(lookDirection, controller.up);
 
         rotateAmount = Input.GetAxis("Mouse X") * 0.1f;
-        Debug.Log(rotateAmount);
 
         UpdateAnimator();
     }
@@ -192,7 +212,6 @@ public class PlayerMachine : SuperStateMachine {
 
         // Apply friction to slow us to a halt
         moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, 10.0f * controller.deltaTime);
-        //UpdateAnimator();
     }
 
     void Idle_ExitState()
@@ -219,7 +238,6 @@ public class PlayerMachine : SuperStateMachine {
         if (input.Current.MoveInput != Vector3.zero)
         {
             moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * WalkSpeed, WalkAcceleration * controller.deltaTime);
-            //UpdateAnimator();
         }
         else
         {

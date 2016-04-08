@@ -344,6 +344,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 15
+--- !u!1 &295455892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 295455894}
+  - 114: {fileID: 295455893}
+  m_Layer: 0
+  m_Name: Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &295455893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 295455892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ded0ea888fa27f4e8fa24127954a075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Distance: 2
+  Height: 2
+  horizontalOffset: 1
+  PlayerTarget: {fileID: 601247881}
+--- !u!4 &295455894
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 295455892}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 280.25, y: 14.78, z: 313.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1457510105}
+  m_Father: {fileID: 0}
+  m_RootOrder: 18
 --- !u!1 &333040439
 GameObject:
   m_ObjectHideFlags: 0
@@ -924,7 +968,6 @@ GameObject:
   - 92: {fileID: 1457510103}
   - 124: {fileID: 1457510102}
   - 81: {fileID: 1457510101}
-  - 114: {fileID: 1457510106}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -998,26 +1041,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457510100}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 280.28, y: 14.99, z: 313.71}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 200, y: 200.00006, z: 200.00002}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 16
---- !u!114 &1457510106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1457510100}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ded0ea888fa27f4e8fa24127954a075, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Distance: 2
-  Height: 2
-  horizontalOffset: 1
-  PlayerTarget: {fileID: 601247881}
+  m_Father: {fileID: 295455894}
+  m_RootOrder: 0
 --- !u!1 &1487365307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1286,7 +1314,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 17
 --- !u!1 &1649827294
 GameObject:
   m_ObjectHideFlags: 0
