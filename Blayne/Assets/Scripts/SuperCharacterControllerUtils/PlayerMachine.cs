@@ -13,21 +13,24 @@ public class PlayerMachine : SuperStateMachine {
     Animator animator;
 
     public float WalkSpeed = 4.0f;
+    public float RunSpeed = 10.0f;
     public float RotateSpeed = 10.0f;
     [HideInInspector]public float forwardAmount = 0;
     [HideInInspector]public float sidewaysAmount = 0;
     [HideInInspector]public float rotateAmount = 0;
     public float WalkAcceleration = 30.0f;
+    public float RunAcceleration = 60.0f;
     public float JumpAcceleration = 5.0f;
     public float JumpHeight = 3.0f;
     public float Gravity = 25.0f;
+    public float maxSpeed;
 
     public bool aim;
     public float aimingWeight;
     float cameraSpeedOffset;
 
     // Add more states by comma separating them
-    enum PlayerStates { Idle, Walk, Jump, Fall }
+    enum PlayerStates { Idle, Walk, Jump, Fall, Run, Stopping }
 
     private SuperCharacterController controller;
 
@@ -83,7 +86,7 @@ public class PlayerMachine : SuperStateMachine {
 
     void UpdateAnimator()
     {
-        //animator.applyRootMotion = true;
+        
         animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
         animator.SetLayerWeight(1, 1);
@@ -97,7 +100,7 @@ public class PlayerMachine : SuperStateMachine {
         // This is run regardless of what state you're in
         aim = Input.GetMouseButton(1);
 
-        aimingWeight = Mathf.MoveTowards(aimingWeight, (aim) ? 1.0f : 0.0f, Time.deltaTime * 5);
+        aimingWeight = Mathf.MoveTowards(aimingWeight, (aim && !input.Current.SprintInput) ? 1.0f : 0.0f, Time.deltaTime * 5);
 
         Vector3 normalState = new Vector3(0, 0, 0);
         Vector3 aimingState = new Vector3(0, 0, 1.0f);
@@ -144,12 +147,11 @@ public class PlayerMachine : SuperStateMachine {
     /// Constructs a vector representing our movement local to our lookDirection, which is
     /// controlled by the camera
     /// </summary>
-    private Vector3 LocalMovement()
+    private Vector3 LocalMovement(bool isRunning)
     {
         Vector3 right = Vector3.Cross(controller.up, lookDirection);
 
         Vector3 local = Vector3.zero;
-        forwardAmount = 0;
 
         if (input.Current.MoveInput.x != 0)
         {
@@ -160,7 +162,10 @@ public class PlayerMachine : SuperStateMachine {
         if (input.Current.MoveInput.z != 0)
         {
             local += lookDirection * input.Current.MoveInput.z;
-            forwardAmount = input.Current.MoveInput.z;
+            if (isRunning)
+                forwardAmount = input.Current.MoveInput.z;
+            else
+                forwardAmount = input.Current.MoveInput.z / 2;
         }
 
         return local.normalized;
@@ -210,6 +215,15 @@ public class PlayerMachine : SuperStateMachine {
             return;
         }
 
+        if (moveDirection.magnitude > 0)
+        {
+            forwardAmount = moveDirection.magnitude / maxSpeed;
+        }
+        else
+        {
+            forwardAmount = 0;
+        }
+
         // Apply friction to slow us to a halt
         moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, 10.0f * controller.deltaTime);
     }
@@ -217,6 +231,44 @@ public class PlayerMachine : SuperStateMachine {
     void Idle_ExitState()
     {
         // Run once when we exit the idle state
+    }
+
+    void Run_SuperUpdate()
+    {
+        if (input.Current.JumpInput)
+        {
+            forwardAmount = 0;
+            currentState = PlayerStates.Jump;
+            return;
+        }
+
+        if (!MaintainingGround())
+        {
+            forwardAmount = 0;
+            currentState = PlayerStates.Fall;
+            return;
+        }
+
+        if (input.Current.MoveInput != Vector3.zero)
+        {
+            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(true) * RunSpeed, RunAcceleration * controller.deltaTime);
+            if (!input.Current.SprintInput)
+            {
+                currentState = PlayerStates.Walk;
+                return;
+            }
+        }
+        else
+        {
+            // were sliding now, so we'll pretend to still be moving legs
+            currentState = PlayerStates.Idle;
+            return;
+        }
+    }
+
+    void Run_ExitState()
+    {
+        maxSpeed = moveDirection.magnitude;
     }
 
     void Walk_SuperUpdate()
@@ -237,7 +289,12 @@ public class PlayerMachine : SuperStateMachine {
 
         if (input.Current.MoveInput != Vector3.zero)
         {
-            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * WalkSpeed, WalkAcceleration * controller.deltaTime);
+            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(false) * WalkSpeed, WalkAcceleration * controller.deltaTime);
+            if (input.Current.SprintInput)
+            {
+                currentState = PlayerStates.Run;
+                return;
+            }
         }
         else
         {
@@ -245,6 +302,11 @@ public class PlayerMachine : SuperStateMachine {
             currentState = PlayerStates.Idle;
             return;
         }
+    }
+
+    void Walk_ExitState()
+    {
+        maxSpeed = moveDirection.magnitude;
     }
 
     void Jump_EnterState()
@@ -267,7 +329,7 @@ public class PlayerMachine : SuperStateMachine {
             return;            
         }
 
-        planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * WalkSpeed, JumpAcceleration * controller.deltaTime);
+        planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement(false) * WalkSpeed, JumpAcceleration * controller.deltaTime);
         verticalMoveDirection -= controller.up * Gravity * controller.deltaTime;
 
         moveDirection = planarMoveDirection + verticalMoveDirection;
