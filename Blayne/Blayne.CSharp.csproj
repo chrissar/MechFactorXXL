@@ -90,6 +90,9 @@
     <Compile Include="Assets\Scripts\AI\Allies\AllyGameController.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\FireTeam.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\FireTeamAlly.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\FireTeamAllyStateMachine.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\FireTeamLeaderActionHelper.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\FireTeamLeaderRoles.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\TeamList.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\AimingState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\FiringState.cs" />
@@ -99,6 +102,10 @@
     <Compile Include="Assets\Scripts\AI\Commands\FireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\MoveFireTeamCommand.cs" />
+    <Compile Include="Assets\Scripts\AI\FireTeamStates\MovementStates\FireTeamAllyIdlingState.cs" />
+    <Compile Include="Assets\Scripts\AI\FireTeamStates\MovementStates\FireTeamAllyMovingState.cs" />
+    <Compile Include="Assets\Scripts\AI\FireTeamStates\StatusStates\FireTeamAllyEaseState.cs" />
+    <Compile Include="Assets\Scripts\AI\FireTeamStates\StatusStates\FireTeamAllySuppressedState.cs" />
     <Compile Include="Assets\Scripts\AI\IAction.cs" />
     <Compile Include="Assets\Scripts\AI\ICombat.cs" />
     <Compile Include="Assets\Scripts\AI\IDecision.cs" />
@@ -213,6 +220,7 @@
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_DepthOfField\TiltShift.shader" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\frag_ao.cginc" />
     <None Include="Assets\Scripts\SuperCharacterController\README.txt" />
+    <None Include="Assets\Soldier\soldierAnimationFrames.txt" />
     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />

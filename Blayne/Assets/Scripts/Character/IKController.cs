@@ -8,10 +8,16 @@ public class IKController : MonoBehaviour {
     public bool ikActive = false;
     public Transform rightHandObj = null;
     public Transform lookObj = null;
+    public PlayerMachine mach;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        ikActive = mach.aim ? true : false;
     }
 
     //a callback for calculating IK

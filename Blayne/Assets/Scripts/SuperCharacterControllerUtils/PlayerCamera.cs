@@ -18,6 +18,7 @@ public class PlayerCamera : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
         input = PlayerTarget.GetComponent<PlayerInputController>();
         machine = PlayerTarget.GetComponent<PlayerMachine>();
         controller = PlayerTarget.GetComponent<SuperCharacterController>();
@@ -38,7 +39,5 @@ public class PlayerCamera : MonoBehaviour {
         transform.position -= transform.forward * Distance;
         transform.position += controller.up * Height;
         transform.position += transform.rotation * ( new Vector3(horizontalOffset, 0, 0));
-        
-
     }
 }

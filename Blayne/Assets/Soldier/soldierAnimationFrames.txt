@@ -1,0 +1,37 @@
+SOLDIER ANIMATIONS FRAMES
+
+
+   NAME				FROM	TO
+
+skinPose			0	0
+walkAiming			5	35
+walkNoAim			40	70
+run				75	99
+firstJump (all)			105	135 (max height on frame 115 about 0.333 sec delay from start at 30/fps)
+jump				105	115
+landing				115	135 (can be used for the doubleJump landing)
+doubleJump (all)		140	176
+doubleJump (only)		140	156 (just do the salto)
+doubleJumpLanding		156	176 (same anim as landing)
+forwardRoll			180	219
+impactBackMedium		225	255
+impactFrontMedium		260	290
+impactLeftMedium		300	330
+impactRightMedium		335	365
+goToClimb			370	385
+climbUp				390	430
+climbDown			440	480
+activateButton			485	504
+swim				510	540
+impactBackheavy			555	680 (projection in air last from start to frame 40 : 1,333 s)
+impactFrontHeavy		688	809 (projection in air last from start to frame 42 : 1,4 s)
+impactLeftHeavy			814	934 (projection in air last from start to frame 42 : 1,4 s)
+impactRightHeavy		939	1059 (projection in air last from start to frame 42 : 1,4 s)
+idleCrouch			1070	1129
+idleCrouchAiming		1140	1199
+walkCrouchaiming		1208	1238
+walkCrouchNoAim			1243	1273
+idleStandAiming			1281	1341
+idleStandNoAim			1346	1406
+
+		
