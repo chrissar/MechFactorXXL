@@ -20,9 +20,19 @@ public class MoveFireTeamCommand : Command
 		if (ally is FireTeamAlly) 
 		{
 			FireTeamAlly fireTeamAlly = (FireTeamAlly)ally;
-			// Set the destination of the ally's fire team.
-			if (fireTeamAlly.fireTeam != null) {
-				fireTeamAlly.fireTeam.SetDestination (mMoveTarget);
+			FireTeam fireTeam = fireTeamAlly.fireTeam;
+			if (fireTeam != null) {
+				// Set the destination of the ally's fire team.
+				fireTeam.SetDestination (mMoveTarget);
+
+				// Set the fire team members to the move state.
+				for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
+					FireTeamAlly allyAtSlot = fireTeam.GetAllyAtSlotPosition (i);
+					if (allyAtSlot != null) {
+						allyAtSlot.currentMovementState = allyAtSlot.movingState;
+						allyAtSlot.OnEnterMovementState ();
+					}
+				}
 			}
 		}
 	}

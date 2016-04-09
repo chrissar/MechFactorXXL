@@ -5,11 +5,14 @@ public enum FireTeamRole {LEADER, NON_LEADER};
 
 public class FireTeamAlly : Ally
 {
-	public FireTeam fireTeam;
-	public int fireTeamNumber;
-	public int slotPosition;
-	public FireTeamRole fireTeamRole;
-	protected NavMeshAgent mNavMeshAgent;
+	[HideInInspector] public FireTeamRole fireTeamRole;
+	[HideInInspector] public FireTeam fireTeam;
+	[HideInInspector] public int fireTeamNumber;
+	[HideInInspector] public int slotPosition;
+	[HideInInspector] public IMovement currentMovementState;
+	[HideInInspector] public FireTeamAllyMovingState movingState;
+	[HideInInspector] public FireTeamAllyIdlingState idlingState;
+	public NavMeshAgent navMeshAgent;
 
 	public Vector3 Position
 	{
@@ -33,12 +36,8 @@ public class FireTeamAlly : Ally
 
 	void Update()
 	{
-		// Move to position marked by slot position
-		if (fireTeam != null) {
-			mNavMeshAgent.destination = fireTeam.getSlotPosition (slotPosition);
-		} else {
-			mNavMeshAgent.destination = transform.position;
-		}
+		// Update movement.
+		currentMovementState.UpdateState();
 	}
 
 	public void PlaceInFireTeam(FireTeam newfireTeam)
@@ -48,16 +47,27 @@ public class FireTeamAlly : Ally
 			fireTeam.AddFireTeamAlly (this);
 		} 
 	}
+		
+	public void OnEnterMovementState(){
+		currentMovementState.OnStateEnter ();
+	}
 
 	protected void Initialize()
 	{
+		// Get the nav mesh agent on the object.
+		navMeshAgent = GetComponent<NavMeshAgent> ();
+		navMeshAgent.destination = transform.position;
+
+		// Initialize member variables.
+		fireTeamRole = FireTeamRole.NON_LEADER;
 		fireTeam = null;
 		fireTeamNumber = -1;
 		slotPosition = -1;
-		fireTeamRole = FireTeamRole.NON_LEADER;
 
-		// Get the nav mesh agent on the object.
-		mNavMeshAgent = GetComponent<NavMeshAgent> ();
-		mNavMeshAgent.destination = transform.position;
+		// Set states.
+		movingState = new FireTeamAllyMovingState (this);
+		idlingState = new FireTeamAllyIdlingState (this);
+		currentMovementState = idlingState;
+		OnEnterMovementState ();
 	}
 }

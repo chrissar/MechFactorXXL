@@ -57,9 +57,6 @@ public class AllyGameController : MonoBehaviour
 		// Set formation of the fire team.
 		FireTeamFormationCommand wedgeCommand = new FireTeamFormationCommand(FireTeamFormation.WEDGE);
 		mFireTeamLeaderAlly.executeCommand (wedgeCommand);
-		// Move team to default location.
-		MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (Vector3.zero);
-		mFireTeamLeaderAlly.executeCommand (moveCommand);
 	}
 
 	void Update()
