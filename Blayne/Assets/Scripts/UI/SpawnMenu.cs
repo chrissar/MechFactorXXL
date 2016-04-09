@@ -59,7 +59,29 @@ public class SpawnMenu : MonoBehaviour
         RaycastHit hit = CastRayOnMouse();
         obj = hit.collider ? hit.collider.gameObject : null;
         location = hit.point;
-        type = ActionTarget.Nothing;
+        if (obj)
+        {
+            FireTeam team = obj.GetComponent<FireTeam>();
+            FireTeamAlly ally = obj.GetComponent<FireTeamAlly>();
+            if (team != null)
+            {
+                type = team.side == FireTeam.Side.Friend ? ActionTarget.FriendGroup : ActionTarget.EnemyGroup;
+            }
+            else if(ally != null)
+            {
+                type = ally.fireTeam.side == FireTeam.Side.Friend ? ActionTarget.Friend : ActionTarget.Enemy;
+            }
+            else
+            {
+                type = ActionTarget.Nothing;
+            }
+        }
+        else
+        {
+            type = ActionTarget.Nothing;
+        }
+        string name = obj ? obj.name : "None";
+        Debug.Log("Selected Object: " + name + " Location: " + location + " Type: " + type);
     }
     private List<MenuAction> GetAllActions(ActionTarget selected, ActionTarget target)
     {

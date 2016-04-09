@@ -13,6 +13,13 @@ public class FireTeamAlly : Ally
 	private FireTeamAllyStateMachine mStateMachine;
 	private FireTeamLeaderActionHelper mFireTeamLeaderHelper;
 
+    public FireTeam.Side Side
+    {
+        get
+        {
+            return fireTeam.side;
+        }
+    }
 	public Vector3 Position
 	{
 		get

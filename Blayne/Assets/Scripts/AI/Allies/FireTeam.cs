@@ -10,7 +10,13 @@ public class FireTeam
 	public const int kMaxFireTeamMembers = 4;
 	private const float mkMinDistanceFromSlotPositionNeeded = 5.0f;
 
-	public int teamNumber;
+    public enum Side
+    {
+        Friend,
+        Enemy
+    }
+    public int teamNumber;
+    public Side side;
 
 	private FireTeamFormation mCurrentFireTeamFormation;
 	private Vector3 mDestination;
