@@ -33,7 +33,7 @@ sampler2D _CameraDepthNormalsTexture;
 sampler2D _RandomTexture;
 float4 _Params; // x=radius, y=minz, z=attenuation power, w=SSAO power
 
-#ifdef SHADER_API_XBOX360
+#ifdef UNITY_COMPILER_HLSL
 
 #	define INPUT_SAMPLE_COUNT 8
 #	include "frag_ao.cginc"
