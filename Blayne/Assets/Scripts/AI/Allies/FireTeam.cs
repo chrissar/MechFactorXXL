@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum FireTeamFormation {WEDGE, FILE, COVER};
 
-public class FireTeam
+public class FireTeam : MonoBehaviour
 {
 
 	public const int kMaxFireTeamMembers = 4;
@@ -30,6 +30,16 @@ public class FireTeam
 	private Quaternion mCurrentOrientation;
 	private float mCurrentSpeed;
 
+    public void Update()
+    {
+        Vector3 centerOfMass = Vector3.zero;
+        foreach(FireTeamAlly ally in mFireTeamNonLeaderMembers)
+        {
+            centerOfMass += ally.gameObject.transform.position;
+        }
+        centerOfMass /= mFireTeamNonLeaderMembers.Length;
+        gameObject.transform.position = centerOfMass;
+    }
 	public Vector3 Destination
 	{
 		get

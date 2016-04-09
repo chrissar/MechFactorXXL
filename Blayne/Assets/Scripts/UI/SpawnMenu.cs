@@ -12,7 +12,8 @@ public class SpawnMenu : MonoBehaviour
         FriendGroup,
         Enemy,
         EnemyGroup,
-        Nothing
+        Nothing,
+        Anything
     }
     public GameObject menuPrefab;
     public Camera viewCamera;
@@ -44,14 +45,17 @@ public class SpawnMenu : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            SelectObject(out selectedObject, out selectedType, out selectedLocation);
-        }
-	    if(Input.GetMouseButtonDown(1))
-        {
-            SelectObject(out targetObject, out targetType, out targetLocation);
-            CreateMenu();
+            if (Input.GetMouseButtonDown(0))
+            {
+                SelectObject(out selectedObject, out selectedType, out selectedLocation);
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                SelectObject(out targetObject, out targetType, out targetLocation);
+                CreateMenu();
+            }
         }
 	}
     private void SelectObject(out GameObject obj, out ActionTarget type, out Vector3 location)
@@ -88,23 +92,33 @@ public class SpawnMenu : MonoBehaviour
         List<MenuAction> result = new List<MenuAction>();
         foreach(MenuAction action in allActions)
         {
-            if(action.selectedType == selected && action.targetType == target)
+            ActionTarget selectedType = action.GetSelectedType();
+            ActionTarget targetType = action.GetTargetType();
+            if((selectedType == selected
+                || selectedType == ActionTarget.Anything)
+                && (targetType == target
+                || targetType == ActionTarget.Anything))
             {
                 result.Add(action);
             }
+            Debug.Log("Action S: " + selectedType + " T: " + targetType);
         }
         return result;
     }
-    private void CreateMenu()
+    public void ClearMenu()
     {
-        if(lastSpawnedMenu.Count > 0)
+        if (lastSpawnedMenu.Count > 0)
         {
-            foreach(GameObject menuItem in lastSpawnedMenu)
+            foreach (GameObject menuItem in lastSpawnedMenu)
             {
                 Destroy(menuItem);
             }
             lastSpawnedMenu.Clear();
         }
+    }
+    private void CreateMenu()
+    {
+        ClearMenu();
         List<MenuAction> actions = GetAllActions(selectedType, targetType);
         Vector3 position = Input.mousePosition - GetRectSize(_canvas.pixelRect) * 0.5f;
         float verticalOffset = 0.0f;

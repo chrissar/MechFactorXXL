@@ -7,27 +7,26 @@ using UnityEngine.UI;
 
 namespace MenuActions
 {
-    public class MenuAction : MonoBehaviour
+    [RequireComponent (typeof (Button))]
+    public abstract class MenuAction : MonoBehaviour
     {
-        public SpawnMenu.ActionTarget selectedType;
-        public SpawnMenu.ActionTarget targetType;
         private Button button;
         protected Vector3 selectedLocation, targetLocation;
         protected GameObject selectedObject, targetObject;
+        public abstract SpawnMenu.ActionTarget GetSelectedType();
+        public abstract SpawnMenu.ActionTarget GetTargetType();
+        protected abstract void Execute();
         public void Awake()
         {
             button = GetComponent<Button>();
-            if (!button) throw new UnityException("A Menu Action is attached to an object that is not a button!");
             button.onClick.AddListener(delegate { OnClick(); });
         }
         private void OnClick()
         {
             SpawnMenu.instance.CopySelectionData(out selectedLocation, out targetLocation, out selectedObject, out targetObject);
             Execute();
+            SpawnMenu.instance.ClearMenu();
         }
-        protected virtual void Execute()
-        {
-
-        }
+        
     }
 }
