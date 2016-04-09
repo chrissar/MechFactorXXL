@@ -65,6 +65,7 @@ public class PlayerMachine : SuperStateMachine {
         currentState = PlayerStates.Idle;
 
         animator = GetComponentInChildren<Animator>();
+        
 
         SetUpAnimator();
     }

@@ -382,7 +382,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 295455892}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 280.25, y: 14.78, z: 313.3}
+  m_LocalPosition: {x: 280.23, y: 14.78, z: 314.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1457510105}
@@ -542,6 +542,24 @@ Transform:
 --- !u!1 &601247881 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 184738, guid: cb8489fc69166b64ba0a3e6a6be07e34, type: 2}
+  m_PrefabInternal: {fileID: 1265537110}
+--- !u!114 &601247882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 601247881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b74b5d052616c594d8079f4cb6de0125, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ikActive: 0
+  rightHandObj: {fileID: 1802457844}
+  lookObj: {fileID: 1802457844}
+--- !u!4 &601247887 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 442890, guid: cb8489fc69166b64ba0a3e6a6be07e34, type: 2}
   m_PrefabInternal: {fileID: 1265537110}
 --- !u!1 &616619518
 GameObject:
@@ -853,7 +871,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 442890, guid: cb8489fc69166b64ba0a3e6a6be07e34, type: 2}
       propertyPath: m_RootOrder
-      value: 15
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cb8489fc69166b64ba0a3e6a6be07e34, type: 2}
@@ -1071,8 +1089,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1458552286}
-  m_LocalRotation: {x: -0.37227026, y: 0.51517993, z: -0.3924958, w: 0.6647944}
-  m_LocalPosition: {x: -0.1722, y: -0.0225, z: -0.0269}
+  m_LocalRotation: {x: -0.3238277, y: 0.4016514, z: -0.3876842, w: 0.7638801}
+  m_LocalPosition: {x: -0.1828, y: -0.0433, z: -0.0567}
   m_LocalScale: {x: -0.39370066, y: -0.39370078, z: -0.39370087}
   m_Children:
   - {fileID: 796066578}
@@ -1636,6 +1654,33 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644585662}
+  m_RootOrder: 1
+--- !u!1 &1802457843
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1802457844}
+  m_Layer: 0
+  m_Name: RightHand_AimIKTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1802457844
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1802457843}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.245, y: 1.867, z: 0.798}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 601247887}
   m_RootOrder: 1
 --- !u!1 &1813259579
 GameObject:
