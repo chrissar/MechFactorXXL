@@ -21,17 +21,9 @@ namespace MenuActions
         {
             Debug.Log(selectedObject.name);
             FireTeam fireTeam = selectedObject.GetComponent<FireTeam>();
-            // Set the destination of the ally's fire team.
-            fireTeam.SetDestination(targetLocation);
-            // Set the fire team members to the move state.
-            for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i)
-            {
-                FireTeamAlly allyAtSlot = fireTeam.GetAllyAtSlotPosition(i);
-                if (allyAtSlot != null)
-                {
-                    allyAtSlot.StateMachine.currentMovementState.ToMoving();
-                }
-            }
+			// Create movement command to issue to the fire team.
+			MoveFireTeamCommand movementCommand = new MoveFireTeamCommand (targetLocation);
+			fireTeam.executeCommand(movementCommand);
         }
     }
 }

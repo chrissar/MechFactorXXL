@@ -116,9 +116,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c34e8a5cba47c7e4f8894fe2e7c092e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireTeamRole: 0
+  fireTeam: {fileID: 0}
   fireTeamNumber: 0
   slotPosition: 0
-  fireTeamRole: 0
+  navMeshAgent: {fileID: 0}
 --- !u!195 &41010351
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -227,6 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultColor: {r: 0.6627451, g: 0.27058825, b: 0.09803922, a: 1}
   disabledColor: {r: 0.21410036, g: 0.74509805, b: 0.8235294, a: 0}
+  fireTeamPrefab: {fileID: 0}
 --- !u!4 &42070733
 Transform:
   m_ObjectHideFlags: 0
@@ -346,9 +349,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c34e8a5cba47c7e4f8894fe2e7c092e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireTeamRole: 0
+  fireTeam: {fileID: 0}
   fireTeamNumber: 0
   slotPosition: 0
-  fireTeamRole: 0
+  navMeshAgent: {fileID: 0}
 --- !u!195 &141571987
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -909,9 +914,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c34e8a5cba47c7e4f8894fe2e7c092e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireTeamRole: 0
+  fireTeam: {fileID: 0}
   fireTeamNumber: 0
   slotPosition: 0
-  fireTeamRole: 0
+  navMeshAgent: {fileID: 0}
 --- !u!23 &1385929980
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1160,9 +1167,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c34e8a5cba47c7e4f8894fe2e7c092e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireTeamRole: 0
+  fireTeam: {fileID: 0}
   fireTeamNumber: 0
   slotPosition: 0
-  fireTeamRole: 0
+  navMeshAgent: {fileID: 0}
 --- !u!195 &1598847198
 NavMeshAgent:
   m_ObjectHideFlags: 0

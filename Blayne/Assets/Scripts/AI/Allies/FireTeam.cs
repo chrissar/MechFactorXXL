@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum FireTeamFormation {WEDGE, FILE, COVER};
 
-public class FireTeam : MonoBehaviour
+public class FireTeam : Ally
 {
 
 	public const int kMaxFireTeamMembers = 4;
@@ -16,8 +16,9 @@ public class FireTeam : MonoBehaviour
         Enemy
     }
     public int teamNumber;
-    public Side side;
+    private Side mSide;
 
+	private Projector mProjector;
 	private FireTeamFormation mCurrentFireTeamFormation;
 	private Vector3 mDestination;
 	private FireTeamAlly mFireTeamLeader;
@@ -25,21 +26,31 @@ public class FireTeam : MonoBehaviour
 	private FireTeamAlly[] mFireTeamNonLeaderMembers;
 	private Vector3[] mRelativeSlotDisplacements;
 	private List<FireTeamAlly> mDisabledTeamMembers;
+	private List<FireTeam> mEngagedEnemyTeams;
 	private Vector3 mCurrentAnchorPosition;
 	private Vector3 mNextAnchorPosition; // Slightly ahead of anchor point to set target slot positions.
 	private Quaternion mCurrentOrientation;
 	private float mCurrentSpeed;
 
-    public void Update()
-    {
-        Vector3 centerOfMass = Vector3.zero;
-        foreach(FireTeamAlly ally in mFireTeamNonLeaderMembers)
-        {
-            centerOfMass += ally.gameObject.transform.position;
-        }
-        centerOfMass /= mFireTeamNonLeaderMembers.Length;
-        gameObject.transform.position = centerOfMass;
-    }
+	public Side TeamSide
+	{
+		get
+		{
+			return mSide;
+		}
+		set 
+		{
+			mSide = value;
+			// Disable the projector if the team is an enemy team.
+			if (mProjector != null && mSide == Side.Enemy) {
+				print ("Disabling projector");
+				mProjector.enabled = false;
+			} else {
+				print ("Enabling projector");
+				mProjector.enabled = true;
+			}
+		}
+	}
 	public Vector3 Destination
 	{
 		get
@@ -52,6 +63,13 @@ public class FireTeam : MonoBehaviour
 		get
 		{ 
 			return mCurrentFireTeamFormation; 
+		}
+	}
+	public  List<FireTeam> EngagedEnemyTeams
+	{
+		get
+		{ 
+			return mEngagedEnemyTeams;
 		}
 	}
 	public int NonLeaderMemberCount
@@ -69,20 +87,14 @@ public class FireTeam : MonoBehaviour
 		}
 	}
 
-	public FireTeam ()
+	public void Awake(){
+		Initialize ();
+	}
+
+	public void Update()
 	{
-		teamNumber = 0;
-		mDestination = Vector3.zero;
-		mCurrentFireTeamFormation = FireTeamFormation.WEDGE;
-		mFireTeamLeader = null;
-		mNonLeaderMemberCount = 0;
-		mFireTeamNonLeaderMembers = new FireTeamAlly[kMaxFireTeamMembers - 1];
-		mRelativeSlotDisplacements = new Vector3[kMaxFireTeamMembers];
-		mDisabledTeamMembers = new List<FireTeamAlly> ();
-		mCurrentAnchorPosition = Vector3.zero;
-		mNextAnchorPosition = mCurrentAnchorPosition;
-		mCurrentOrientation = Quaternion.identity;
-		mCurrentSpeed = 2.0f;
+		UpdateProjector ();
+		UpdateAnchor ();
 	}
 
 	public FireTeamAlly GetAllyAtSlotPosition(int slotPosition)
@@ -129,18 +141,7 @@ public class FireTeam : MonoBehaviour
 		// Assign the slot positions to the members of the fire team.
 		AssignSlotPositions ();
 	}
-
-	public void UpdateAnchor()
-	{
-		// Only move the anchor if the fire team is close enough to their slot positions.
-		if (IsFireTeamInPosition ()) {
-			// Update current anchor point to move towards destination based on overall team speed.
-			Vector3 destinationDisplacement = mDestination - mCurrentAnchorPosition;
-			mCurrentAnchorPosition += destinationDisplacement.normalized * mCurrentSpeed * Time.deltaTime;
-			SetNextAnchorPointTarget ();
-		}
-	}
-
+		
 	public void AddFireTeamAlly(FireTeamAlly fireTeamAllyToAdd)
 	{
 		if (fireTeamAllyToAdd == null) {
@@ -156,6 +157,7 @@ public class FireTeam : MonoBehaviour
 			mNonLeaderMemberCount++;
 		}
 		// Set fire team ally's team to this team.
+		fireTeamAllyToAdd.fireTeamNumber = teamNumber;
 		fireTeamAllyToAdd.fireTeam = this;
 		// Update the formation to account for the added member.
 		UpdateFormation();
@@ -262,12 +264,57 @@ public class FireTeam : MonoBehaviour
 		return Vector3.zero;
 	}
 
+	protected void Initialize ()
+	{
+		teamNumber = 0;
+		mProjector = gameObject.GetComponentInChildren<Projector>();
+		mDestination = Vector3.zero;
+		mFireTeamLeader = null;
+		mNonLeaderMemberCount = 0;
+		mFireTeamNonLeaderMembers = new FireTeamAlly[kMaxFireTeamMembers - 1];
+		mRelativeSlotDisplacements = new Vector3[kMaxFireTeamMembers];
+		mDisabledTeamMembers = new List<FireTeamAlly> ();
+		mEngagedEnemyTeams = new List<FireTeam> ();
+		mCurrentAnchorPosition = Vector3.zero;
+		gameObject.transform.position = mCurrentAnchorPosition;
+		mNextAnchorPosition = mCurrentAnchorPosition;
+		mCurrentFireTeamFormation = FireTeamFormation.WEDGE;
+		SetWedgeSlotPositions ();
+		mCurrentOrientation = Quaternion.identity;
+		mCurrentSpeed = 2.0f;
+	}
+
 	private void UpdateFormation()
 	{
 		// Set the anchor point based on the current members of the team.
 		SetAnchorPoint();
 		// Assign the slot positions of the current members in the team.
 		AssignSlotPositions();
+	}
+		
+	private void UpdateProjector()
+	{
+		// Set the projector to the center of mass of all the members in the fire team.
+		Vector3 positionSum = Vector3.zero;
+		if(mFireTeamLeader != null){
+			positionSum += mFireTeamLeader.Position; // Add the fire team leader position.
+		}
+		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
+			positionSum += mFireTeamNonLeaderMembers[i].Position; // Add the fire team non-leader position.
+		}
+		gameObject.transform.position = 
+			positionSum / (mNonLeaderMemberCount + 1); // include leader position.
+	}
+
+	private void UpdateAnchor()
+	{
+		// Only move the anchor if the fire team is close enough to their slot positions.
+		if (IsFireTeamInPosition ()) {
+			// Update current anchor point to move towards destination based on overall team speed.
+			Vector3 destinationDisplacement = mDestination - mCurrentAnchorPosition;
+			mCurrentAnchorPosition += destinationDisplacement.normalized * mCurrentSpeed * Time.deltaTime;
+			SetNextAnchorPointTarget ();
+		}
 	}
 
 	private void SetAnchorPoint()

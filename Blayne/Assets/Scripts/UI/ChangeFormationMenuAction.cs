@@ -20,18 +20,9 @@ namespace MenuActions
         protected override void Execute()
         {
             FireTeam fireTeam = targetObject.GetComponent<FireTeam>();
-
-            // Set the formation of the ally's fire team to the wedge formation.
-            fireTeam.SetFormation(formation);
-            // Set the fire team members to the move state.
-            for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i)
-            {
-                FireTeamAlly allyAtSlot = fireTeam.GetAllyAtSlotPosition(i);
-                if (allyAtSlot != null)
-                {
-                    allyAtSlot.StateMachine.currentMovementState.ToMoving();
-                }
-            }
+			// Create formation command to issue to the fire team.
+			ChangeFireTeamFormationCommand formationCommand = new ChangeFireTeamFormationCommand(formation);
+			fireTeam.executeCommand(formationCommand);
         }
     }
 }

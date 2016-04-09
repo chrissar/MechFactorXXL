@@ -1,18 +1,18 @@
 ﻿using System;
 using UnityEngine;
 
-public class MoveFireTeamCommand : Command
+public class ChangeFireTeamFormationCommand : Command
 {
-	private Vector3 mMoveTarget;
+	public FireTeamFormation mFireTeamFormation;
 
-	public MoveFireTeamCommand ()
+	public  ChangeFireTeamFormationCommand ()
 	{
-		mMoveTarget = Vector3.zero;
+		mFireTeamFormation = FireTeamFormation.WEDGE;
 	}
 
-	public MoveFireTeamCommand (Vector3 moveTarget)
+	public  ChangeFireTeamFormationCommand (FireTeamFormation formation)
 	{
-		mMoveTarget = moveTarget;
+		mFireTeamFormation = formation;
 	}
 
 	public override void execute(Ally ally)
@@ -20,9 +20,9 @@ public class MoveFireTeamCommand : Command
 		if (ally != null && ally is FireTeam) 
 		{
 			FireTeam fireTeam = ally as FireTeam;
-			// Set the destination of the ally's fire team.
-			fireTeam.SetDestination (mMoveTarget);
 
+			// Set the formation of the ally's fire team to the wedge formation.
+			fireTeam.SetFormation(mFireTeamFormation);
 			// Set the fire team members to the move state.
 			for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
 				FireTeamAlly allyAtSlot = fireTeam.GetAllyAtSlotPosition (i);
@@ -30,6 +30,7 @@ public class MoveFireTeamCommand : Command
 					allyAtSlot.StateMachine.currentMovementState.ToMoving ();
 				}
 			}
+
 		}
 	}
 }

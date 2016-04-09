@@ -69,11 +69,13 @@ public class SpawnMenu : MonoBehaviour
             FireTeamAlly ally = obj.GetComponent<FireTeamAlly>();
             if (team != null)
             {
-                type = team.side == FireTeam.Side.Friend ? ActionTarget.FriendGroup : ActionTarget.EnemyGroup;
+				type = team.TeamSide == 
+					FireTeam.Side.Friend ? ActionTarget.FriendGroup : ActionTarget.EnemyGroup;
             }
             else if(ally != null)
             {
-                type = ally.fireTeam.side == FireTeam.Side.Friend ? ActionTarget.Friend : ActionTarget.Enemy;
+				type = ally.fireTeam.TeamSide == 
+					FireTeam.Side.Friend ? ActionTarget.Friend : ActionTarget.Enemy;
             }
             else
             {

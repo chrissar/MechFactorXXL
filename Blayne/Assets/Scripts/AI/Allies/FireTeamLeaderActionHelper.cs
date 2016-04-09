@@ -10,6 +10,10 @@ public class FireTeamLeaderActionHelper
 		mFireTeamLeader = fireTeamLeader;
 	}
 
+	public void AddTeamOfEnemyToEngagedList(FireTeamAlly enemy){
+		mFireTeamLeader.fireTeam.EngagedEnemyTeams.Add(enemy.fireTeam);
+	}
+
 	public void MoveTeamToCoverForEnemy(){
 		// Find the most appropriate cover point.
 		GameObject coverPoint = GetBestCoverPoint();
