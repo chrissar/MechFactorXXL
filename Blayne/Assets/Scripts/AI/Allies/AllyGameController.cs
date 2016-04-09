@@ -9,6 +9,7 @@ public class AllyGameController : MonoBehaviour
 {
 	public Color defaultColor;
 	public Color disabledColor;
+	public Camera mainCamera;
     public FireTeam fireTeamPrefab;
 	private TeamList mTeamList;
 	private int mTestedAllyFireTeamNumber;
@@ -87,6 +88,7 @@ public class AllyGameController : MonoBehaviour
 			UnitRemovalInputs ();
 		}
 		UnitDisableInputs ();
+		CameraMovementInputs ();
 	}
 
 	private void DestinationInputs ()
@@ -229,6 +231,22 @@ public class AllyGameController : MonoBehaviour
 				ChangeColorOfFireTeamAlly (mAlly3, disabledColor);
 				mAlly3Disabled = true;
 			}
+		}
+	}
+
+	private void CameraMovementInputs ()
+	{
+		if (Input.GetKey (KeyCode.LeftArrow)) {
+			mainCamera.transform.position += Vector3.left * 5 * Time.deltaTime;
+		}
+		if (Input.GetKey (KeyCode.RightArrow)) {
+			mainCamera.transform.position += Vector3.right * 5 * Time.deltaTime;
+		}
+		if (Input.GetKey (KeyCode.UpArrow)) {
+			mainCamera.transform.position += Vector3.forward * 5 * Time.deltaTime;
+		}
+		if (Input.GetKey(KeyCode.DownArrow)) {
+			mainCamera.transform.position += Vector3.back * 5 * Time.deltaTime;
 		}
 	}
 

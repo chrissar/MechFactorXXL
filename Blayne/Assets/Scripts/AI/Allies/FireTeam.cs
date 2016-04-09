@@ -43,10 +43,8 @@ public class FireTeam : Ally
 			mSide = value;
 			// Disable the projector if the team is an enemy team.
 			if (mProjector != null && mSide == Side.Enemy) {
-				print ("Disabling projector");
 				mProjector.enabled = false;
 			} else {
-				print ("Enabling projector");
 				mProjector.enabled = true;
 			}
 		}
@@ -87,7 +85,8 @@ public class FireTeam : Ally
 		}
 	}
 
-	public void Awake(){
+	public void Awake()
+	{
 		Initialize ();
 	}
 
@@ -119,8 +118,6 @@ public class FireTeam : Ally
 	public void SetFormation(FireTeamFormation newFireTeamFormation)
 	{
 		mCurrentFireTeamFormation = newFireTeamFormation;
-		// Set the anchor point of the formation.
-		SetAnchorPoint ();
 		switch (mCurrentFireTeamFormation) {
 			case FireTeamFormation.WEDGE:
 				// Set the slot positions for the wedge formation.
@@ -138,8 +135,8 @@ public class FireTeam : Ally
 				mCurrentFireTeamFormation = FireTeamFormation.COVER;
 				break;
 		}
-		// Assign the slot positions to the members of the fire team.
-		AssignSlotPositions ();
+		// Update the formation to take into account the new formation setup.
+		UpdateFormation ();
 	}
 		
 	public void AddFireTeamAlly(FireTeamAlly fireTeamAllyToAdd)
@@ -250,16 +247,13 @@ public class FireTeam : Ally
 	public Vector3 getSlotPosition(int slotNumber)
 	{
 		if (0 <= slotNumber && slotNumber < mRelativeSlotDisplacements.Length){
-			// If not taking cover (which is urgent), return the next anchor position offset by
-			// the slot displacement and rotated by the current orientation of the team. If the team
-			// is taking cover, return the destination offset by the slot displacement.
-			if (mCurrentFireTeamFormation != FireTeamFormation.COVER) {
-				return mNextAnchorPosition +
-				(mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
-			} else {
-				return mDestination +
-					(mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
+			// IF the fire team is taking cover (which is urgent) use the destination for the 
+			// slot position displacement, taking into account the orientation of the team.
+			// Otherisez use the next anchor position for the displacement.
+			if (mCurrentFireTeamFormation == FireTeamFormation.COVER) {
+				return mDestination + (mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
 			}
+			return mNextAnchorPosition + (mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
 		}
 		return Vector3.zero;
 	}
@@ -281,7 +275,7 @@ public class FireTeam : Ally
 		mCurrentFireTeamFormation = FireTeamFormation.WEDGE;
 		SetWedgeSlotPositions ();
 		mCurrentOrientation = Quaternion.identity;
-		mCurrentSpeed = 2.0f;
+		mCurrentSpeed = 3.0f;
 	}
 
 	private void UpdateFormation()
@@ -308,13 +302,14 @@ public class FireTeam : Ally
 
 	private void UpdateAnchor()
 	{
-		// Only move the anchor if the fire team is close enough to their slot positions.
-		if (IsFireTeamInPosition ()) {
+		// Only move the anchor if the fire team is close enough to their slot positions
+		// pr if the team is taking cover (which is urgent).
+		if (IsFireTeamInPosition () || mCurrentFireTeamFormation == FireTeamFormation.COVER) {
 			// Update current anchor point to move towards destination based on overall team speed.
 			Vector3 destinationDisplacement = mDestination - mCurrentAnchorPosition;
 			mCurrentAnchorPosition += destinationDisplacement.normalized * mCurrentSpeed * Time.deltaTime;
-			SetNextAnchorPointTarget ();
 		}
+		SetNextAnchorPointTarget ();
 	}
 
 	private void SetAnchorPoint()
@@ -349,8 +344,8 @@ public class FireTeam : Ally
 	private void SetNextAnchorPointTarget()
 	{
 		// Set future anchor position to be between the current anchor position and the 
-		// destination by a certain amount (2x max speed of team) from 
-		// the current anchor position.
+		// destination by a certain amount (2x max speed of team) from the current 
+		// anchor position.
 		Vector3 destinationDisplacement = mDestination - mCurrentAnchorPosition;
 		float destinationDistance = destinationDisplacement.magnitude;
 		if (destinationDistance < 2 * mCurrentSpeed) {
