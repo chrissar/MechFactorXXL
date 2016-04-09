@@ -9,6 +9,7 @@ public class AllyGameController : MonoBehaviour
 {
 	public Color defaultColor;
 	public Color disabledColor;
+    public FireTeam fireTeamPrefab;
 	private TeamList mTeamList;
 	private int mTestedFireTeamNumber;
 	private FireTeamAlly mFireTeamLeaderAlly;
@@ -26,7 +27,8 @@ public class AllyGameController : MonoBehaviour
 		// Initialize the team list and add one fire team to it.
 		mTeamList = new TeamList ();
 		mTestedFireTeamNumber = 0;
-		FireTeam fireTeam = new FireTeam ();
+        if (!fireTeamPrefab) throw new UnityException("No Fire Team Prefab attached to the Ally Game Controller");
+        FireTeam fireTeam = Instantiate(fireTeamPrefab);
 		fireTeam.teamNumber = mTestedFireTeamNumber;
 		mTeamList.AddTeamToListWithNumber (fireTeam, fireTeam.teamNumber);
 
