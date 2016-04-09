@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum FireTeamFormation {WEDGE, FILE};
+public enum FireTeamFormation {WEDGE, FILE, COVER};
 
 public class FireTeam
 {
@@ -86,6 +86,32 @@ public class FireTeam
 		mDestination = destination;
 		SetNextAnchorPointTarget ();
 		SetOrientation ();
+	}
+
+	public void SetFormation(FireTeamFormation newFireTeamFormation)
+	{
+		mCurrentFireTeamFormation = newFireTeamFormation;
+		// Set the anchor point of the formation.
+		SetAnchorPoint ();
+		switch (mCurrentFireTeamFormation) {
+			case FireTeamFormation.WEDGE:
+				// Set the slot positions for the wedge formation.
+				SetWedgeSlotPositions ();
+				mCurrentFireTeamFormation = FireTeamFormation.WEDGE;
+				break;
+			case FireTeamFormation.FILE:
+				// Set the slot positions for the file formation.
+				SetFileSlotPositions ();
+				mCurrentFireTeamFormation = FireTeamFormation.FILE;
+				break;
+			case FireTeamFormation.COVER:
+				// Set the slot positions for the taking of cover formation.
+				SetCoverSlotPositions ();
+				mCurrentFireTeamFormation = FireTeamFormation.COVER;
+				break;
+		}
+		// Assign the slot positions to the members of the fire team.
+		AssignSlotPositions ();
 	}
 
 	public void UpdateAnchor()
@@ -206,31 +232,18 @@ public class FireTeam
 	public Vector3 getSlotPosition(int slotNumber)
 	{
 		if (0 <= slotNumber && slotNumber < mRelativeSlotDisplacements.Length){
-			// Return the next anchor position offset by the slot displacement and
-			// rotated by the current orientation of the team.
-			return mNextAnchorPosition +
-				(mCurrentOrientation * mRelativeSlotDisplacements[slotNumber]);
+			// If not taking cover (which is urgent), return the next anchor position offset by
+			// the slot displacement and rotated by the current orientation of the team. If the team
+			// is taking cover, return the destination offset by the slot displacement.
+			if (mCurrentFireTeamFormation != FireTeamFormation.COVER) {
+				return mNextAnchorPosition +
+				(mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
+			} else {
+				return mDestination +
+					(mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
+			}
 		}
 		return Vector3.zero;
-	}
-
-	public void SetFormation(FireTeamFormation newFireTeamFormation)
-	{
-		mCurrentFireTeamFormation = newFireTeamFormation;
-		// Set the anchor point of the formation.
-		SetAnchorPoint ();
-		switch (mCurrentFireTeamFormation) {
-			case FireTeamFormation.WEDGE:
-				// Set the slot positions for the wedge formation.
-				SetWedgeSlotPositions ();
-				break;
-			case FireTeamFormation.FILE:
-				// Set the slot positions for the file formation.
-				SetFileSlotPositions ();
-				break;
-		}
-		// Assign the slot positions to the members of the fire team.
-		AssignSlotPositions ();
 	}
 
 	private void UpdateFormation()
@@ -409,17 +422,26 @@ public class FireTeam
 	{
 		// Set the relative displacements of each of the slots from the anchor point.
 		mRelativeSlotDisplacements[0] = new Vector3(0, 0, 0);
-		mRelativeSlotDisplacements [1] = new Vector3 (-5, 0, -5);
-		mRelativeSlotDisplacements [2] = new Vector3 (-5, 0, 5);
-		mRelativeSlotDisplacements [3] = new Vector3 (-10, 0, 10);
+		mRelativeSlotDisplacements [1] = new Vector3 (-5.0f, 0, -5.0f);
+		mRelativeSlotDisplacements [2] = new Vector3 (-5.0f, 0, 5.0f);
+		mRelativeSlotDisplacements [3] = new Vector3 (-10.0f, 0, 10.0f);
 	}
 
 	private void SetFileSlotPositions()
 	{
 		// Set the relative displacements of each of the slots from the anchor point.
 		mRelativeSlotDisplacements[0] = new Vector3(0, 0, 0);
-		mRelativeSlotDisplacements [1] = new Vector3 (-5, 0, 0);
-		mRelativeSlotDisplacements [2] = new Vector3 (-15, 0, 0);
-		mRelativeSlotDisplacements [3] = new Vector3 (-15, 0, 0);
+		mRelativeSlotDisplacements [1] = new Vector3 (-5.0f, 0, 0);
+		mRelativeSlotDisplacements [2] = new Vector3 (-10.0f, 0, 0);
+		mRelativeSlotDisplacements [3] = new Vector3 (-15.0f, 0, 0);
+	}
+
+	private void SetCoverSlotPositions()
+	{
+		// Set the relative displacements of each of the slots from the anchor point.
+		mRelativeSlotDisplacements[0] = new Vector3(1.5f, 0, 1.5f);
+		mRelativeSlotDisplacements [1] = new Vector3 (-1.5f, 0, 1.5f);
+		mRelativeSlotDisplacements [2] = new Vector3 (1.5f, 0, -1.5f);
+		mRelativeSlotDisplacements [3] = new Vector3 (-1.5f, 0, -1.5f);
 	}
 }

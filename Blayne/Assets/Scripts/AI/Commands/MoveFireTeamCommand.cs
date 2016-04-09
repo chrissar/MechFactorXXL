@@ -29,8 +29,7 @@ public class MoveFireTeamCommand : Command
 				for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
 					FireTeamAlly allyAtSlot = fireTeam.GetAllyAtSlotPosition (i);
 					if (allyAtSlot != null) {
-						allyAtSlot.currentMovementState = allyAtSlot.movingState;
-						allyAtSlot.OnEnterMovementState ();
+						allyAtSlot.StateMachine.currentMovementState.ToMoving ();
 					}
 				}
 			}

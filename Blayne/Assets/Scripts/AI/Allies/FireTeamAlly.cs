@@ -9,10 +9,9 @@ public class FireTeamAlly : Ally
 	[HideInInspector] public FireTeam fireTeam;
 	[HideInInspector] public int fireTeamNumber;
 	[HideInInspector] public int slotPosition;
-	[HideInInspector] public IMovement currentMovementState;
-	[HideInInspector] public FireTeamAllyMovingState movingState;
-	[HideInInspector] public FireTeamAllyIdlingState idlingState;
-	public NavMeshAgent navMeshAgent;
+	[HideInInspector] public NavMeshAgent navMeshAgent;
+	private FireTeamAllyStateMachine mStateMachine;
+	private FireTeamLeaderActionHelper mFireTeamLeaderHelper;
 
 	public Vector3 Position
 	{
@@ -28,6 +27,13 @@ public class FireTeamAlly : Ally
 			return transform.rotation;
 		}
 	}
+	public FireTeamAllyStateMachine StateMachine
+	{
+		get
+		{ 
+			return mStateMachine;
+		}
+	}
 
 	void Awake()
 	{
@@ -37,19 +43,7 @@ public class FireTeamAlly : Ally
 	void Update()
 	{
 		// Update movement.
-		currentMovementState.UpdateState();
-	}
-
-	public void PlaceInFireTeam(FireTeam newfireTeam)
-	{
-		if (newfireTeam != null) {
-			fireTeam = newfireTeam;
-			fireTeam.AddFireTeamAlly (this);
-		} 
-	}
-		
-	public void OnEnterMovementState(){
-		currentMovementState.OnStateEnter ();
+		mStateMachine.UpdateStates();
 	}
 
 	protected void Initialize()
@@ -64,10 +58,21 @@ public class FireTeamAlly : Ally
 		fireTeamNumber = -1;
 		slotPosition = -1;
 
-		// Set states.
-		movingState = new FireTeamAllyMovingState (this);
-		idlingState = new FireTeamAllyIdlingState (this);
-		currentMovementState = idlingState;
-		OnEnterMovementState ();
+		// Initialize state machine and leader actions helper.
+		mStateMachine = new FireTeamAllyStateMachine(this);
+		mFireTeamLeaderHelper = new FireTeamLeaderActionHelper (this);
+	}
+
+	public void PlaceInFireTeam(FireTeam newfireTeam)
+	{
+		if (newfireTeam != null) {
+			fireTeam = newfireTeam;
+			fireTeam.AddFireTeamAlly (this);
+		} 
+	}
+
+	public void NotifyOfEnemy(GameObject enemyGameObject){
+		print ("Enemy at " + enemyGameObject.transform.position);
+		mFireTeamLeaderHelper.MoveTeamToCoverForEnemy ();
 	}
 }
