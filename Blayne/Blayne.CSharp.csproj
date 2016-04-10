@@ -134,6 +134,8 @@
     <Compile Include="Assets\Scripts\Character\IKController.cs" />
     <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
+    <Compile Include="Assets\Scripts\StateMachine\State.cs" />
+    <Compile Include="Assets\Scripts\StateMachine\StateTransition.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterController\Core\BSPTree.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterController\Core\BruteForceMesh.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterController\Core\RPGController\RPGMesh.cs" />
