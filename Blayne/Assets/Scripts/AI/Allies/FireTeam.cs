@@ -32,6 +32,8 @@ public class FireTeam : Ally
 	private Quaternion mCurrentOrientation;
 	private float mCurrentSpeed;
 
+    private State mCurrentState;
+
 	public Side TeamSide
 	{
 		get
@@ -95,6 +97,7 @@ public class FireTeam : Ally
 	public void Awake()
 	{
 		Initialize ();
+        InitializeStateMachine();
 	}
 
 	public void Update()
@@ -102,6 +105,84 @@ public class FireTeam : Ally
 		UpdateProjector ();
 		UpdateAnchor ();
 	}
+
+    private void InitializeStateMachine()
+    {
+        State attackState = new State("Attack", () =>
+        {
+            // Need to call attack function for squad
+            Debug.Log("Attacking");
+        });
+        State coverState = new State("Cover", () =>
+        {
+            // Need to call cover function for squad
+            Debug.Log("Attacking");
+        });
+        State retreatState = new State("Right Cast", () =>
+        {
+            // Need to call retreat function for squad
+            Debug.Log("Attacking");
+        });
+
+        // Initial state
+        mCurrentState = attackState;
+
+        //State transition definitions
+        attackState.AddTransition(new StateTransition(coverState, () =>
+        {
+            // Add condition for transitioning to cover from attacking. Stubbed to return false for now
+            return false;
+        }, () =>
+        {
+            Debug.Log("Go to cover");
+        }));
+
+        attackState.AddTransition(new StateTransition(retreatState, () =>
+        {
+            // Add condition for transitioning to retreating from attacking
+            return mDisabledTeamMembers.Count > 3;
+        }, () =>
+        {
+            new TeamDisengageCommand().execute(this);
+        }));
+
+        //Left Cast State transitions
+        coverState.AddTransition(new StateTransition(attackState, () =>
+        {
+            // Add condition for transitioning to attacking from cover. Stubbed to be false. Ideally will need to know if cover exists.
+            return false;
+        }, () =>
+        {
+            new TeamAttackEnemyCommand(mEngagedEnemyTeams[UnityEngine.Random.Range(0, mEngagedEnemyTeams.Count)]).execute(this);
+        }));
+        coverState.AddTransition(new StateTransition(retreatState, () =>
+        {
+            // Add condition for transitioning to retreating from cover.
+            return mDisabledTeamMembers.Count > 3;
+        }, () =>
+        {
+            new TeamDisengageCommand().execute(this);
+        }));
+
+        //Right Cast State transitions
+        retreatState.AddTransition(new StateTransition(attackState, () =>
+        {
+            // Add condition for transitioning to attacking from retreating
+            return false;
+        }, () =>
+        {
+            new TeamAttackEnemyCommand(mEngagedEnemyTeams[UnityEngine.Random.Range(0, mEngagedEnemyTeams.Count)]).execute(this);
+        }));
+        retreatState.AddTransition(new StateTransition(coverState, () =>
+        {
+            // Add condition for transitioning to cover from retreating
+            return false;
+        }, () =>
+        {
+            Debug.Log("Go to cover");
+        }));
+
+    }
 
 	public FireTeamAlly GetAllyAtSlotPosition(int slotPosition)
 	{
