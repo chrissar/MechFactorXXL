@@ -13,22 +13,28 @@ namespace Combat
         public float bulletSpeed;
         public float bulletLifeTime;
 
-        private float mTimeBetweenShots = 0;
+        private float mTimeToNextShot = 0;
         public void Shoot()
         {
-            mTimeBetweenShots += Time.deltaTime;
-            if (mTimeBetweenShots >= 1.0f / (float)fireRate)
+            
+            float delay = 1.0f / (float)fireRate;
+            if (mTimeToNextShot <= 0)
             {
-                mTimeBetweenShots = 0;
+                mTimeToNextShot = 1.0f / (float)fireRate;
                 GameObject bulletObj = Instantiate(
                     bulletPrefab.gameObject,
                     muzzle.transform.position,
                     muzzle.transform.rotation)
                     as GameObject;
-
+                bulletObj.transform.localScale = gameObject.transform.localScale;
                 Bullet bullet = bulletObj.GetComponent<Bullet>();
-                bullet.velocity = muzzle.transform.right * bulletSpeed;
+                bullet.GetComponent<Rigidbody>().AddForce(muzzle.transform.forward * bulletSpeed, ForceMode.Impulse);
+                Destroy(bulletObj, bulletLifeTime);
             }
+        }
+        public void Update()
+        {
+            mTimeToNextShot -= Time.deltaTime;
         }
     }
 }

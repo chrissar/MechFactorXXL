@@ -10,19 +10,21 @@ namespace Combat
     {
         public int damage;
         public bool destroyOnContact = true;
-        [HideInInspector]public Vector3 velocity = Vector3.zero;
-        private Rigidbody mRigidBody;
-        public void Awake()
+        //[HideInInspector]public Vector3 velocity = Vector3.zero;
+        //private Rigidbody mRigidBody;
+       /* public void Awake()
         {
             mRigidBody = gameObject.GetComponent<Rigidbody>();
-            mRigidBody.isKinematic = true;
+            //mRigidBody.isKinematic = true;
         }
         public void Update()
         {
-            mRigidBody.MovePosition(velocity * Time.deltaTime);
-        }
+            Vector3 newPosition = mRigidBody.transform.position + velocity * Time.deltaTime;
+            mRigidBody.MovePosition(newPosition);
+        }*/
         public void OnCollisionEnter(Collision collision)
         {
+            Debug.Log("collided!");
             Health health = collision.gameObject.GetComponent<Health>();
             if(health)
             {
