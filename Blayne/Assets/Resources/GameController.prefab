@@ -40,8 +40,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topDownView: 0
-  target: {fileID: 0}
-  playerCamera: {fileID: 0}
+  numTicketsPerTeam: 10
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

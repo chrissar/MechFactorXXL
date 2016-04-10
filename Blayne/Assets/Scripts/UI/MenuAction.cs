@@ -23,9 +23,9 @@ namespace MenuActions
         }
         private void OnClick()
         {
-            SpawnMenu.instance.CopySelectionData(out selectedLocation, out targetLocation, out selectedObject, out targetObject);
+            SpawnMenu.Instance.CopySelectionData(out selectedLocation, out targetLocation, out selectedObject, out targetObject);
             Execute();
-            SpawnMenu.instance.ClearMenu();
+            SpawnMenu.Instance.ClearMenu();
         }
         
     }

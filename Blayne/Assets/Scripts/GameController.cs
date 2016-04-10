@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour
     public bool topDownView = false;
     public int numTicketsPerTeam = 10;
 
+    private SpawnMenu mSpawnMenu;
     private static GameController msInstance;
 
     public static GameController Instance
@@ -31,6 +32,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         DontDestroyOnLoad(gameObject);
+        mSpawnMenu = SpawnMenu.Instance;
     }
 
     void Update()
@@ -38,6 +40,10 @@ public class GameController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             ToggleCamera();
+            if (mSpawnMenu != null)
+            {
+                mSpawnMenu.Toggle();
+            }
         }
     }
 

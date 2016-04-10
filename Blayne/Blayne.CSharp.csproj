@@ -105,6 +105,8 @@
     <Compile Include="Assets\Scripts\AI\Commands\FireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\MoveFireTeamCommand.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\TeamAttackEnemyCommand.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\TeamDisengageCommand.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\CombatStates\FireTeamAllyAimingState.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\CombatStates\FireTeamAllyIdlingCombatState.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\MovementStates\FireTeamAllyIdlingState.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="Assets\Scripts\UI\MenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\MoveTeamMenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\SpawnMenu.cs" />
+    <Compile Include="Assets\Scripts\UI\TeamAttackEnemyMenuAction.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\GridManager.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\TerrainSplatReader.cs" />
     <Compile Include="Assets\Scripts\World\ZoneController.cs" />
