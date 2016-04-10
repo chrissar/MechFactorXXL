@@ -5,21 +5,21 @@ using System.Text;
 
 namespace MenuActions
 {
-    public class ChangeFormationMenuAction : MenuAction
+    public class TeamAttackEnemyMenuAction : MenuAction
     {
-        public FireTeamFormation formation = FireTeamFormation.WEDGE;
-
         public override SpawnMenu.ActionTarget GetSelectedType()
-        {
-            return SpawnMenu.ActionTarget.Anything;
-        }
-        public override SpawnMenu.ActionTarget GetTargetType()
         {
             return SpawnMenu.ActionTarget.FriendGroup;
         }
+
+        public override SpawnMenu.ActionTarget GetTargetType()
+        {
+            return SpawnMenu.ActionTarget.EnemyGroup;
+        }
+
         protected override void Execute()
         {
-            new ChangeFireTeamFormationCommand(formation).execute(targetObject.GetComponent<FireTeam>());
+            new TeamAttackEnemyCommand(targetObject.GetComponent<FireTeam>()).execute(selectedObject.GetComponent<FireTeam>());
         }
     }
 }

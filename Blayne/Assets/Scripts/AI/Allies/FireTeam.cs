@@ -49,6 +49,13 @@ public class FireTeam : Ally
 			}
 		}
 	}
+    public List<FireTeamAlly> GetAllMembers()
+    {
+        List<FireTeamAlly> result = new List<FireTeamAlly>();
+        result.Add(mFireTeamLeader);
+        result.AddRange(mFireTeamNonLeaderMembers);
+        return result;
+    }
 	public Vector3 Destination
 	{
 		get
