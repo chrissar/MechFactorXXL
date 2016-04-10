@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerCamera : MonoBehaviour {
-
+public class PlayerCamera : MonoBehaviour
+{
     public float Distance = 3.0f;
     public float Height = 2.0f;
     public float horizontalOffset = 2.0f;
+
+    public Transform topDownViewCameraTransform;
 
     public GameObject PlayerTarget;    
 
@@ -17,8 +19,8 @@ public class PlayerCamera : MonoBehaviour {
     private SuperCharacterController controller;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start ()
+    {
         input = PlayerTarget.GetComponent<PlayerInputController>();
         machine = PlayerTarget.GetComponent<PlayerMachine>();
         controller = PlayerTarget.GetComponent<SuperCharacterController>();
@@ -26,18 +28,28 @@ public class PlayerCamera : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void LateUpdate () {
-        transform.position = target.position;
+	void LateUpdate ()
+    {
+        if (!GameController.Instance.topDownView)
+        {
+            transform.position = target.position;
 
-        yRotation += input.Current.MouseInput.y;
+            yRotation += input.Current.MouseInput.y;
 
-        Vector3 left = Vector3.Cross(machine.lookDirection, controller.up);
+            Vector3 left = Vector3.Cross(machine.lookDirection, controller.up);
 
-        transform.rotation = Quaternion.LookRotation(machine.lookDirection, controller.up);
-        transform.rotation = Quaternion.AngleAxis(yRotation, left) * transform.rotation;
+            transform.rotation = Quaternion.LookRotation(machine.lookDirection, controller.up);
+            transform.rotation = Quaternion.AngleAxis(yRotation, left) * transform.rotation;
 
-        transform.position -= transform.forward * Distance;
-        transform.position += controller.up * Height;
-        transform.position += transform.rotation * ( new Vector3(horizontalOffset, 0, 0));
+            transform.position -= transform.forward * Distance;
+            transform.position += controller.up * Height;
+            transform.position += transform.rotation * (new Vector3(horizontalOffset, 0, 0));
+        }
+
+        else
+        {
+            transform.position = topDownViewCameraTransform.position;
+            transform.rotation = topDownViewCameraTransform.rotation;
+        }
     }
 }
