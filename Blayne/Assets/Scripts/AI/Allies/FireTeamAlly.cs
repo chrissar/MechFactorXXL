@@ -9,15 +9,17 @@ public class FireTeamAlly : Ally
 	private const float mkSensingProximityRadius = 5.0f;
 	private const float mkVisionConeRadius = 10.0f;
 	private const float mkVisionConeHalfAngle = 30.0f;
+	public const float kMaxAttackRange = 20.0f;
 
 	[HideInInspector] public FireTeamRole fireTeamRole;
 	[HideInInspector] public int fireTeamNumber;
 	[HideInInspector] public int slotPosition;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
 	[HideInInspector] public FireTeam fireTeam;
+	[HideInInspector] public FireTeam targetEnemyTeam;
+	[HideInInspector] public bool isDisabled;
 	private List<FireTeamAlly> mEnemies;
 	private FireTeamAllyStateMachine mStateMachine;
-	private FireTeamLeaderActionHelper mFireTeamLeaderHelper;
 
 	public Vector3 Position
 	{
@@ -48,13 +50,15 @@ public class FireTeamAlly : Ally
 
 	public void Update()
 	{
-		// For testing, only update fiendly units.
-		if (fireTeam.TeamSide == FireTeam.Side.Friend) {
-			// Check for visible enemies.
-			checkForVisibleEnemies ();
+		if (!isDisabled) {
+			// For testing, only update fiendly units.
+			if (fireTeam.TeamSide == FireTeam.Side.Friend) {
+				// Check for visible enemies.
+				checkForVisibleEnemies ();
 
-			// Update movement.
-			mStateMachine.UpdateStates ();
+				// Update movement.
+				mStateMachine.UpdateStates ();
+			}
 		}
 	}
 
@@ -68,8 +72,8 @@ public class FireTeamAlly : Ally
 
 	public void NotifyOfEnemy(FireTeamAlly enemy){
 		print ("Enemy at " + enemy.Position + " Found by " + gameObject.name);
-		mFireTeamLeaderHelper.AddTeamOfEnemyToEngagedList (enemy);
-		mFireTeamLeaderHelper.MoveTeamToCoverForEnemy ();
+		// Add enemy to the list of engaged enemies.
+		fireTeam.EngagedEnemyTeams.Add(enemy.fireTeam);
 	}
 
 	protected void Initialize()
@@ -77,17 +81,19 @@ public class FireTeamAlly : Ally
 		// Get the nav mesh agent on the object.
 		navMeshAgent = GetComponent<NavMeshAgent> ();
 		navMeshAgent.destination = transform.position;
+		navMeshAgent.updateRotation = true;
 
 		// Initialize member variables.
 		fireTeamRole = FireTeamRole.NON_LEADER;
 		fireTeam = null;
 		mEnemies = new List<FireTeamAlly> ();
+		targetEnemyTeam = null;
 		fireTeamNumber = -1;
 		slotPosition = -1;
+		isDisabled = false;
 
 		// Initialize state machine and leader actions helper.
 		mStateMachine = new FireTeamAllyStateMachine(this);
-		mFireTeamLeaderHelper = new FireTeamLeaderActionHelper (this);
 	}
 
 	public void SetEnemies ()

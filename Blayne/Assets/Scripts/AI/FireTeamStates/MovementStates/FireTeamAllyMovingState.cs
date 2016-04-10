@@ -15,7 +15,7 @@ public class FireTeamAllyMovingState : IMovement
 		// Move to position marked by slot position.
 		if (mStatePatternFTAlly.fireTeam != null) {
 			mStatePatternFTAlly.navMeshAgent.destination = 
-				mStatePatternFTAlly.fireTeam.getSlotPosition (mStatePatternFTAlly.slotPosition);
+				mStatePatternFTAlly.fireTeam.GetSlotPosition (mStatePatternFTAlly.slotPosition);
 		} else {
 			ToIdling ();
 		}

@@ -244,7 +244,7 @@ public class FireTeam : Ally
 		return promotedFireTeamAlly;
 	}
 		
-	public Vector3 getSlotPosition(int slotNumber)
+	public Vector3 GetSlotPosition(int slotNumber)
 	{
 		if (0 <= slotNumber && slotNumber < mRelativeSlotDisplacements.Length){
 			// IF the fire team is taking cover (which is urgent) use the destination for the 
@@ -381,7 +381,7 @@ public class FireTeam : Ally
 		}
 		// Check if leader is close enough to the leader's slot position.
 		if(Vector3.Distance(mFireTeamLeader.Position, 
-			getSlotPosition(mFireTeamLeader.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
+			GetSlotPosition(mFireTeamLeader.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
 		{
 			return false;
 		}
@@ -389,7 +389,7 @@ public class FireTeam : Ally
 		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
 			FireTeamAlly fireTeamAlly = mFireTeamNonLeaderMembers [i];
 			if(Vector3.Distance(fireTeamAlly.Position, 
-				getSlotPosition(fireTeamAlly.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
+				GetSlotPosition(fireTeamAlly.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
 			{
 				return false;
 			}
