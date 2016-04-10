@@ -5,26 +5,26 @@ using System.Collections.Generic;
 
 public class State
 {
-    private List<StateTransition> _transitions;
+    private List<StateTransition> mTransitions;
     public string Name
     {
         get; set;
     }
-    private Action stateAction;
+    private Action mStateAction;
     public State(string name, Action action)
     {
         Name = name;
-        stateAction = action;
-        _transitions = new List<StateTransition>();
+        mStateAction = action;
+        mTransitions = new List<StateTransition>();
     }
     public void AddTransition(StateTransition transition)
     {
-        _transitions.Add(transition);
+        mTransitions.Add(transition);
     }
     public State Transition()
     {
         State nextState = this;
-        foreach (StateTransition transition in _transitions)
+        foreach (StateTransition transition in mTransitions)
         {
             if (transition.IsReady())
             {
@@ -37,9 +37,9 @@ public class State
     }
     public void Act()
     {
-        if (stateAction != null)
+        if (mStateAction != null)
         {
-            stateAction.Invoke();
+            mStateAction.Invoke();
         }
     }
 }

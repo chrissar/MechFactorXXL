@@ -133,6 +133,9 @@
     <Compile Include="Assets\Scripts\Character\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Character\IKController.cs" />
     <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Combat\Bullet.cs" />
+    <Compile Include="Assets\Scripts\Combat\Gun.cs" />
+    <Compile Include="Assets\Scripts\Combat\Health.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\StateMachine\State.cs" />
     <Compile Include="Assets\Scripts\StateMachine\StateTransition.cs" />
@@ -166,6 +169,8 @@
     <Compile Include="Assets\Scripts\UI\MoveTeamMenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\SpawnMenu.cs" />
     <Compile Include="Assets\Scripts\UI\TeamAttackEnemyMenuAction.cs" />
+    <Compile Include="Assets\Scripts\UI\TeamDisengageEnemyMenuAction.cs" />
+    <Compile Include="Assets\Scripts\World\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\GridManager.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\TerrainSplatReader.cs" />
     <Compile Include="Assets\Scripts\World\ZoneController.cs" />

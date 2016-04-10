@@ -10,6 +10,9 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	public FireTeam fireTeam;
 	private int mNumberOfEngagedEnemies;
 
+    private GameObject mBestCoverPoint = null;
+    public bool CoverExists { get { return mBestCoverPoint != null; } }
+
 	public void Start()
 	{
 		mNumberOfEngagedEnemies = 0;
@@ -127,6 +130,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 				}
 			}
 		}
+        mBestCoverPoint = validCoverPointFarthestFromEnemies;
 		return validCoverPointFarthestFromEnemies;
 	}
 
