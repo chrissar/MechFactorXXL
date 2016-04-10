@@ -247,7 +247,7 @@ public class FireTeam : Ally
 	public Vector3 GetSlotPosition(int slotNumber)
 	{
 		if (0 <= slotNumber && slotNumber < mRelativeSlotDisplacements.Length){
-			// IF the fire team is taking cover (which is urgent) use the destination for the 
+			// If the fire team is taking cover (which is urgent) use the destination for the 
 			// slot position displacement, taking into account the orientation of the team.
 			// Otherisez use the next anchor position for the displacement.
 			if (mCurrentFireTeamFormation == FireTeamFormation.COVER) {
@@ -256,6 +256,54 @@ public class FireTeam : Ally
 			return mNextAnchorPosition + (mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
 		}
 		return Vector3.zero;
+	}
+
+	public bool IsFireTeamInPosition()
+	{
+		// Check if each fire team member is close enough to their slot position. 
+		// If their are not return false.
+		if (mFireTeamLeader == null) {
+			// If there is no leader, assume the remainder of the team is in position.
+			return true;
+		}
+		// Check if leader is close enough to the leader's slot position.
+		if(IsFireTeamAllyAtSlotInPosition(0) == false)
+		{
+			return false;
+		}
+		// Check if non-leaders are close enough to their assigned slot positions.
+		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
+			FireTeamAlly fireTeamAlly = mFireTeamNonLeaderMembers [i];
+			// Slot positions for non-leader are offset by 1.
+			if(IsFireTeamAllyAtSlotInPosition(i + 1) == false)
+			{
+				return false;
+			}
+		}
+
+		// If all fire team members are close enough to their slot positions, return true;
+		return true;
+	}
+
+	public bool IsFireTeamAllyAtSlotInPosition(int slotPosition){
+		FireTeamAlly fireTeamAlly = GetAllyAtSlotPosition (slotPosition);
+		// A non-existent ally is considered to be in position.
+		if (fireTeamAlly == null) {
+			return true;
+		}
+		// Check if the ally is close enough to the ally's current target.
+		// If the ally is detached, check if they are close enough to their detached postion. Otherwise,
+		// check if the ally is close enough to the assigned slot position for that ally.
+		Vector3 allyTarget = Vector3.zero;
+		if (fireTeamAlly.IsDetached) {
+			allyTarget = fireTeamAlly.DetachDestination;
+		} else {
+			allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
+		}
+		if (Vector3.Distance (fireTeamAlly.Position, allyTarget) < mkMinDistanceFromSlotPositionNeeded) {
+			return true;
+		}
+		return false;
 	}
 
 	protected void Initialize ()
@@ -369,34 +417,6 @@ public class FireTeam : Ally
 			mCurrentOrientation = Quaternion.identity;
 			mCurrentOrientation.SetFromToRotation (Vector3.right, destinationDisplacement);
 		}
-	}
-
-	private bool IsFireTeamInPosition()
-	{
-		// Check if each fire team member is close enough to their slot position. 
-		// If their are not return false.
-		if (mFireTeamLeader == null) {
-			// If there is no leader, assume the remainder of the team is in position.
-			return true;
-		}
-		// Check if leader is close enough to the leader's slot position.
-		if(Vector3.Distance(mFireTeamLeader.Position, 
-			GetSlotPosition(mFireTeamLeader.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
-		{
-			return false;
-		}
-		// Check if non-leaders are close enough to their assigned slot positions.
-		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
-			FireTeamAlly fireTeamAlly = mFireTeamNonLeaderMembers [i];
-			if(Vector3.Distance(fireTeamAlly.Position, 
-				GetSlotPosition(fireTeamAlly.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
-			{
-				return false;
-			}
-		}
-
-		// If all fire team members are close enough to their slot positions, return true;
-		return true;
 	}
 
 	// Returns the ally that replaces the removed ally in the team ordering.

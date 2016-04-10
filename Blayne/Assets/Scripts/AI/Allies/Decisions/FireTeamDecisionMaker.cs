@@ -21,6 +21,9 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			return;
 		}
 
+		// Update list of engaged enemies.
+		UpdateEngagedEnemiesList();
+
 		// Check if the number of engaged enemies has increased.
 		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count) {
 			mNumberOfEngagedEnemies = fireTeam.EngagedEnemyTeams.Count;
@@ -34,12 +37,46 @@ public class FireTeamDecisionMaker : MonoBehaviour
 				} else {
 					// Stand ground by setting the fire team destination to the 
 					// fire team leader's position.
-					SetFireTeamDestination (fireTeam.GetAllyAtSlotPosition(0).Position);
+					SetFireTeamDestination (fireTeam.GetAllyAtSlotPosition (0).Position);
 				}
 				// Engage enemies.
 				AttackEnemy ();
-			} 
+			} else {
+				// Disengage Enemies.
+				DisengageEnemy();
+			}
 		}
+	}
+
+	private void UpdateEngagedEnemiesList()
+	{
+		// If none of the members of the fire team see any enemies, clear the 
+		// list of engaged enemies. Note that allies will face enemies they have 
+		// engaged while within sight range of the enemy.
+		FireTeamAlly ally = IsNoEnemyInSight ();
+		if (ally == null) {
+			fireTeam.EngagedEnemyTeams.Clear ();
+		}
+	}
+
+	private FireTeamAlly IsNoEnemyInSight()
+	{
+		// Check if there are any visible enemies around the squad.
+		for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
+			FireTeamAlly ally = fireTeam.GetAllyAtSlotPosition (i);
+			if(ally != null){
+				if (ally.IsEnemyVisible ()) {
+					return ally; 
+				}
+			}
+		}
+		return null;
+	}
+
+	private bool IsOverpoweredByEnemy()
+	{
+		// This is currently stubbed to always return true.
+		return true;
 	}
 
 	private void SetFireTeamDestination(Vector3 destination)
@@ -58,6 +95,13 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			IssueCommandToEntireTeam (attackEnemyCommand);
 		}
 	}
+
+	private void DisengageEnemy()
+	{
+		// Order the team to attack the closest enemy team.
+		DisengageCommand disengageCommand = new DisengageCommand ();
+		IssueCommandToEntireTeam (disengageCommand);
+	}
 		
 	// This should be modified to return a cover point using more sophisticated methods.
 	private GameObject GetBestCoverPoint()
@@ -67,26 +111,23 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		List<GameObject> candidateCoverPoints = GetCandidateCoverPoints ();
 
 		Vector3 teamPosition = fireTeam.CurrentAnchorPosition;
-		GameObject closestValidCoverPoint = null;
-		float closestDistance = -1.0f;
-		// Of the candidate cover points, find the one that is closest to the 
-		// fire team that is also sufficiently far from the engaged enemies.
+		GameObject validCoverPointFarthestFromEnemies = null;
+		float farthestDistance = -1.0f;
+		// Of the candidate cover points, find the one that is farthest from 
+		// all enemies.
 		foreach (GameObject candidateCoverPoint in candidateCoverPoints) {
-			// Check if the cover point is sufficiently far from the
-			// engaged enemies.
-			Vector3 coverPointPosition = candidateCoverPoint.transform.position; 
-			float distanceFromFireTeam = Vector3.Distance (teamPosition, coverPointPosition);
-			if (IsCoverPointFarEnoughFromEnemies (coverPointPosition, distanceFromFireTeam)) {
-				// Check if cover point is the closest cover point 
-				// to the team found so far.
-				if (closestDistance < 0 || distanceFromFireTeam < closestDistance) {
-					// Set the cover point as the current best cover point.
-					closestValidCoverPoint = candidateCoverPoint;
-					closestDistance = distanceFromFireTeam;
+			Vector3 coverPointPosition  = candidateCoverPoint.transform.position;
+			// Check if the cover point is sufficiently far from the engaged enemies.
+			if (IsCoverPointFarEnoughFromEnemies (coverPointPosition)) {
+				float closestEnemyDistance = closestEnemyDistanceFromPoint (coverPointPosition);
+				if (farthestDistance < 0.0f || closestEnemyDistance > farthestDistance) {
+					// Set the new farthest distance from enemies cover point.
+					validCoverPointFarthestFromEnemies = candidateCoverPoint;
+					farthestDistance = closestEnemyDistance;
 				}
 			}
 		}
-		return closestValidCoverPoint;
+		return validCoverPointFarthestFromEnemies;
 	}
 
 	private List<GameObject> GetCandidateCoverPoints()
@@ -104,8 +145,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		return candidateCoverPoints;
 	}
 
-	private bool IsCoverPointFarEnoughFromEnemies(Vector3 coverPointPosition, 
-		float distanceFromLeaderFireTeam)
+	private bool IsCoverPointFarEnoughFromEnemies(Vector3 coverPointPosition)
 	{
 		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
 			// The cover point is considered too close to enemies if below the minumum
@@ -113,13 +153,25 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			// point than the fire team of the leader.
 			float distanceFromEnemy =
 				Vector3.Distance (coverPointPosition, enemyFireTeam.CurrentAnchorPosition);
-			if(distanceFromEnemy < mkCoverMinimumDistanceFromEnemy || 
-				distanceFromEnemy < distanceFromLeaderFireTeam)
+			if(distanceFromEnemy < mkCoverMinimumDistanceFromEnemy)
 			{
 				return false;
 			}
 		}
 		return true;
+	}
+
+	private float closestEnemyDistanceFromPoint(Vector3 point){
+		float closestEnemyDistance = -1.0f;
+		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
+			float distance = Vector3.Distance (point, enemyFireTeam.CurrentAnchorPosition);
+			if(closestEnemyDistance < 0 || distance <closestEnemyDistance)
+			{
+				// Set the closest distance found so far.
+				closestEnemyDistance = distance;
+			}
+		}
+		return closestEnemyDistance;
 	}
 
 	private FireTeam GetClosestEnemyFireTeam(){

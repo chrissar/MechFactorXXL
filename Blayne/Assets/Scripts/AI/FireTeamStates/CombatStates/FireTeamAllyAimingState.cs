@@ -21,7 +21,7 @@ public class FireTeamAllyAimingState : ICombat
 			// If the enemy is sufficiently close, continue aiming.
 			if (closestTeamMember != null &&
 				Vector3.Distance (mStatePatternFTAlly.Position, 
-					closestTeamMember.Position) < FireTeamAlly.kMaxAttackRange) {
+					closestTeamMember.Position) < FireTeamAlly.kVisionConeRadius) {
 				// Face the closest team member in the enemy team.
 				rotateToFaceTarget (closestTeamMember.Position);
 			} else {
@@ -67,12 +67,13 @@ public class FireTeamAllyAimingState : ICombat
 	private void rotateToFaceTarget(Vector3 targetPoint)
 	{
 		Vector3 targetDirection = targetPoint - mStatePatternFTAlly.Position;
-		// Do not consider vertical displacement.
-		targetDirection = new Vector3 (targetDirection.x, 0, targetDirection.z);
 		Quaternion targetRotation = Quaternion.FromToRotation (Vector3.forward, targetDirection);
-		
-		mStatePatternFTAlly.transform.rotation = 
+		// Use Interpolated rotation, but restrict rotation to y axis.
+		Quaternion newOrientation = 
 			Quaternion.Slerp (mStatePatternFTAlly.transform.rotation, targetRotation, Time.deltaTime * 5);
+		newOrientation = Quaternion.Euler(new Vector3(0, newOrientation.eulerAngles.y, 0));
+			
+		mStatePatternFTAlly.transform.rotation = newOrientation;
 	}
 
 	private FireTeamAlly GetClosestTeamMemberInFireTeam(FireTeam fireTeam)

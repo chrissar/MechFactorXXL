@@ -1,11 +1,15 @@
 ﻿using System;
 
-namespace AssemblyCSharp
+public class DisengageCommand : Command
 {
-	public class DisengageCommand
+	public override void execute(Ally ally)
 	{
-		public DisengageCommand ()
+		if (ally != null && ally is FireTeamAlly) 
 		{
+			FireTeamAlly fireTeamAlly = ally as FireTeamAlly;
+
+			// Set the target fire team of the fire team ally.
+			fireTeamAlly.targetEnemyTeam = null;
 		}
 	}
 }

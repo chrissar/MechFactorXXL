@@ -21,7 +21,7 @@ public class FireTeamAllyIdlingCombatState : ICombat
 			// If the enemy is sufficiently close, move to aiming state.
 			if (closestTeamMember != null &&
 				Vector3.Distance (mStatePatternFTAlly.Position, 
-					closestTeamMember.Position) < FireTeamAlly.kMaxAttackRange) {
+					closestTeamMember.Position) < FireTeamAlly.kVisionConeRadius) {
 				ToAiming();
 			} 
 		} 

@@ -1,29 +1,19 @@
 ﻿using System;
+using UnityEngine;
 
-public class FireTeamAllyMovingState : IMovement
+public class FireTeamAllyRunningState : IMovement
 {
 	private readonly FireTeamAlly mStatePatternFTAlly;
 	private FireTeamAllyStateMachine mStateMachine;
 
-	public FireTeamAllyMovingState (FireTeamAlly statePatternFTAlly, FireTeamAllyStateMachine stateMachine){
+	public FireTeamAllyRunningState (FireTeamAlly statePatternFTAlly, FireTeamAllyStateMachine stateMachine){
 		mStatePatternFTAlly = statePatternFTAlly;
 		mStateMachine = stateMachine;
 	}
 
 	public void UpdateState()
 	{
-		// Move to position marked by slot position.
-		if (mStatePatternFTAlly.fireTeam != null) {
-			// If the ally is detached, move to the detach destination.
-			if (mStatePatternFTAlly.IsDetached) {
-				mStatePatternFTAlly.navMeshAgent.destination = mStatePatternFTAlly.DetachDestination;
-			} else {
-				mStatePatternFTAlly.navMeshAgent.destination = 
-					mStatePatternFTAlly.fireTeam.GetSlotPosition (mStatePatternFTAlly.slotPosition);
-			}
-		} else {
-			ToIdling ();
-		}
+		
 	}
 
 	public void OnStateEnter()
@@ -38,7 +28,9 @@ public class FireTeamAllyMovingState : IMovement
 
 	public void ToMoving()
 	{
-
+		mStateMachine.currentMovementState.OnStateExit ();
+		mStateMachine.currentMovementState = mStateMachine.movingState;
+		mStateMachine.currentMovementState.OnStateEnter();
 	}
 
 	public void ToIdling()
@@ -53,3 +45,4 @@ public class FireTeamAllyMovingState : IMovement
 
 	}
 }
+
