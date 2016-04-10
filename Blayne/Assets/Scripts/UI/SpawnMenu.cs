@@ -17,28 +17,29 @@ public class SpawnMenu : MonoBehaviour
     }
     public GameObject menuPrefab;
     public Camera viewCamera;
-    public static SpawnMenu instance
+    public static SpawnMenu Instance
     {
         get;
         private set;
     }
-    private Canvas _canvas;
-    private List<GameObject> lastSpawnedMenu;
-    private MenuAction[] allActions;
+    private Canvas mCanvas;
+    private List<GameObject> mLastSpawnedMenu;
+    private MenuAction[] mAllActions;
 
-    private Vector3 selectedLocation;
-    private Vector3 targetLocation;
-    private GameObject selectedObject;
-    private GameObject targetObject;
-    private ActionTarget selectedType = ActionTarget.Nothing;
-    private ActionTarget targetType = ActionTarget.Nothing;
+    private Vector3 mSelectedLocation;
+    private Vector3 mTargetLocation;
+    private GameObject mSelectedObject;
+    private GameObject mTargetObject;
+    private ActionTarget mSelectedType = ActionTarget.Nothing;
+    private ActionTarget mTargetType = ActionTarget.Nothing;
 	// Use this for initialization
 	void Awake ()
     {
-        instance = this;
-        allActions = menuPrefab.GetComponentsInChildren<MenuAction>();
-        lastSpawnedMenu = new List<GameObject>();
-        _canvas = GetComponent<Canvas>();
+        Instance = this;
+        enabled = false;
+        mAllActions = menuPrefab.GetComponentsInChildren<MenuAction>();
+        mLastSpawnedMenu = new List<GameObject>();
+        mCanvas = GetComponent<Canvas>();
         if (!viewCamera) throw new UnityException("No View Camera attached to the SpawnMenu Script.");
     }
 	
@@ -49,11 +50,11 @@ public class SpawnMenu : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                SelectObject(out selectedObject, out selectedType, out selectedLocation);
+                SelectObject(out mSelectedObject, out mSelectedType, out mSelectedLocation);
             }
             if (Input.GetMouseButtonDown(1))
             {
-                SelectObject(out targetObject, out targetType, out targetLocation);
+                SelectObject(out mTargetObject, out mTargetType, out mTargetLocation);
                 CreateMenu();
             }
         }
@@ -92,7 +93,7 @@ public class SpawnMenu : MonoBehaviour
     private List<MenuAction> GetAllActions(ActionTarget selected, ActionTarget target)
     {
         List<MenuAction> result = new List<MenuAction>();
-        foreach(MenuAction action in allActions)
+        foreach(MenuAction action in mAllActions)
         {
             ActionTarget selectedType = action.GetSelectedType();
             ActionTarget targetType = action.GetTargetType();
@@ -107,28 +108,34 @@ public class SpawnMenu : MonoBehaviour
         }
         return result;
     }
+    
+    public void Toggle()
+    {
+        enabled = !enabled;
+    }
+
     public void ClearMenu()
     {
-        if (lastSpawnedMenu.Count > 0)
+        if (mLastSpawnedMenu.Count > 0)
         {
-            foreach (GameObject menuItem in lastSpawnedMenu)
+            foreach (GameObject menuItem in mLastSpawnedMenu)
             {
                 Destroy(menuItem);
             }
-            lastSpawnedMenu.Clear();
+            mLastSpawnedMenu.Clear();
         }
     }
     private void CreateMenu()
     {
         ClearMenu();
-        List<MenuAction> actions = GetAllActions(selectedType, targetType);
-        Vector3 position = Input.mousePosition - GetRectSize(_canvas.pixelRect) * 0.5f;
+        List<MenuAction> actions = GetAllActions(mSelectedType, mTargetType);
+        Vector3 position = Input.mousePosition - GetRectSize(mCanvas.pixelRect) * 0.5f;
         float verticalOffset = 0.0f;
         foreach (MenuAction action in actions)
         {
             GameObject item = Instantiate(action.gameObject);
-            lastSpawnedMenu.Add(item);
-            item.transform.SetParent(_canvas.transform);
+            mLastSpawnedMenu.Add(item);
+            item.transform.SetParent(mCanvas.transform);
             RectTransform itemRect = item.GetComponent<RectTransform>();
             Vector3 rectSize = GetRectSize(itemRect.rect);
             Vector3 invertedYRectSize = new Vector3(rectSize.x, -rectSize.y, rectSize.z) * 0.5f - Vector3.up * verticalOffset;
@@ -154,9 +161,9 @@ public class SpawnMenu : MonoBehaviour
         out GameObject selectedObject, 
         out GameObject targetObject)
     {
-        selectedLocation = this.selectedLocation;
-        targetLocation = this.targetLocation;
-        selectedObject = this.selectedObject;
-        targetObject = this.targetObject;
+        selectedLocation = this.mSelectedLocation;
+        targetLocation = this.mTargetLocation;
+        selectedObject = this.mSelectedObject;
+        targetObject = this.mTargetObject;
     }
 }
