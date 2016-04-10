@@ -67,14 +67,11 @@ public class FireTeamAlly : Ally
 	public void Update()
 	{
 		if (!isDisabled) {
-			// For testing, only update fiendly units.
-			if (fireTeam.TeamSide == FireTeam.Side.Friend) {
-				// Check for visible enemies.
-				checkForVisibleEnemies ();
+			// Check for visible enemies.
+			checkForVisibleEnemies ();
 
-				// Update movement.
-				mStateMachine.UpdateStates ();
-			}
+			// Update movement.
+			mStateMachine.UpdateStates ();
 		}
 	}
 

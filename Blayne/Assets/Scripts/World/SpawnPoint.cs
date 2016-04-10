@@ -19,17 +19,21 @@ public class SpawnPoint : MonoBehaviour
         FireTeam team = fireTeamObject.GetComponent<FireTeam>();
         team.TeamSide = teamSide;
         team.teamNumber = teamNumber;
-        
+
         for(int i=0;i<FireTeam.kMaxFireTeamMembers;i++)
         {
             GameObject allyObj = Instantiate(allyPrefab.gameObject);
             allyObj.transform.position = team.GetSlotPosition(i);
             FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
+			if (team.GetAllyAtSlotPosition (0) == null) {
+				ally.fireTeamRole = FireTeamRole.LEADER;
+			}
             team.AddFireTeamAlly(ally);
-            //ally.StateMachine.currentMovementState.ToMoving();
+            ally.StateMachine.currentMovementState.ToMoving();
         }
-        //team.SetFormation(FireTeamFormation.WEDGE);
-        //team.SetDestination(fireTeamObject.transform.position);
+
+		team.SetFormation(FireTeamFormation.WEDGE);
+		team.SetDestination (fireTeamObject.transform.position);
     }
 }
 
