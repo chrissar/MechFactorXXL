@@ -92,6 +92,14 @@ public class FireTeam : Ally
 		{ 
 			return mCurrentAnchorPosition;
 		}
+		set
+		{ 
+			mCurrentAnchorPosition = value;
+			// Reset the next anchor position as well so that the slot positions returned 
+			// by GetSlotPosition() reflect the new current anchor position without an extra
+			// update frame needing to be called.
+			mNextAnchorPosition = mCurrentAnchorPosition;
+		}
 	}
 
 	public void Awake()

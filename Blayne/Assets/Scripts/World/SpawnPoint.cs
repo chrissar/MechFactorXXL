@@ -19,21 +19,25 @@ public class SpawnPoint : MonoBehaviour
         FireTeam team = fireTeamObject.GetComponent<FireTeam>();
         team.TeamSide = teamSide;
         team.teamNumber = teamNumber;
+		SpawnFireTeamAtPosition (team, fireTeamObject.transform.position);
+    }
 
-        for(int i=0;i<FireTeam.kMaxFireTeamMembers;i++)
-        {
-            GameObject allyObj = Instantiate(allyPrefab.gameObject);
-            allyObj.transform.position = team.GetSlotPosition(i);
-            FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
+	private void SpawnFireTeamAtPosition(FireTeam team, Vector3 spawnPosition){
+		team.SetDestination (spawnPosition); // Sets the destination that fire team moves towards
+		team.CurrentAnchorPosition = spawnPosition; // Sets the fire team's current position.
+		team.SetFormation(FireTeamFormation.WEDGE);
+
+		for(int i=0; i<FireTeam.kMaxFireTeamMembers; i++)
+		{
+			GameObject allyObj = Instantiate(allyPrefab.gameObject);
+			allyObj.transform.position = team.GetSlotPosition(i);
+			FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
 			if (team.GetAllyAtSlotPosition (0) == null) {
 				ally.fireTeamRole = FireTeamRole.LEADER;
 			}
-            team.AddFireTeamAlly(ally);
-            ally.StateMachine.currentMovementState.ToMoving();
-        }
-
-		team.SetFormation(FireTeamFormation.WEDGE);
-		team.SetDestination (fireTeamObject.transform.position);
-    }
+			team.AddFireTeamAlly(ally);
+			ally.StateMachine.currentMovementState.ToMoving();
+		}
+	}
 }
 
