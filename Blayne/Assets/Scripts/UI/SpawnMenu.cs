@@ -36,7 +36,6 @@ public class SpawnMenu : MonoBehaviour
 	void Awake ()
     {
         Instance = this;
-        enabled = false;
         mAllActions = menuPrefab.GetComponentsInChildren<MenuAction>();
         mLastSpawnedMenu = new List<GameObject>();
         mCanvas = GetComponent<Canvas>();
