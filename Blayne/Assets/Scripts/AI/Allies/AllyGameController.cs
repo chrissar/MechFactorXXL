@@ -67,8 +67,8 @@ public class AllyGameController : MonoBehaviour
 		mEnemyFireTeam.AddFireTeamAlly (mEnemy1);
 
 		// Have the fire teams set their allies.
-		mTeamList.addTeamsWithSameAlignmentToTeam(mAllyFireTeam);
-		mTeamList.addTeamsWithSameAlignmentToTeam(mEnemyFireTeam);
+		mTeamList.AddTeamsWithSameAlignmentToTeam(mAllyFireTeam);
+		mTeamList.AddTeamsWithSameAlignmentToTeam(mEnemyFireTeam);
 
 		// Have the characters set their enemies.
 		mAlly0.SetEnemies();

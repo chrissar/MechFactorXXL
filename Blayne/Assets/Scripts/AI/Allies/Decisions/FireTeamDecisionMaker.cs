@@ -56,12 +56,9 @@ public class FireTeamDecisionMaker : MonoBehaviour
 				// If the team is in critial condition, move 
 				// the team to the closest team base.
 				if (IsTeamInCritialCondition ()) {
-					Vector3 closestTeamBasePosition = GetClosestTeamBase ();
-					if (closestTeamBasePosition != Vector3.zero) {
-						// Move to the team base, assuming file formation.
-						MoveToPointWithFormation (closestTeamBasePosition,
-							FireTeamFormation.WEDGE);
-					}
+					// Move back to spawn point to respawn destroyed members of the fire team.
+					MoveToPointWithFormation (fireTeam.spawnPoint.transform.position,
+						FireTeamFormation.WEDGE);
 				}	
 			}
 		}
@@ -180,7 +177,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	{
 		// Order the team to fire upon the closest enemy team. This sets the target enemy team
 		// of the fire team members to the closest enemy team.
-		FireTeam fireTeamToAttack = GetClosestEnemyFireTeam();
+		FireTeam fireTeamToAttack = GetBestEnemyFireTeamTarget();
 		if (fireTeamToAttack != null) {
 			AttackEnemyCommand attackEnemyCommand = new AttackEnemyCommand (fireTeamToAttack);
 			IssueCommandToEntireTeam (attackEnemyCommand);
@@ -218,7 +215,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 
 	private List<GameObject> GetCandidateCoverPoints()
 	{
-		GameObject[] coverPoints = GameObject.FindGameObjectsWithTag("Cover");
+		GameObject[] coverPoints = GameObject.FindGameObjectsWithTag("cover");
 		List<GameObject> candidateCoverPoints = new List<GameObject> ();
 		foreach (GameObject coverPoint in coverPoints) {
 			// If the cover point is close enough to the fire team, add it to
@@ -229,24 +226,6 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			}
 		}
 		return candidateCoverPoints;
-	}
-
-	private Vector3 GetClosestTeamBase()
-	{
-		Vector3 closestTeamBasePosition = Vector3.zero;
-		float closestTeamBaseDistance = -1.0f;
-		foreach (TeamBase teamBase in fireTeam.TeamBases) {
-			if (teamBase != null) {
-				float distance = Vector3.Distance (teamBase.transform.position,
-					fireTeam.CurrentAnchorPosition);
-				if (closestTeamBaseDistance < 0 || distance < closestTeamBaseDistance) {
-					// Set the team base position as the new closest team base position.
-					closestTeamBasePosition = teamBase.transform.position;
-					closestTeamBaseDistance = distance;
-				}
-			}
-		}
-		return closestTeamBasePosition;
 	}
 
 	private bool IsCoverPointFarEnoughFromEnemies(Vector3 coverPointPosition)
@@ -278,13 +257,16 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		return closestEnemyDistance;
 	}
 
-	private FireTeam GetClosestEnemyFireTeam()
+	private FireTeam GetBestEnemyFireTeamTarget()
 	{
 		Vector3 teamPosition = fireTeam.CurrentAnchorPosition;
-		FireTeam closestEnemyFireTeam = null;
+		FireTeam bestEnemyFireTeamTarget = null;
+		int smallestEnemyTeamSize = FireTeam.kMaxFireTeamMembers;
 		float closestDistance = -1.0f;
 
-		// Find the enemy fire team being engaged that is closest to the leader's fire team.
+
+		// Find the enemy fire team being engaged that is closest to the leader's fire team
+		// With the smallest number of fire team members.
 		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
 			if (enemyFireTeam != null) {
 				Vector3 enemyFireTeamPosition = enemyFireTeam.CurrentAnchorPosition; 
@@ -292,12 +274,12 @@ public class FireTeamDecisionMaker : MonoBehaviour
 
 				if (closestDistance < 0 || distance < closestDistance) {
 					// Set the fire team as the current closest fire team
-					closestEnemyFireTeam = enemyFireTeam;
 					closestDistance = distance;
+					bestEnemyFireTeamTarget = enemyFireTeam;
 				}
 			}
 		}
-		return closestEnemyFireTeam;
+		return bestEnemyFireTeamTarget;
 	}
 
 	private void IssueCommandToEntireTeam(Command command)
