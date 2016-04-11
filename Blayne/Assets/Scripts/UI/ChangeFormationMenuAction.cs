@@ -19,10 +19,7 @@ namespace MenuActions
         }
         protected override void Execute()
         {
-            FireTeam fireTeam = targetObject.GetComponent<FireTeam>();
-			// Create formation command to issue to the fire team.
-			ChangeFireTeamFormationCommand formationCommand = new ChangeFireTeamFormationCommand(formation);
-			fireTeam.executeCommand(formationCommand);
+            new ChangeFireTeamFormationCommand(formation).execute(targetObject.GetComponent<FireTeam>());
         }
     }
 }

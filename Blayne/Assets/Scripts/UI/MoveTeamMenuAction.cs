@@ -19,11 +19,7 @@ namespace MenuActions
 
         protected override void Execute()
         {
-            Debug.Log(selectedObject.name);
-            FireTeam fireTeam = selectedObject.GetComponent<FireTeam>();
-			// Create movement command to issue to the fire team.
-			MoveFireTeamCommand movementCommand = new MoveFireTeamCommand (targetLocation);
-			fireTeam.executeCommand(movementCommand);
+            new MoveFireTeamCommand(targetLocation).execute(selectedObject.GetComponent<FireTeam>());
         }
     }
 }

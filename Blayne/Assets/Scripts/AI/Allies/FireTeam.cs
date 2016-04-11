@@ -32,6 +32,8 @@ public class FireTeam : Ally
 	private Quaternion mCurrentOrientation;
 	private float mCurrentSpeed;
 
+    private State mCurrentState;
+
 	public Side TeamSide
 	{
 		get
@@ -49,6 +51,13 @@ public class FireTeam : Ally
 			}
 		}
 	}
+    public List<FireTeamAlly> GetAllMembers()
+    {
+        List<FireTeamAlly> result = new List<FireTeamAlly>();
+        result.Add(mFireTeamLeader);
+        result.AddRange(mFireTeamNonLeaderMembers);
+        return result;
+    }
 	public Vector3 Destination
 	{
 		get
@@ -83,11 +92,20 @@ public class FireTeam : Ally
 		{ 
 			return mCurrentAnchorPosition;
 		}
+		set
+		{ 
+			mCurrentAnchorPosition = value;
+			// Reset the next anchor position as well so that the slot positions returned 
+			// by GetSlotPosition() reflect the new current anchor position without an extra
+			// update frame needing to be called.
+			mNextAnchorPosition = mCurrentAnchorPosition;
+		}
 	}
 
 	public void Awake()
 	{
 		Initialize ();
+        InitializeStateMachine();
 	}
 
 	public void Update()
@@ -95,6 +113,84 @@ public class FireTeam : Ally
 		UpdateProjector ();
 		UpdateAnchor ();
 	}
+
+    private void InitializeStateMachine()
+    {
+        State attackState = new State("Attack", () =>
+        {
+            // Need to call attack function for squad
+            Debug.Log("Attacking");
+        });
+        State coverState = new State("Cover", () =>
+        {
+            // Need to call cover function for squad
+            Debug.Log("Attacking");
+        });
+        State retreatState = new State("Right Cast", () =>
+        {
+            // Need to call retreat function for squad
+            Debug.Log("Attacking");
+        });
+
+        // Initial state
+        mCurrentState = attackState;
+
+        //State transition definitions
+        attackState.AddTransition(new StateTransition(coverState, () =>
+        {
+            // Add condition for transitioning to cover from attacking. Stubbed to return false for now
+            return false;
+        }, () =>
+        {
+            Debug.Log("Go to cover");
+        }));
+
+        attackState.AddTransition(new StateTransition(retreatState, () =>
+        {
+            // Add condition for transitioning to retreating from attacking
+            return mDisabledTeamMembers.Count > 3;
+        }, () =>
+        {
+            new TeamDisengageCommand().execute(this);
+        }));
+
+        //Left Cast State transitions
+        coverState.AddTransition(new StateTransition(attackState, () =>
+        {
+            // Add condition for transitioning to attacking from cover. Stubbed to be false. Ideally will need to know if cover exists.
+            return false;
+        }, () =>
+        {
+            new TeamAttackEnemyCommand(mEngagedEnemyTeams[UnityEngine.Random.Range(0, mEngagedEnemyTeams.Count)]).execute(this);
+        }));
+        coverState.AddTransition(new StateTransition(retreatState, () =>
+        {
+            // Add condition for transitioning to retreating from cover.
+            return mDisabledTeamMembers.Count > 3;
+        }, () =>
+        {
+            new TeamDisengageCommand().execute(this);
+        }));
+
+        //Right Cast State transitions
+        retreatState.AddTransition(new StateTransition(attackState, () =>
+        {
+            // Add condition for transitioning to attacking from retreating
+            return false;
+        }, () =>
+        {
+            new TeamAttackEnemyCommand(mEngagedEnemyTeams[UnityEngine.Random.Range(0, mEngagedEnemyTeams.Count)]).execute(this);
+        }));
+        retreatState.AddTransition(new StateTransition(coverState, () =>
+        {
+            // Add condition for transitioning to cover from retreating
+            return false;
+        }, () =>
+        {
+            Debug.Log("Go to cover");
+        }));
+
+    }
 
 	public FireTeamAlly GetAllyAtSlotPosition(int slotPosition)
 	{
@@ -244,10 +340,10 @@ public class FireTeam : Ally
 		return promotedFireTeamAlly;
 	}
 		
-	public Vector3 getSlotPosition(int slotNumber)
+	public Vector3 GetSlotPosition(int slotNumber)
 	{
 		if (0 <= slotNumber && slotNumber < mRelativeSlotDisplacements.Length){
-			// IF the fire team is taking cover (which is urgent) use the destination for the 
+			// If the fire team is taking cover (which is urgent) use the destination for the 
 			// slot position displacement, taking into account the orientation of the team.
 			// Otherisez use the next anchor position for the displacement.
 			if (mCurrentFireTeamFormation == FireTeamFormation.COVER) {
@@ -256,6 +352,54 @@ public class FireTeam : Ally
 			return mNextAnchorPosition + (mCurrentOrientation * mRelativeSlotDisplacements [slotNumber]);
 		}
 		return Vector3.zero;
+	}
+
+	public bool IsFireTeamInPosition()
+	{
+		// Check if each fire team member is close enough to their slot position. 
+		// If their are not return false.
+		if (mFireTeamLeader == null) {
+			// If there is no leader, assume the remainder of the team is in position.
+			return true;
+		}
+		// Check if leader is close enough to the leader's slot position.
+		if(IsFireTeamAllyAtSlotInPosition(0) == false)
+		{
+			return false;
+		}
+		// Check if non-leaders are close enough to their assigned slot positions.
+		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
+			FireTeamAlly fireTeamAlly = mFireTeamNonLeaderMembers [i];
+			// Slot positions for non-leader are offset by 1.
+			if(IsFireTeamAllyAtSlotInPosition(i + 1) == false)
+			{
+				return false;
+			}
+		}
+
+		// If all fire team members are close enough to their slot positions, return true;
+		return true;
+	}
+
+	public bool IsFireTeamAllyAtSlotInPosition(int slotPosition){
+		FireTeamAlly fireTeamAlly = GetAllyAtSlotPosition (slotPosition);
+		// A non-existent ally is considered to be in position.
+		if (fireTeamAlly == null) {
+			return true;
+		}
+		// Check if the ally is close enough to the ally's current target.
+		// If the ally is detached, check if they are close enough to their detached postion. Otherwise,
+		// check if the ally is close enough to the assigned slot position for that ally.
+		Vector3 allyTarget = Vector3.zero;
+		if (fireTeamAlly.IsDetached) {
+			allyTarget = fireTeamAlly.DetachDestination;
+		} else {
+			allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
+		}
+		if (Vector3.Distance (fireTeamAlly.Position, allyTarget) < mkMinDistanceFromSlotPositionNeeded) {
+			return true;
+		}
+		return false;
 	}
 
 	protected void Initialize ()
@@ -369,34 +513,6 @@ public class FireTeam : Ally
 			mCurrentOrientation = Quaternion.identity;
 			mCurrentOrientation.SetFromToRotation (Vector3.right, destinationDisplacement);
 		}
-	}
-
-	private bool IsFireTeamInPosition()
-	{
-		// Check if each fire team member is close enough to their slot position. 
-		// If their are not return false.
-		if (mFireTeamLeader == null) {
-			// If there is no leader, assume the remainder of the team is in position.
-			return true;
-		}
-		// Check if leader is close enough to the leader's slot position.
-		if(Vector3.Distance(mFireTeamLeader.Position, 
-			getSlotPosition(mFireTeamLeader.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
-		{
-			return false;
-		}
-		// Check if non-leaders are close enough to their assigned slot positions.
-		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
-			FireTeamAlly fireTeamAlly = mFireTeamNonLeaderMembers [i];
-			if(Vector3.Distance(fireTeamAlly.Position, 
-				getSlotPosition(fireTeamAlly.slotPosition)) > mkMinDistanceFromSlotPositionNeeded)
-			{
-				return false;
-			}
-		}
-
-		// If all fire team members are close enough to their slot positions, return true;
-		return true;
 	}
 
 	// Returns the ally that replaces the removed ally in the team ordering.

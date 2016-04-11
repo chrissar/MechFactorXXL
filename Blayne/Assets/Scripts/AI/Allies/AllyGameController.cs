@@ -20,10 +20,6 @@ public class AllyGameController : MonoBehaviour
 	private FireTeamAlly mAlly2;
 	private FireTeamAlly mAlly3;
 	private FireTeamAlly mEnemy0;
-	private bool mAlly0Disabled;
-	private bool mAlly1Disabled;
-	private bool mAlly2Disabled;
-	private bool mAlly3Disabled;
 
 	void Start()
 	{
@@ -40,11 +36,6 @@ public class AllyGameController : MonoBehaviour
 		enemyFireTeam.TeamSide = FireTeam.Side.Enemy;
 		enemyFireTeam.teamNumber = mTestedEnemyFireTeamNumber;
 		mTeamList.AddTeamToListWithNumber (enemyFireTeam, enemyFireTeam.teamNumber);
-
-		mAlly0Disabled = false;
-		mAlly1Disabled = false;
-		mAlly2Disabled = false;
-		mAlly3Disabled = false;
 
 		// Add the NPCs to the fire team.
 		mFireTeamLeaderAlly = null;
@@ -155,31 +146,31 @@ public class AllyGameController : MonoBehaviour
 	{
 		// Accept inputs for testing the disabling/enabling ally 0.
 		if (Input.GetKeyDown (KeyCode.Alpha0)) {
-			if (mAlly0Disabled) {
+			if (mAlly0.isDisabled) {
+				mAlly0.isDisabled = false;
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Enable ally 0 and set it as the leader.
 				fireTeam.EnableFireTeamAlly (mAlly0);
 				mFireTeamLeaderAlly = mAlly0;
 				ChangeColorOfFireTeamAlly(mAlly0, defaultColor);
-				mAlly0Disabled = false;
 			} else {
+				mAlly0.isDisabled = true;
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
 				FireTeamAlly replacementLeader = fireTeam.DisableFireTeamAlly (mAlly0);
 				mFireTeamLeaderAlly = replacementLeader;
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly0, disabledColor);
-				mAlly0Disabled = true;
 			}
 		}
 		// Accept inputs for testing the disabling/enabling ally 1.
 		if (Input.GetKeyDown (KeyCode.Alpha1)) {
-			if (mAlly1Disabled) {
+			if (mAlly1.isDisabled) {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Enable ally 0 and set it as the leader.
 				fireTeam.EnableFireTeamAlly (mAlly1);
 				ChangeColorOfFireTeamAlly(mAlly1, defaultColor);
-				mAlly1Disabled = false;
+				mAlly1.isDisabled = false;
 			} else {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
@@ -189,17 +180,17 @@ public class AllyGameController : MonoBehaviour
 				}
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly1, disabledColor);
-				mAlly1Disabled = true;
+				mAlly1.isDisabled = true;
 			}
 		}
 		// Accept inputs for testing the disabling/enabling ally 2.
 		if (Input.GetKeyDown (KeyCode.Alpha2)) {
-			if (mAlly2Disabled) {
+			if (mAlly2.isDisabled) {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Enable ally 0 and set it as the leader.
 				fireTeam.EnableFireTeamAlly (mAlly2);
 				ChangeColorOfFireTeamAlly(mAlly2, defaultColor);
-				mAlly2Disabled = false;
+				mAlly2.isDisabled = false;
 			} else {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
@@ -209,17 +200,17 @@ public class AllyGameController : MonoBehaviour
 				}
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly2, disabledColor);
-				mAlly2Disabled = true;
+				mAlly2.isDisabled = true;
 			}
 		}
 		// Accept inputs for testing the disabling/enabling ally 2.
 		if (Input.GetKeyDown (KeyCode.Alpha3)) {
-			if (mAlly3Disabled) {
+			if (mAlly3.isDisabled) {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Enable ally 0 and set it as the leader.
 				fireTeam.EnableFireTeamAlly (mAlly3);
 				ChangeColorOfFireTeamAlly(mAlly3, defaultColor);
-				mAlly3Disabled = false;
+				mAlly3.isDisabled = false;
 			} else {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
@@ -229,7 +220,7 @@ public class AllyGameController : MonoBehaviour
 				}
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly3, disabledColor);
-				mAlly3Disabled = true;
+				mAlly3.isDisabled = true;
 			}
 		}
 	}

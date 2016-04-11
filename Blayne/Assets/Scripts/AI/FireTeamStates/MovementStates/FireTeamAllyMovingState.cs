@@ -14,8 +14,13 @@ public class FireTeamAllyMovingState : IMovement
 	{
 		// Move to position marked by slot position.
 		if (mStatePatternFTAlly.fireTeam != null) {
-			mStatePatternFTAlly.navMeshAgent.destination = 
-				mStatePatternFTAlly.fireTeam.getSlotPosition (mStatePatternFTAlly.slotPosition);
+			// If the ally is detached, move to the detach destination.
+			if (mStatePatternFTAlly.IsDetached) {
+				mStatePatternFTAlly.navMeshAgent.destination = mStatePatternFTAlly.DetachDestination;
+			} else {
+				mStatePatternFTAlly.navMeshAgent.destination = 
+					mStatePatternFTAlly.fireTeam.GetSlotPosition (mStatePatternFTAlly.slotPosition);
+			}
 		} else {
 			ToIdling ();
 		}
