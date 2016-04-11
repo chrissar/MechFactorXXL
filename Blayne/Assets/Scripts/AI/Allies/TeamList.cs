@@ -4,25 +4,35 @@ using UnityEngine;
 
 public class TeamList
 {
-	public Dictionary<int, FireTeam> teamList;
+	private Dictionary<int, FireTeam> mTeamList;
 
 	public TeamList ()
 	{
-		teamList = new Dictionary<int, FireTeam> ();
+		mTeamList = new Dictionary<int, FireTeam> ();
 	}
 
 	public void AddTeamToListWithNumber(FireTeam teamToAdd, int teamNumber)
 	{
 		if (teamToAdd != null && teamNumber >= 0) {
-			teamList.Add (teamNumber, teamToAdd);
+			mTeamList.Add (teamNumber, teamToAdd);
 		} 
 	}
 
 	public FireTeam getTeamWithNumber(int teamNumber)
 	{
 		FireTeam fireTeam = null;
-		teamList.TryGetValue (teamNumber, out fireTeam);
+		mTeamList.TryGetValue (teamNumber, out fireTeam);
 		return fireTeam;
+	}
+
+	public void addTeamsWithSameAlignmentToTeam(FireTeam fireTeam)
+	{
+		List<FireTeam> fireTeamsOfGivenAlignment = new List<FireTeam>();
+		foreach(KeyValuePair<int, FireTeam> teamEntry in mTeamList){
+			if (teamEntry.Value.TeamSide == fireTeam.TeamSide) {
+				fireTeam.alliedFireTeams.Add (teamEntry.Value);
+			}
+		}
 	}
 }
 

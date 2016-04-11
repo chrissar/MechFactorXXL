@@ -5,6 +5,7 @@ using UnityEngine;
 public class FireTeamDecisionMaker : MonoBehaviour
 {
 	private const float mkMaxCoverPointDistance = 20.0f;
+	private const float mkMaxSupportFireTeamDistance = 30.0f;
 	private const float mkCoverMinimumDistanceFromEnemy = 15.0f;
 
 	public FireTeam fireTeam;
@@ -31,19 +32,24 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count) {
 			mNumberOfEngagedEnemies = fireTeam.EngagedEnemyTeams.Count;
 			if (mNumberOfEngagedEnemies > 0) {
-				// Find the best cover point to take if there is one.
-				GameObject coverPoint = GetBestCoverPoint ();
-				if (coverPoint != null) {
-					// Move to cover point.
-					fireTeam.SetFormation (FireTeamFormation.COVER);
-					SetFireTeamDestination (coverPoint.transform.position);
+
+				// Set the enemy team as the current target to fire at.
+				FireTeam engagedEnemyFireTeam = FireAtEnemy ();
+				// If enemy fire team is stronger, try to find cover.
+				if (IsOverpoweredByEnemy()) {
+					// Find the best cover point to take if there is one.
+					GameObject coverPoint = GetBestCoverPoint ();
+					if (coverPoint != null) {
+						// Move to the cover point.
+						MoveToCoverPoint (coverPoint.transform.position);
+					} else {
+						// Cannot take cover, so attack the enemy team.
+						AttackEnemyTeam (engagedEnemyFireTeam);
+					}
 				} else {
-					// Stand ground by setting the fire team destination to the 
-					// fire team leader's position.
-					SetFireTeamDestination (fireTeam.GetAllyAtSlotPosition (0).Position);
+					// Attempt to destroy the enemy team.
+					AttackEnemyTeam (engagedEnemyFireTeam);
 				}
-				// Engage enemies.
-				AttackEnemy ();
 			} else {
 				// Disengage Enemies.
 				DisengageEnemy();
@@ -76,10 +82,40 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		return null;
 	}
 
+	private void MoveToCoverPoint(Vector3 coverPoint)
+	{
+		// Set the destination of the fire team to the cover point,
+		// while setting them to the cover formation.
+		ChangeFireTeamFormationCommand formationCommand =
+			new ChangeFireTeamFormationCommand (FireTeamFormation.COVER);
+		fireTeam.executeCommand (formationCommand);
+		MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (coverPoint);
+		fireTeam.executeCommand (moveCommand);
+	}
+
+	private void AttackEnemyTeam(FireTeam enemyFireTeam)
+	{
+		fireTeam.EnemyTeamToAttack = enemyFireTeam;
+	}
+		
 	private bool IsOverpoweredByEnemy()
 	{
-		// This is currently stubbed to always return true.
-		return true;
+		// For now, assume the enemy is stronger if the fire team is engaging more enemies than there
+		// are surrounding allied fire teams.
+		int numberOfSupportFireTeams = 0;
+		foreach (FireTeam alliedFireTeam in fireTeam.alliedFireTeams) {
+			// Check if the ally fire team is close enough to this fire team 
+			// (and that it is not this fire team). If so, consider it a support ally.
+			if(alliedFireTeam != fireTeam && 
+				Vector3.Distance(alliedFireTeam.CurrentAnchorPosition,
+					fireTeam.CurrentAnchorPosition) < mkMaxSupportFireTeamDistance){
+				++numberOfSupportFireTeams;
+			}
+		}
+		if (numberOfSupportFireTeams < mNumberOfEngagedEnemies) {
+			return true;
+		}
+		return false;
 	}
 
 	private void SetFireTeamDestination(Vector3 destination)
@@ -89,19 +125,22 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		fireTeam.SetDestination (destination);
 	}
 
-	private void AttackEnemy()
+	// Returns enemy team that was chosen to fire upon.
+	private FireTeam FireAtEnemy()
 	{
-		// Order the team to attack the closest enemy team.
+		// Order the team to fire upon the closest enemy team. This sets the target enemy team
+		// of the fire team members to the closest enemy team.
 		FireTeam fireTeamToAttack = GetClosestEnemyFireTeam();
 		if (fireTeamToAttack != null) {
 			AttackEnemyCommand attackEnemyCommand = new AttackEnemyCommand (fireTeamToAttack);
 			IssueCommandToEntireTeam (attackEnemyCommand);
 		}
+		return fireTeamToAttack;
 	}
 
 	private void DisengageEnemy()
 	{
-		// Order the team to attack the closest enemy team.
+		// Order the team to stop engaging any enemies.
 		DisengageCommand disengageCommand = new DisengageCommand ();
 		IssueCommandToEntireTeam (disengageCommand);
 	}
