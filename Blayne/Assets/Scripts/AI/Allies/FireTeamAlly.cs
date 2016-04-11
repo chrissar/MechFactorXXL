@@ -85,6 +85,12 @@ public class FireTeamAlly : Ally
 		}
 	}
 
+	public void OnDestroy()
+	{
+		// Remove self from fire team.
+		fireTeam.RemoveFireTeamAlly(this);
+	}
+
 	public void checkForVisibleEnemies(){
 		FireTeamAlly closestVisibleEnemy = GetClosestNewVisibleEnemy ();
 		if (closestVisibleEnemy != null) {
@@ -126,7 +132,8 @@ public class FireTeamAlly : Ally
 
 	// Returns the closest enemy to the ally that is visible to the ally. 
 	// Can return null if no enemies are visible.
-	public FireTeamAlly GetClosestNewVisibleEnemy (){
+	public FireTeamAlly GetClosestNewVisibleEnemy ()
+	{
 		FireTeamAlly closestEnemy = null;
 		float closestEnemyDistance = -1.0f;
 		foreach (FireTeamAlly enemy in mEnemies) {
@@ -153,7 +160,8 @@ public class FireTeamAlly : Ally
 		return closestEnemy;
 	}
 		
-	public bool IsAnyEnemyVisible (){
+	public bool IsAnyEnemyVisible ()
+	{
 		foreach (FireTeamAlly enemy in mEnemies) {
 			// Do not consider destroyed enemies.
 			if (enemy == null) {
@@ -167,7 +175,8 @@ public class FireTeamAlly : Ally
 		return false; // No enemies found.
 	}
 
-	public bool IsFireTeamAllyVisible(FireTeamAlly fireTeamAlly){
+	public bool IsFireTeamAllyVisible(FireTeamAlly fireTeamAlly)
+	{
 		Vector3 allyDisplacement = fireTeamAlly.Position - transform.position;
 		Vector3 currentFacingDirection = transform.rotation * Vector3.forward;
 

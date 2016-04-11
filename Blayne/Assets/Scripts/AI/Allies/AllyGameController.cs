@@ -145,8 +145,7 @@ public class AllyGameController : MonoBehaviour
 			// Get member at slot 0.
 			FireTeamAlly allyToRemove = fireTeam.GetAllyAtSlotPosition(0);
 			if (allyToRemove != null) {
-				FireTeamAlly replacementLeader = fireTeam.RemoveFireTeamAlly (allyToRemove);
-				// Remove the old team leader from the scene.
+				// Destroy the old team leader in the scene.
 				Destroy (allyToRemove.gameObject);
 			}
 		}
@@ -155,8 +154,7 @@ public class AllyGameController : MonoBehaviour
 			FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 			FireTeamAlly slotPosition1Ally = fireTeam.GetAllyAtSlotPosition (1);
 			if (slotPosition1Ally != null) {
-				fireTeam.RemoveFireTeamAlly (slotPosition1Ally);
-				// Remove the removed team member from the scene.
+				// Destroy the removed team member in the scene.
 				Destroy (slotPosition1Ally.gameObject);
 			}
 		}
