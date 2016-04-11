@@ -24,7 +24,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		if (fireTeam == null) {
 			return;
 		}
-
+			
 		// Update list of engaged enemies.
 		UpdateEngagedEnemiesList();
 
@@ -32,7 +32,6 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count) {
 			mNumberOfEngagedEnemies = fireTeam.EngagedEnemyTeams.Count;
 			if (mNumberOfEngagedEnemies > 0) {
-
 				// Set the enemy team as the current target to fire at.
 				FireTeam engagedEnemyFireTeam = FireAtEnemy ();
 				// If enemy fire team is stronger, try to find cover.
@@ -59,12 +58,26 @@ public class FireTeamDecisionMaker : MonoBehaviour
 
 	private void UpdateEngagedEnemiesList()
 	{
-		// If none of the members of the fire team see any enemies, clear the 
-		// list of engaged enemies. Note that allies will face enemies they have 
-		// engaged while within sight range of the enemy.
-		FireTeamAlly ally = IsNoEnemyInSight ();
-		if (ally == null) {
-			fireTeam.EngagedEnemyTeams.Clear ();
+		RemoveDestroyedEnemyFireTeams ();
+		// Only check for visible enemies again after reaching the appropriate position.
+		if(fireTeam.IsFireTeamInPosition()){
+			// If none of the members of the fire team see any enemies, clear the 
+			// list of engaged enemies. Note that allies will face enemies they have 
+			// engaged while within sight range of the enemy.
+			FireTeamAlly ally = IsNoEnemyInSight ();
+			if (ally == null) {
+				fireTeam.EngagedEnemyTeams.Clear ();
+			}
+		}
+	}
+
+	private void RemoveDestroyedEnemyFireTeams()
+	{
+		for (int i = fireTeam.EngagedEnemyTeams.Count - 1; i >= 0; --i) {
+			if (fireTeam.EngagedEnemyTeams [i] == null ||
+				fireTeam.EngagedEnemyTeams [i].MemberCount == 0) {
+				fireTeam.EngagedEnemyTeams.RemoveAt (i);
+			}
 		}
 	}
 
@@ -74,7 +87,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
 			FireTeamAlly ally = fireTeam.GetAllyAtSlotPosition (i);
 			if(ally != null){
-				if (ally.IsEnemyVisible ()) {
+				if (ally.IsAnyEnemyVisible ()) {
 					return ally; 
 				}
 			}
@@ -97,22 +110,38 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	{
 		fireTeam.EnemyTeamToAttack = enemyFireTeam;
 	}
+
+	private void DisengageEnemy()
+	{
+		// Order the team to stop engaging any enemies.
+		fireTeam.EnemyTeamToAttack = null;
+		DisengageCommand disengageCommand = new DisengageCommand ();
+		IssueCommandToEntireTeam (disengageCommand);
+		// Return to wedge formation.
+		new ChangeFireTeamFormationCommand(FireTeamFormation.WEDGE).execute(fireTeam);
+	}
 		
 	private bool IsOverpoweredByEnemy()
 	{
-		// For now, assume the enemy is stronger if the fire team is engaging more enemies than there
-		// are surrounding allied fire teams.
-		int numberOfSupportFireTeams = 0;
+		// Count number of allies
+		int numberOfSupportAllies = fireTeam.MemberCount; // Count own fire team.
 		foreach (FireTeam alliedFireTeam in fireTeam.alliedFireTeams) {
 			// Check if the ally fire team is close enough to this fire team 
 			// (and that it is not this fire team). If so, consider it a support ally.
 			if(alliedFireTeam != fireTeam && 
 				Vector3.Distance(alliedFireTeam.CurrentAnchorPosition,
 					fireTeam.CurrentAnchorPosition) < mkMaxSupportFireTeamDistance){
-				++numberOfSupportFireTeams;
+				numberOfSupportAllies += alliedFireTeam.MemberCount;
 			}
 		}
-		if (numberOfSupportFireTeams < mNumberOfEngagedEnemies) {
+		// Count number of enemeis
+		int numberOfEnemies = 0;
+		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
+			numberOfEnemies += enemyFireTeam.MemberCount;
+		}
+		// For now, assume the enemy is stronger if the fire team is engaging more enemies 
+		// than there are surrounding allies.
+		if (numberOfSupportAllies < numberOfEnemies) {
 			return true;
 		}
 		return false;
@@ -136,13 +165,6 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			IssueCommandToEntireTeam (attackEnemyCommand);
 		}
 		return fireTeamToAttack;
-	}
-
-	private void DisengageEnemy()
-	{
-		// Order the team to stop engaging any enemies.
-		DisengageCommand disengageCommand = new DisengageCommand ();
-		IssueCommandToEntireTeam (disengageCommand);
 	}
 		
 	// This should be modified to return a cover point using more sophisticated methods.
@@ -224,13 +246,15 @@ public class FireTeamDecisionMaker : MonoBehaviour
 
 		// Find the enemy fire team being engaged that is closest to the leader's fire team.
 		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
-			Vector3 enemyFireTeamPosition = enemyFireTeam.CurrentAnchorPosition; 
-			float distance = Vector3.Distance (teamPosition, enemyFireTeamPosition);
+			if (enemyFireTeam != null) {
+				Vector3 enemyFireTeamPosition = enemyFireTeam.CurrentAnchorPosition; 
+				float distance = Vector3.Distance (teamPosition, enemyFireTeamPosition);
 
-			if (closestDistance < 0 || distance < closestDistance) {
-				// Set the fire team as the current closest fire team
-				closestEnemyFireTeam = enemyFireTeam;
-				closestDistance = distance;
+				if (closestDistance < 0 || distance < closestDistance) {
+					// Set the fire team as the current closest fire team
+					closestEnemyFireTeam = enemyFireTeam;
+					closestDistance = distance;
+				}
 			}
 		}
 		return closestEnemyFireTeam;

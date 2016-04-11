@@ -32,9 +32,6 @@ public class SpawnPoint : MonoBehaviour
 			GameObject allyObj = Instantiate(allyPrefab.gameObject);
 			allyObj.transform.position = team.GetSlotPosition(i);
 			FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
-			if (team.GetAllyAtSlotPosition (0) == null) {
-				ally.fireTeamRole = FireTeamRole.LEADER;
-			}
 			team.AddFireTeamAlly(ally);
 			ally.StateMachine.currentMovementState.ToMoving();
 		}

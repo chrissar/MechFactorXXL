@@ -16,12 +16,12 @@ public class AllyGameController : MonoBehaviour
 	private TeamList mTeamList;
 	private int mTestedAllyFireTeamNumber;
 	private int mTestedEnemyFireTeamNumber;
-	private FireTeamAlly mFireTeamLeaderAlly;
 	private FireTeamAlly mAlly0;
 	private FireTeamAlly mAlly1;
 	private FireTeamAlly mAlly2;
 	private FireTeamAlly mAlly3;
 	private FireTeamAlly mEnemy0;
+	private FireTeamAlly mEnemy1;
 
 	void Start()
 	{
@@ -48,25 +48,23 @@ public class AllyGameController : MonoBehaviour
 		mTeamList.AddTeamToListWithNumber (mEnemyFireTeam, mEnemyFireTeam.teamNumber);
 
 		// Add the NPCs to the fire team.
-		mFireTeamLeaderAlly = null;
 		// Get NPCs.
 		mAlly0 = GameObject.Find ("NPC0").GetComponent<FireTeamAlly>() as FireTeamAlly;
 		mAlly1 = GameObject.Find ("NPC1").GetComponent<FireTeamAlly>() as FireTeamAlly;
 		mAlly2 = GameObject.Find ("NPC2").GetComponent<FireTeamAlly>() as FireTeamAlly;
 		mAlly3 = GameObject.Find ("NPC3").GetComponent<FireTeamAlly>() as FireTeamAlly;
 		mEnemy0 = GameObject.Find ("NPC4").GetComponent<FireTeamAlly>() as FireTeamAlly;
+		mEnemy1 = GameObject.Find ("NPC5").GetComponent<FireTeamAlly>() as FireTeamAlly;
 
 		// Add allies to the friendly fire team, with ally 0 being the leader.
-		mAlly0.fireTeamRole = FireTeamRole.LEADER;
 		mAllyFireTeam.AddFireTeamAlly (mAlly0);
 		mAllyFireTeam.AddFireTeamAlly (mAlly1);
 		mAllyFireTeam.AddFireTeamAlly (mAlly2);
 		mAllyFireTeam.AddFireTeamAlly (mAlly3);
-		mFireTeamLeaderAlly = mAlly0;
 
 		// Add enemies to the enemy fire team, with enemy 0 being the leader.
-		mEnemy0.fireTeamRole = FireTeamRole.LEADER;
 		mEnemyFireTeam.AddFireTeamAlly (mEnemy0);
+		mEnemyFireTeam.AddFireTeamAlly (mEnemy1);
 
 		// Have the fire teams set their allies.
 		mTeamList.addTeamsWithSameAlignmentToTeam(mAllyFireTeam);
@@ -78,6 +76,11 @@ public class AllyGameController : MonoBehaviour
 		mAlly2.SetEnemies();
 		mAlly3.SetEnemies();
 		mEnemy0.SetEnemies();
+		mEnemy1.SetEnemies();
+
+		// Set default formation.
+		new ChangeFireTeamFormationCommand(FireTeamFormation.WEDGE).execute(mAllyFireTeam);
+		new ChangeFireTeamFormationCommand(FireTeamFormation.WEDGE).execute(mEnemyFireTeam);
 	}
 
 	void Update()
@@ -87,7 +90,7 @@ public class AllyGameController : MonoBehaviour
 
 	private void acceptInput()
 	{
-		if (mFireTeamLeaderAlly != null) {
+		if (mAllyFireTeam.MemberCount > 0) {
 			DestinationInputs ();
 			FormationInputs ();
 			UnitRemovalInputs ();
@@ -139,10 +142,14 @@ public class AllyGameController : MonoBehaviour
 		// Accept inputs for testing the removal of the leader.
 		if (Input.GetKeyDown (KeyCode.R)) {
 			FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
-			FireTeamAlly replacementLeader = fireTeam.RemoveFireTeamAlly (mFireTeamLeaderAlly);
-			// Remove the old team leader from the scene.
-			Destroy (mFireTeamLeaderAlly.gameObject);
-			mFireTeamLeaderAlly = replacementLeader;
+			// Get member at slot 0.
+			FireTeamAlly allyToRemove = fireTeam.GetAllyAtSlotPosition(0);
+			if (allyToRemove != null) {
+				FireTeamAlly replacementLeader = fireTeam.RemoveFireTeamAlly (allyToRemove);
+				// Remove the old team leader from the scene.
+				print(allyToRemove);
+				Destroy (allyToRemove.gameObject);
+			}
 		}
 		// Accept inputs for testing the removal of the member at slot position 1.
 		if (Input.GetKeyDown (KeyCode.T)) {
@@ -165,14 +172,12 @@ public class AllyGameController : MonoBehaviour
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Enable ally 0 and set it as the leader.
 				fireTeam.EnableFireTeamAlly (mAlly0);
-				mFireTeamLeaderAlly = mAlly0;
 				ChangeColorOfFireTeamAlly(mAlly0, defaultColor);
 			} else {
 				mAlly0.IsDisabled = true;
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
-				FireTeamAlly replacementLeader = fireTeam.DisableFireTeamAlly (mAlly0);
-				mFireTeamLeaderAlly = replacementLeader;
+				fireTeam.DisableFireTeamAlly (mAlly0);
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly0, disabledColor);
 			}
@@ -188,10 +193,7 @@ public class AllyGameController : MonoBehaviour
 			} else {
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
-				FireTeamAlly replacementAlly = fireTeam.DisableFireTeamAlly (mAlly1);
-				if (mAlly1 != null && mAlly1 == mFireTeamLeaderAlly) {
-					mFireTeamLeaderAlly = replacementAlly;
-				}
+				fireTeam.DisableFireTeamAlly (mAlly1);
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly1, disabledColor);
 				mAlly1.IsDisabled = true;
@@ -209,9 +211,6 @@ public class AllyGameController : MonoBehaviour
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
 				FireTeamAlly replacementAlly = fireTeam.DisableFireTeamAlly (mAlly2);
-				if (mAlly2 != null && mAlly2 == mFireTeamLeaderAlly) {
-					mFireTeamLeaderAlly = replacementAlly;
-				}
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly2, disabledColor);
 				mAlly2.IsDisabled = true;
@@ -229,9 +228,6 @@ public class AllyGameController : MonoBehaviour
 				FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 				// Set the current leader as the ally that replaces the original leader.
 				FireTeamAlly replacementAlly = fireTeam.DisableFireTeamAlly (mAlly3);
-				if (mAlly3 != null && mAlly3 == mFireTeamLeaderAlly) {
-					mFireTeamLeaderAlly = replacementAlly;
-				}
 				// Change the color of the disabled original leader.
 				ChangeColorOfFireTeamAlly (mAlly3, disabledColor);
 				mAlly3.IsDisabled = true;

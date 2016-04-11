@@ -9,7 +9,7 @@ public class FireTeam : Ally
 
 	public const int kMaxFireTeamMembers = 4;
 	private const float mkMinDistanceFromSlotPositionNeeded = 5.0f;
-	private const float mkOptimalAttackDistance = FireTeamAlly.kVisionConeRadius * 0.3f;
+	private const float mkOptimalAttackDistance = FireTeamAlly.kVisionConeRadius * 0.5f;
 
     public enum Side
     {
@@ -23,9 +23,8 @@ public class FireTeam : Ally
 	private Projector mProjector;
 	private FireTeamFormation mCurrentFireTeamFormation;
 	private Vector3 mDestination;
-	private FireTeamAlly mFireTeamLeader;
-	private int mNonLeaderMemberCount;
-	private FireTeamAlly[] mFireTeamNonLeaderMembers;
+	private int mMemberCount;
+	private FireTeamAlly[] mFireTeamMembers;
 	private Vector3[] mRelativeSlotDisplacements;
 	private List<FireTeamAlly> mDisabledTeamMembers;
 	private List<FireTeam> mEngagedEnemyTeams;
@@ -57,8 +56,7 @@ public class FireTeam : Ally
     public List<FireTeamAlly> GetAllMembers()
     {
         List<FireTeamAlly> result = new List<FireTeamAlly>();
-        result.Add(mFireTeamLeader);
-        result.AddRange(mFireTeamNonLeaderMembers);
+        result.AddRange(mFireTeamMembers);
         return result;
     }
 	public Vector3 Destination
@@ -97,11 +95,11 @@ public class FireTeam : Ally
 			} 
 		}
 	}
-	public int NonLeaderMemberCount
+	public int MemberCount
 	{
 		get
 		{ 
-			return mNonLeaderMemberCount;
+			return mMemberCount;
 		}
 	}
 	public Vector3 CurrentAnchorPosition
@@ -213,12 +211,8 @@ public class FireTeam : Ally
 
 	public FireTeamAlly GetAllyAtSlotPosition(int slotPosition)
 	{
-		if (slotPosition == 0) {
-			return mFireTeamLeader;
-		} else if (slotPosition - 1 < mFireTeamNonLeaderMembers.Length) {
-			// Slots of non-leader team members are offset by 1 from their
-			// position in the non-leader team list.
-			return mFireTeamNonLeaderMembers [slotPosition - 1];
+		if (slotPosition >= 0 && slotPosition < mFireTeamMembers.Length) {
+			return mFireTeamMembers [slotPosition];
 		}
 		return null;
 	}
@@ -259,14 +253,11 @@ public class FireTeam : Ally
 		if (fireTeamAllyToAdd == null) {
 			return;
 		}
-		// If the added ally is a leader, set it as the leader if there is currently no leader.
-		// Otherwise, add it to the list of non-leaders.
-		if (mFireTeamLeader == null && fireTeamAllyToAdd.fireTeamRole == FireTeamRole.LEADER) {
-			mFireTeamLeader = fireTeamAllyToAdd;
-		} else if(mNonLeaderMemberCount < mFireTeamNonLeaderMembers.Length){
+		// Add aly to the list of allies.
+		if(mMemberCount < mFireTeamMembers.Length){
 			// Add team member to list of non-leader team members if there is room.
-			mFireTeamNonLeaderMembers[mNonLeaderMemberCount] = fireTeamAllyToAdd;
-			mNonLeaderMemberCount++;
+			mFireTeamMembers[mMemberCount] = fireTeamAllyToAdd;
+			mMemberCount++;
 		}
 		// Set fire team ally's team to this team.
 		fireTeamAllyToAdd.fireTeamNumber = teamNumber;
@@ -284,37 +275,21 @@ public class FireTeam : Ally
 			return;
 		}
 		// Check if there is currently a leader.
-		if (mFireTeamLeader != null) {
-			// Only allow enabling of allies if the team is not full while there is a leader.
-			if (mNonLeaderMemberCount >= mFireTeamNonLeaderMembers.Length) {
-				return;
-			}
-			// Make sure the fire team ally has a valid slot position. Note that 
-			// slot positions for non-leader team members have an offset of 1
-			// from their place in the non-leader team member list.
-			if (fireTeamAllyToEnable.slotPosition < 0 ||
-			    fireTeamAllyToEnable.slotPosition > mFireTeamNonLeaderMembers.Length) {
-				return;
-			}
-			// If the team member to enable was previously the leader, then reset the 
-			// enabled ally to be the leader and insert the current leader back into the list 
-			// of non leaders.
-			if (fireTeamAllyToEnable.fireTeamRole == FireTeamRole.LEADER) {
-				InsertTeamMemberAtIndex (mFireTeamLeader, 0);
-				mFireTeamLeader = fireTeamAllyToEnable;
-			} else {
-				// Set the slot position of the ally to enable to 1 if it is currently at 0
-				// (which can happen if the ally was a temporary leader).
-				if (fireTeamAllyToEnable.slotPosition == 0) {
-					fireTeamAllyToEnable.slotPosition = 1;
-				}
-				// Insert the enabled ally back into its original slot position.
-				InsertTeamMemberAtIndex (fireTeamAllyToEnable, fireTeamAllyToEnable.slotPosition - 1);
-			}
-		} else {
-			// Make the enabled ally the current leader.
-			mFireTeamLeader = fireTeamAllyToEnable;
+		// Only allow enabling of allies if the team is not full while there is a leader.
+		if (mMemberCount >= mFireTeamMembers.Length) {
+			return;
 		}
+		// Make sure the fire team ally has a valid slot position. Note that 
+		// slot positions for non-leader team members have an offset of 1
+		// from their place in the non-leader team member list.
+		if (fireTeamAllyToEnable.slotPosition < 0 ||
+		    fireTeamAllyToEnable.slotPosition > mFireTeamMembers.Length) {
+			return;
+		}
+
+		// Insert the enabled ally back into its original slot position.
+		InsertTeamMemberAtIndex (fireTeamAllyToEnable, fireTeamAllyToEnable.slotPosition);
+
 		// Set fire team ally's team to this team.
 		fireTeamAllyToEnable.fireTeam = this;
 		fireTeamAllyToEnable.IsDisabled = false; // Enable the ally.
@@ -335,8 +310,6 @@ public class FireTeam : Ally
 		FireTeamAlly promotedFireTeamAlly = RemoveFireTeamAllyFromTeamMemberList(fireTeamAllyToRemove);
 		// Update the formation to account for the removed member.
 		UpdateFormation();
-		// Clear the fire team ally's current fire team.
-		fireTeamAllyToRemove.fireTeam = null;
 		// Return the ally that replaced the removed one.
 		return promotedFireTeamAlly;
 	}
@@ -356,9 +329,8 @@ public class FireTeam : Ally
 		UpdateFormation();
 		// Insert the disabled ally into the list of disabled allies.
 		mDisabledTeamMembers.Add(fireTeamAllyToDisable);
-		// Clear the fire team ally's current fire team.
-		fireTeamAllyToDisable.fireTeam = null;
-		fireTeamAllyToDisable.IsDisabled = true; // Disable the ally.
+		// Disable the ally.
+		fireTeamAllyToDisable.IsDisabled = true; 
 		// Return the ally that replaced the removed one.
 		return promotedFireTeamAlly;
 	}
@@ -380,21 +352,10 @@ public class FireTeam : Ally
 	public bool IsFireTeamInPosition()
 	{
 		// Check if each fire team member is close enough to their slot position. 
-		// If their are not return false.
-		if (mFireTeamLeader == null) {
-			// If there is no leader, assume the remainder of the team is in position.
-			return true;
-		}
-		// Check if leader is close enough to the leader's slot position.
-		if(IsFireTeamAllyAtSlotInPosition(0) == false)
-		{
-			return false;
-		}
-		// Check if non-leaders are close enough to their assigned slot positions.
-		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
-			FireTeamAlly fireTeamAlly = mFireTeamNonLeaderMembers [i];
-			// Slot positions for non-leader are offset by 1.
-			if(IsFireTeamAllyAtSlotInPosition(i + 1) == false)
+		// If they are not return false.
+		for (int i = 0; i < mMemberCount; ++i) {
+			FireTeamAlly fireTeamAlly = mFireTeamMembers [i];
+			if(IsFireTeamAllyAtSlotInPosition(i) == false)
 			{
 				return false;
 			}
@@ -431,9 +392,8 @@ public class FireTeam : Ally
 		alliedFireTeams = new List<FireTeam> ();
 		mProjector = gameObject.GetComponentInChildren<Projector>();
 		mDestination = Vector3.zero;
-		mFireTeamLeader = null;
-		mNonLeaderMemberCount = 0;
-		mFireTeamNonLeaderMembers = new FireTeamAlly[kMaxFireTeamMembers - 1];
+		mMemberCount = 0;
+		mFireTeamMembers = new FireTeamAlly[kMaxFireTeamMembers];
 		mRelativeSlotDisplacements = new Vector3[kMaxFireTeamMembers];
 		mDisabledTeamMembers = new List<FireTeamAlly> ();
 		mEngagedEnemyTeams = new List<FireTeam> ();
@@ -476,16 +436,14 @@ public class FireTeam : Ally
 		
 	private void UpdateProjector()
 	{
-		// Set the projector to the center of mass of all the members in the fire team.
-		Vector3 positionSum = Vector3.zero;
-		if(mFireTeamLeader != null){
-			positionSum += mFireTeamLeader.Position; // Add the fire team leader position.
+		if(mMemberCount > 0){
+			// Set the projector to the center of mass of all the members in the fire team.
+			Vector3 positionSum = Vector3.zero;
+			for (int i = 0; i < mMemberCount; ++i) {
+				positionSum += mFireTeamMembers[i].Position; // Add the fire team member positions.
+			}
+			gameObject.transform.position = positionSum / (mMemberCount); // include leader position.
 		}
-		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
-			positionSum += mFireTeamNonLeaderMembers[i].Position; // Add the fire team non-leader position.
-		}
-		gameObject.transform.position = 
-			positionSum / (mNonLeaderMemberCount + 1); // include leader position.
 	}
 
 	private void UpdateAnchor()
@@ -509,28 +467,18 @@ public class FireTeam : Ally
 	{
 		// Get the average position of all the current fire team members to set as the anchor point.
 		Vector3 positionSum = Vector3.zero;
-		if(mFireTeamLeader != null){
-			positionSum += mFireTeamLeader.Position; // Add the fire team leader position.
+		for (int i = 0; i < mMemberCount; ++i) {
+			positionSum += mFireTeamMembers[i].Position; // Add the fire team member positions.
 		}
-		for (int i = 0; i < mNonLeaderMemberCount; ++i) {
-			positionSum += mFireTeamNonLeaderMembers[i].Position; // Add the fire team non-leader position.
-		}
-		mCurrentAnchorPosition = positionSum / (mNonLeaderMemberCount + 1); // include leader position.
+		mCurrentAnchorPosition = positionSum / (mMemberCount); // include leader position.
 	}
 
 	private void AssignSlotPositions()
 	{
-		// Assign the leader to slot position zero.
-		if (mFireTeamLeader != null) {
-			mFireTeamLeader.slotPosition = 0;
-		}
 		// Assign each slot to the member in the fire team according to 
-		// their position in the list of non-leader team members.
-		for(int nextSlot = 1; nextSlot < mRelativeSlotDisplacements.Length; nextSlot++){
-			for (int i = 0; i < mNonLeaderMemberCount; ++i) {
-				// Slot positions of team members in the non-leader list are offset by 1.
-				mFireTeamNonLeaderMembers [i].slotPosition = i + 1; 
-			}
+		// their position in the list of team members.
+		for (int i = 0; i < mMemberCount; ++i) {
+			mFireTeamMembers [i].slotPosition = i; 
 		}
 	}
 
@@ -567,35 +515,21 @@ public class FireTeam : Ally
 	// Returns the ally that replaces the removed ally in the team ordering.
 	private FireTeamAlly RemoveFireTeamAllyFromTeamMemberList(FireTeamAlly fireTeamAllyToRemove)
 	{
-		// If the added ally is the leader, remove it as the leader. Otherwise, 
-		// remove the ally from the list of non-leaders.
-		if (fireTeamAllyToRemove == mFireTeamLeader) {
-			mFireTeamLeader = null;
-			// Set the new team leader to be the first team member in the
-			// non-leader team  member list, if one exists.
-			if (mNonLeaderMemberCount > 0) {
-				mFireTeamLeader = mFireTeamNonLeaderMembers [0];
-				// Remove the new team leader from the list of non-leader team members
-				// and shift the other team members to fill the empty spot.
-				RemoveTeamMemberAtIndex(0);
-				return mFireTeamLeader;
+		// Remove the ally from the list of team members.
+		// Try to find the ally in the list of non-leader team members.
+		int indexOfTeamMemberToRemove = -1;
+		for (int i = 0; i < mMemberCount; i++) {
+			if (fireTeamAllyToRemove == mFireTeamMembers [i]) {
+				indexOfTeamMemberToRemove = i;
+				break;
 			}
-		} else {
-			// Try to find the ally in the list of non-leader team members.
-			int indexOfTeamMemberToRemove = -1;
-			for (int i = 0; i < mNonLeaderMemberCount; i++) {
-				if (fireTeamAllyToRemove == mFireTeamNonLeaderMembers [i]) {
-					indexOfTeamMemberToRemove = i;
-					break;
-				}
-			}
-			// Remove the found team member and shift the other team members.
-			if (indexOfTeamMemberToRemove > -1 && 
-				indexOfTeamMemberToRemove < mFireTeamNonLeaderMembers.Length) {
-				RemoveTeamMemberAtIndex (indexOfTeamMemberToRemove);
-				// Return the new ally at the index of the removed ally.
-				return 	mFireTeamNonLeaderMembers [indexOfTeamMemberToRemove];
-			}
+		}
+		// Remove the found team member and shift the other team members.
+		if (indexOfTeamMemberToRemove > -1 && 
+			indexOfTeamMemberToRemove < mFireTeamMembers.Length) {
+			RemoveTeamMemberAtIndex (indexOfTeamMemberToRemove);
+			// Return the new ally at the index of the removed ally.
+			return 	mFireTeamMembers [indexOfTeamMemberToRemove];
 		}
 		return null;
 	}
@@ -604,27 +538,26 @@ public class FireTeam : Ally
 	{
 		// If the index is already being used, shift team members to make room for 
 		// the team member to add without them becoming overwritten themselves.
-		if (mFireTeamNonLeaderMembers [index] != null) {
-			for (int i = mNonLeaderMemberCount; i > index; --i) {
-				mFireTeamNonLeaderMembers [i] = mFireTeamNonLeaderMembers [i - 1];
+		if (mFireTeamMembers [index] != null) {
+			for (int i = mMemberCount; i > index; --i) {
+				mFireTeamMembers [i] = mFireTeamMembers [i - 1];
 			}
 			// Insert the fire team member into the specified index.
-			fireTeamAllyToInsert.fireTeamRole = FireTeamRole.NON_LEADER;
-			mFireTeamNonLeaderMembers [index] = fireTeamAllyToInsert;
+			mFireTeamMembers [index] = fireTeamAllyToInsert;
 
 		} else {
 			// Fill the first empty slot found in the list of non-leader
 			// team members. This ensures there are no slot gaps in 
 			// the formation.
-			for (int i = 0; i < mFireTeamNonLeaderMembers.Length; ++i) {
-				if (mFireTeamNonLeaderMembers [i] == null) {
-					mFireTeamNonLeaderMembers [i] = fireTeamAllyToInsert;
+			for (int i = 0; i < mFireTeamMembers.Length; ++i) {
+				if (mFireTeamMembers [i] == null) {
+					mFireTeamMembers [i] = fireTeamAllyToInsert;
 					break;
 				}
 			}
 		}
 		// Increment the non-leader team member counter
-		++mNonLeaderMemberCount;
+		++mMemberCount;
 	}
 
 	private void RemoveTeamMemberAtIndex(int index)
@@ -632,13 +565,13 @@ public class FireTeam : Ally
 		// Remove the team member at the specified index and shift the other team members 
 		// by shifting the other team members by one position, overwriting the removed 
 		// team member.
-		for (int i = index; i < (mNonLeaderMemberCount - 1); ++i) {
-			mFireTeamNonLeaderMembers [i] = mFireTeamNonLeaderMembers [i + 1];
+		for (int i = index; i < (mMemberCount - 1); ++i) {
+			mFireTeamMembers [i] = mFireTeamMembers [i + 1];
 		}
 		// Null the value at the index of the last fire team member shifted.
-		mFireTeamNonLeaderMembers [mNonLeaderMemberCount - 1] = null;
+		mFireTeamMembers [mMemberCount - 1] = null;
 		// Decrement the non-leader team member counter
-		--mNonLeaderMemberCount;
+		--mMemberCount;
 	}
 		
 	private void SetWedgeSlotPositions()
