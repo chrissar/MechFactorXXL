@@ -15,7 +15,6 @@ namespace Combat
         public int damagedPercentage;
         [Range(0, 100)]
         public int criticalPercentage;
-
         public void Awake()
         {
             if (!health) throw new UnityException("No Health linked to a Health Indicator");

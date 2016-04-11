@@ -245,6 +245,7 @@ GameObject:
   - 23: {fileID: 283762533}
   - 114: {fileID: 283762532}
   - 54: {fileID: 283762537}
+  - 114: {fileID: 283762538}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -264,7 +265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 0
-  maxHealth: 10
+  maxHealth: 50
 --- !u!23 &283762533
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -337,6 +338,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &283762538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 283762531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc093eab65311de43a131239967e5d6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthyColor: {r: 0, g: 1, b: 0.13103461, a: 0}
+  damagedColor: {r: 0.90344834, g: 1, b: 0, a: 0}
+  criticalColor: {r: 1, g: 0, b: 0, a: 0}
+  health: {fileID: 283762532}
+  damagedPercentage: 69
+  criticalPercentage: 37
 --- !u!1001 &1279385634
 Prefab:
   m_ObjectHideFlags: 0
@@ -376,27 +394,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5408844, guid: 1fef627553582b548b5bd91fc96aa155, type: 2}
-      propertyPath: m_UseGravity
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1fef627553582b548b5bd91fc96aa155, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1279385638 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 144662, guid: 1fef627553582b548b5bd91fc96aa155, type: 2}
-  m_PrefabInternal: {fileID: 1279385634}
---- !u!136 &1279385648
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1279385638}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.021676017
-  m_Height: 0.0098351
-  m_Direction: 1
-  m_Center: {x: -4.656613e-10, y: 0.0000000020954758, z: 0.021676017}
