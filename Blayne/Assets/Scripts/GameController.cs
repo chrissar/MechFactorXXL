@@ -33,7 +33,10 @@ public class GameController : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
         mSpawnMenu = SpawnMenu.Instance;
-        mSpawnMenu.enabled = false;
+        if (mSpawnMenu != null)
+        {
+            mSpawnMenu.enabled = false;
+        }
     }
 
     void Update()
