@@ -7,7 +7,7 @@ public enum FireTeamRole {LEADER, NON_LEADER};
 public class FireTeamAlly : Ally
 {
 	public const float kSensingProximityRadius = 5.0f;
-	public const float kVisionConeRadius = 20.0f;
+	public const float kVisionConeRadius = 30.0f;
 	public const float kVisionConeHalfAngle = 30.0f;
 
 	[HideInInspector] public FireTeamRole fireTeamRole;
@@ -16,7 +16,7 @@ public class FireTeamAlly : Ally
 	[HideInInspector] public NavMeshAgent navMeshAgent;
 	[HideInInspector] public FireTeam fireTeam;
 	[HideInInspector] public FireTeam targetEnemyTeam;
-	[HideInInspector] public bool isDisabled;
+	private bool mIsDisabled;
 	private Vector3 mDetachDestination;
 	private bool mIsDetached;
 	private List<FireTeamAlly> mEnemies;
@@ -43,6 +43,19 @@ public class FireTeamAlly : Ally
 			return mDetachDestination;
 		}
 	}
+	public bool IsDisabled
+	{
+		get 
+		{
+			return mIsDisabled;
+		}
+		set
+		{
+			mIsDisabled = value;
+			// Enable/Disable the nav mesh as appropriate.
+			navMeshAgent.enabled = !mIsDisabled;
+		}
+	}
 	public bool IsDetached
 	{
 		get 
@@ -66,7 +79,7 @@ public class FireTeamAlly : Ally
 
 	public void Update()
 	{
-		if (!isDisabled) {
+		if (!mIsDisabled) {
 			// Check for visible enemies.
 			checkForVisibleEnemies ();
 
@@ -175,7 +188,7 @@ public class FireTeamAlly : Ally
 		fireTeamNumber = -1;
 		slotPosition = -1;
 		ClearDetachDestination ();
-		isDisabled = false;
+		mIsDisabled = false;
 
 		// Initialize state machine and leader actions helper.
 		mStateMachine = new FireTeamAllyStateMachine(this);

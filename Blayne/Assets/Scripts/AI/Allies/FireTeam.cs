@@ -9,6 +9,7 @@ public class FireTeam : Ally
 
 	public const int kMaxFireTeamMembers = 4;
 	private const float mkMinDistanceFromSlotPositionNeeded = 5.0f;
+	private const float mkOptimalAttackDistance = FireTeamAlly.kVisionConeRadius * 0.3f;
 
     public enum Side
     {
@@ -16,6 +17,7 @@ public class FireTeam : Ally
         Enemy
     }
     public int teamNumber;
+	public List<FireTeam> alliedFireTeams;
     private Side mSide;
 
 	private Projector mProjector;
@@ -27,6 +29,7 @@ public class FireTeam : Ally
 	private Vector3[] mRelativeSlotDisplacements;
 	private List<FireTeamAlly> mDisabledTeamMembers;
 	private List<FireTeam> mEngagedEnemyTeams;
+	private FireTeam mEnemyTeamToAttack;
 	private Vector3 mCurrentAnchorPosition;
 	private Vector3 mNextAnchorPosition; // Slightly ahead of anchor point to set target slot positions.
 	private Quaternion mCurrentOrientation;
@@ -79,6 +82,21 @@ public class FireTeam : Ally
 			return mEngagedEnemyTeams;
 		}
 	}
+	public  FireTeam EnemyTeamToAttack
+	{
+		get
+		{ 
+			return mEnemyTeamToAttack;
+		}
+		set 
+		{	
+			FireTeam fireTeamToAttack = value;
+			// Only set the enemy team if it is on the opposite team.
+			if (fireTeamToAttack != null && fireTeamToAttack.mSide != mSide) {
+				mEnemyTeamToAttack = fireTeamToAttack;
+			} 
+		}
+	}
 	public int NonLeaderMemberCount
 	{
 		get
@@ -110,6 +128,7 @@ public class FireTeam : Ally
 
 	public void Update()
 	{
+		UpdateDestination ();
 		UpdateProjector ();
 		UpdateAnchor ();
 	}
@@ -298,6 +317,7 @@ public class FireTeam : Ally
 		}
 		// Set fire team ally's team to this team.
 		fireTeamAllyToEnable.fireTeam = this;
+		fireTeamAllyToEnable.IsDisabled = false; // Enable the ally.
 		// Update the formation to account for the enabled member.
 		UpdateFormation();
 		// Remove the ally from the list of disabled allies.
@@ -328,6 +348,8 @@ public class FireTeam : Ally
 		if (fireTeamAllyToDisable == null) {
 			return null;
 		}
+	
+
 		// Remove the ally, and get the ally that replaced the removed one.
 		FireTeamAlly promotedFireTeamAlly = RemoveFireTeamAllyFromTeamMemberList(fireTeamAllyToDisable);
 		// Update the formation to account for the removed member.
@@ -336,6 +358,7 @@ public class FireTeam : Ally
 		mDisabledTeamMembers.Add(fireTeamAllyToDisable);
 		// Clear the fire team ally's current fire team.
 		fireTeamAllyToDisable.fireTeam = null;
+		fireTeamAllyToDisable.IsDisabled = true; // Disable the ally.
 		// Return the ally that replaced the removed one.
 		return promotedFireTeamAlly;
 	}
@@ -405,6 +428,7 @@ public class FireTeam : Ally
 	protected void Initialize ()
 	{
 		teamNumber = 0;
+		alliedFireTeams = new List<FireTeam> ();
 		mProjector = gameObject.GetComponentInChildren<Projector>();
 		mDestination = Vector3.zero;
 		mFireTeamLeader = null;
@@ -413,6 +437,7 @@ public class FireTeam : Ally
 		mRelativeSlotDisplacements = new Vector3[kMaxFireTeamMembers];
 		mDisabledTeamMembers = new List<FireTeamAlly> ();
 		mEngagedEnemyTeams = new List<FireTeam> ();
+		mEnemyTeamToAttack = null;
 		mCurrentAnchorPosition = Vector3.zero;
 		gameObject.transform.position = mCurrentAnchorPosition;
 		mNextAnchorPosition = mCurrentAnchorPosition;
@@ -420,6 +445,25 @@ public class FireTeam : Ally
 		SetWedgeSlotPositions ();
 		mCurrentOrientation = Quaternion.identity;
 		mCurrentSpeed = 3.0f;
+	}
+
+	private void UpdateDestination()
+	{
+		// If there is an enemy that the team is currently attacking, set the destination 
+		// of the fire team to the optimal attacking distance from the enemy team.
+		if (mEnemyTeamToAttack != null) {
+			// Move to optimal attack distance along the line between the enemy and the
+			// current anchor position.
+			Vector3 targetDirection = mCurrentAnchorPosition - mEnemyTeamToAttack.mCurrentAnchorPosition;
+			targetDirection.Normalize();
+			// To prevent rounding errors, only set the new destination if it is 
+			// sufficiently far from the current destination.
+			Vector3 newDestination =  mEnemyTeamToAttack.mCurrentAnchorPosition +
+				targetDirection * mkOptimalAttackDistance;
+			if (Vector3.Distance (newDestination, mDestination) > 2.0f) {
+				mDestination = newDestination;
+			}
+		}
 	}
 
 	private void UpdateFormation()
@@ -451,7 +495,12 @@ public class FireTeam : Ally
 		if (IsFireTeamInPosition () || mCurrentFireTeamFormation == FireTeamFormation.COVER) {
 			// Update current anchor point to move towards destination based on overall team speed.
 			Vector3 destinationDisplacement = mDestination - mCurrentAnchorPosition;
-			mCurrentAnchorPosition += destinationDisplacement.normalized * mCurrentSpeed * Time.deltaTime;
+			// To prevent rounding errors, only update the current anchor position if the 
+			// destination is sufficiently far from it.
+			if (destinationDisplacement.magnitude > 2.0f) {
+				mCurrentAnchorPosition += 
+					destinationDisplacement.normalized * mCurrentSpeed * Time.deltaTime;
+			} 
 		}
 		SetNextAnchorPointTarget ();
 	}
