@@ -43,7 +43,17 @@ public class PlayerMachine : SuperStateMachine {
 
     private Quaternion previousRotation;
 
-    private Transform cam; //reference to our case
+    public Transform cam; //reference to our case
+    public Transform cube;
+
+    // IK Stuff
+    public Transform spine;
+    public float aimingZ = 200;
+    public float aimingY = 200;
+    public float aimingX = 200;
+    public float point;
+
+    public Vector3 rotation;
 
     void Start () {
         // Put any code here you want to run ONCE, when the object is initialized
@@ -87,7 +97,7 @@ public class PlayerMachine : SuperStateMachine {
 
     void UpdateAnimator()
     {
-        
+        animator.SetFloat("Sideways", sidewaysAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
         animator.SetBool("Aim", aim);
@@ -100,7 +110,7 @@ public class PlayerMachine : SuperStateMachine {
         lookDirection = Quaternion.AngleAxis(input.Current.MouseInput.x * RotateSpeed, controller.up) * lookDirection;
         // Put any code in here you want to run BEFORE the state's update function.
         // This is run regardless of what state you're in
-        aim = Input.GetMouseButton(1);
+        aim = input.Current.MouseAim;
 
         aimingWeight = Mathf.MoveTowards(aimingWeight, (aim && !input.Current.SprintInput) ? 1.0f : 0.0f, Time.deltaTime * 5);
 
@@ -128,6 +138,23 @@ public class PlayerMachine : SuperStateMachine {
         rotateAmount = Input.GetAxis("Mouse X") * 0.1f;
 
         UpdateAnimator();
+    }
+
+    void LateUpdate()
+    {
+        if (aim)
+        {
+            Vector3 eulerAngleOffset = Vector3.zero;
+            eulerAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
+            Ray ray = new Ray(cam.position, cam.forward);
+            Vector3 lookPosition = ray.GetPoint(point);
+            spine.LookAt(lookPosition);            
+            spine.Rotate(eulerAngleOffset, Space.Self);
+        }
+        else
+        {
+            //spine.LookAt(Vector3.zero);
+        }
     }
 
     private bool AcquiringGround()
@@ -158,7 +185,11 @@ public class PlayerMachine : SuperStateMachine {
         if (input.Current.MoveInput.x != 0)
         {
             local += right * input.Current.MoveInput.x;
-            //forwardAmount = input.Current.MoveInput.x;
+            sidewaysAmount = input.Current.MoveInput.x;
+        }
+        else
+        {
+            sidewaysAmount = 0;
         }
 
         if (input.Current.MoveInput.z != 0)
@@ -191,6 +222,7 @@ public class PlayerMachine : SuperStateMachine {
     // Jump_SuperUpdate()
     void Idle_EnterState()
     {
+        sidewaysAmount = 0;
         controller.EnableSlopeLimit();
         controller.EnableClamping();
     }
@@ -228,6 +260,11 @@ public class PlayerMachine : SuperStateMachine {
 
         // Apply friction to slow us to a halt
         moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, 10.0f * controller.deltaTime);
+    }
+
+    void Idle_LateUpdate()
+    {
+
     }
 
     void Idle_ExitState()

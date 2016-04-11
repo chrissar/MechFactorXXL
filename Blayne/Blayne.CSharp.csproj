@@ -98,6 +98,7 @@
     <Compile Include="Assets\Scripts\AI\CombatStates\FiringState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\IdlingCombatState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\ReloadingState.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\ChangeFireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\Command.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\FireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\PlayerMachine.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\PlayerMachineDebug.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\SimpleStateMachine.cs" />
+    <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\TestIK.cs" />
     <Compile Include="Assets\Scripts\UI\ChangeFormationMenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\MenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\MoveTeamMenuAction.cs" />
@@ -168,7 +170,6 @@
     <Compile Include="Assets\UnityChan\Scripts\UnityChanControlScriptWithRgidBody.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Cartoon Soldier\Readme.txt" />
     <None Include="Assets\RigifyToUnity\Readme.txt" />
     <None Include="Assets\RigifyToUnity\Release Notes.txt" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\ChromaticAberrationShader.shader" />

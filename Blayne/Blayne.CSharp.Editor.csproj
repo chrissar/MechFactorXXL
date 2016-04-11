@@ -109,7 +109,6 @@
     <Compile Include="Assets\RigifyToUnity\Scripts\Editor\RigifyToUnityPrefs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Cartoon Soldier\Readme.txt" />
     <None Include="Assets\RigifyToUnity\Readme.txt" />
     <None Include="Assets\RigifyToUnity\Release Notes.txt" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\ChromaticAberrationShader.shader" />
