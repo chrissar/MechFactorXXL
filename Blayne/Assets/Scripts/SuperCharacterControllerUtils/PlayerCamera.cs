@@ -45,8 +45,8 @@ public class PlayerCamera : MonoBehaviour
             rot = Quaternion.AngleAxis(yRotation, left) * rot;
 
             pos = target.position;
-            pos -= target.forward * Distance;
-            pos += target.up * Height;
+            pos -= rot * target.forward * Distance;
+            pos += rot * target.up * Height;
             pos += rot * (new Vector3(horizontalOffset, 0, 0));
         }
 

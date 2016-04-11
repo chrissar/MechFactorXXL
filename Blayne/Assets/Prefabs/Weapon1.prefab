@@ -32,6 +32,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &150522
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 433174}
+  m_Layer: 0
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &153728
 GameObject:
   m_ObjectHideFlags: 0
@@ -40,6 +55,8 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 411656}
+  - 114: {fileID: 11430882}
+  - 114: {fileID: 11488682}
   m_Layer: 0
   m_Name: Weapon1
   m_TagString: Untagged
@@ -102,8 +119,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 153728}
-  m_LocalRotation: {x: -0.00022372606, y: -0.023175824, z: -0.035398774, w: 0.9991045}
-  m_LocalPosition: {x: 282.12598, y: 14.824249, z: 318.4975}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.281, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 471238}
@@ -122,6 +139,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 411656}
   m_RootOrder: 1
+--- !u!4 &433174
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 150522}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+  m_LocalPosition: {x: 0.02, y: 6.45, z: 0.12}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 489682}
+  m_RootOrder: 0
 --- !u!4 &440564
 Transform:
   m_ObjectHideFlags: 1
@@ -158,7 +187,8 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0.004141754, y: 0.09701186, z: 0.18623586}
   m_LocalScale: {x: 0.1772296, y: 0.1433636, z: 0.1433636}
-  m_Children: []
+  m_Children:
+  - {fileID: 433174}
   m_Father: {fileID: 471238}
   m_RootOrder: 0
 --- !u!4 &495938
@@ -273,6 +303,33 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 180800}
   m_Mesh: {fileID: 4300002, guid: fddeeac0ebed86c4cab4320764b5c227, type: 3}
+--- !u!114 &11430882
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 153728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 101972021c649d444ba6687f53042fed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &11488682
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 153728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a7a51de65d0d64ea77216fe88f1f73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 11484876, guid: 24a7e16a6faa5c144b7b6f8b90b4e890, type: 2}
+  muzzle: {fileID: 150522}
+  fireRate: 1
+  bulletSpeed: 2
+  bulletLifeTime: 2
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

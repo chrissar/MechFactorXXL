@@ -8,6 +8,7 @@ namespace Combat
     [RequireComponent (typeof(Gun))]
     public class TestGunController : MonoBehaviour
     {
+        public KeyCode shootKey = KeyCode.Space;
         private Gun mGun;
         public void Awake()
         {
@@ -15,7 +16,7 @@ namespace Combat
         }
         public void Update()
         {
-            if(Input.GetKey(KeyCode.Space))
+            if(Input.GetKey(shootKey))
             {
                 mGun.Shoot();
             }

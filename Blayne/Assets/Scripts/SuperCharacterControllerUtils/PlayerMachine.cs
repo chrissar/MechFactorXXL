@@ -9,7 +9,7 @@ using System.Collections;
 public class PlayerMachine : SuperStateMachine {
 
     public Transform AnimatedMesh;
-
+    public Combat.Gun gun;
     Animator animator;
 
     public float WalkSpeed = 4.0f;
@@ -75,7 +75,8 @@ public class PlayerMachine : SuperStateMachine {
         currentState = PlayerStates.Idle;
 
         animator = GetComponentInChildren<Animator>();
-        
+
+        if (!gun) throw new UnityException("Player Machine does not have a Gun Script linked");
 
         SetUpAnimator();
     }
@@ -257,11 +258,17 @@ public class PlayerMachine : SuperStateMachine {
         {
             forwardAmount = 0;
         }
-
+        Shoot();
         // Apply friction to slow us to a halt
         moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, 10.0f * controller.deltaTime);
     }
-
+    private void Shoot()
+    {
+        if(aim && input.Current.MouseFire)
+        {
+            gun.Shoot();
+        }
+    }
     void Idle_LateUpdate()
     {
 
@@ -303,6 +310,7 @@ public class PlayerMachine : SuperStateMachine {
             currentState = PlayerStates.Idle;
             return;
         }
+        Shoot();
     }
 
     void Run_ExitState()
@@ -341,6 +349,7 @@ public class PlayerMachine : SuperStateMachine {
             currentState = PlayerStates.Idle;
             return;
         }
+        Shoot();
     }
 
     void Walk_ExitState()
@@ -372,6 +381,7 @@ public class PlayerMachine : SuperStateMachine {
         verticalMoveDirection -= controller.up * Gravity * controller.deltaTime;
 
         moveDirection = planarMoveDirection + verticalMoveDirection;
+        Shoot();
     }
 
     void Fall_EnterState()

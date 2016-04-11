@@ -26,7 +26,7 @@ namespace Combat
                     muzzle.transform.position,
                     muzzle.transform.rotation)
                     as GameObject;
-                bulletObj.transform.localScale = gameObject.transform.localScale;
+                //bulletObj.transform.localScale = gameObject.transform.localScale;
                 Bullet bullet = bulletObj.GetComponent<Bullet>();
                 bullet.GetComponent<Rigidbody>().AddForce(muzzle.transform.forward * bulletSpeed, ForceMode.Impulse);
                 Destroy(bulletObj, bulletLifeTime);
