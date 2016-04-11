@@ -60,7 +60,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 					if (closestTeamBasePosition != Vector3.zero) {
 						// Move to the team base, assuming file formation.
 						MoveToPointWithFormation (closestTeamBasePosition,
-							FireTeamFormation.FILE);
+							FireTeamFormation.WEDGE);
 					}
 				}	
 			}

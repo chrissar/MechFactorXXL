@@ -23,7 +23,7 @@ public class AllyGameController : MonoBehaviour
 	private FireTeamAlly mEnemy0;
 	private FireTeamAlly mEnemy1;
 
-	void Start()
+	public void Start()
 	{
 		// Initialize the team list and create the fire teams to add to it.
 		mTeamList = new TeamList ();

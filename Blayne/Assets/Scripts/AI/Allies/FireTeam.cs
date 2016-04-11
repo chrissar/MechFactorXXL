@@ -229,6 +229,7 @@ public class FireTeam : Ally
 
 	public void SetDestination(Vector3 destination)
 	{
+		Debug.Log("moving Team to " + destination);
 		mDestination = destination;
 		SetNextAnchorPointTarget ();
 		SetOrientation ();
@@ -447,13 +448,16 @@ public class FireTeam : Ally
 		
 	private void UpdateProjector()
 	{
-		if(mMemberCount > 0){
+		if (mMemberCount > 0) {
+			mProjector.enabled = true;
 			// Set the projector to the center of mass of all the members in the fire team.
 			Vector3 positionSum = Vector3.zero;
 			for (int i = 0; i < mMemberCount; ++i) {
-				positionSum += mFireTeamMembers[i].Position; // Add the fire team member positions.
+				positionSum += mFireTeamMembers [i].Position; // Add the fire team member positions.
 			}
 			gameObject.transform.position = positionSum / (mMemberCount); // include leader position.
+		} else {
+			mProjector.enabled = false;
 		}
 	}
 
@@ -591,7 +595,10 @@ public class FireTeam : Ally
 		foreach (GameObject teamBaseObject in teamBaseObjects) {
 			TeamBase teamBase = teamBaseObject.GetComponent<TeamBase> ();
 			if (teamBase != null && teamBase.teamSide == mSide) {
+				// Add team base to list of team bases.
 				mTeamBases.Add (teamBase);
+				// Add self to the team base list of allied fire teams.
+				teamBase.AddAlliedFireTeamToListOfFireTeams(this);
 			}
 		}
 	}
