@@ -147,7 +147,6 @@ public class AllyGameController : MonoBehaviour
 			if (allyToRemove != null) {
 				FireTeamAlly replacementLeader = fireTeam.RemoveFireTeamAlly (allyToRemove);
 				// Remove the old team leader from the scene.
-				print(allyToRemove);
 				Destroy (allyToRemove.gameObject);
 			}
 		}
