@@ -39,8 +39,9 @@ public class FireTeamDecisionMaker : MonoBehaviour
 					// Find the best cover point to take if there is one.
 					GameObject coverPoint = GetBestCoverPoint ();
 					if (coverPoint != null) {
-						// Move to the cover point.
-						MoveToCoverPoint (coverPoint.transform.position);
+						// Move to the cover point, assuming cover formation.
+						MoveToPointWithFormation (coverPoint.transform.position, 
+							FireTeamFormation.COVER);
 					} else {
 						// Cannot take cover, so attack the enemy team.
 						AttackEnemyTeam (engagedEnemyFireTeam);
@@ -52,6 +53,16 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			} else {
 				// Disengage Enemies.
 				DisengageEnemy();
+				// If the team is in critial condition, move 
+				// the team to the closest team base.
+				if (IsTeamInCritialCondition ()) {
+					Vector3 closestTeamBasePosition = GetClosestTeamBase ();
+					if (closestTeamBasePosition != Vector3.zero) {
+						// Move to the team base, assuming file formation.
+						MoveToPointWithFormation (closestTeamBasePosition,
+							FireTeamFormation.FILE);
+					}
+				}	
 			}
 		}
 	}
@@ -95,14 +106,14 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		return null;
 	}
 
-	private void MoveToCoverPoint(Vector3 coverPoint)
+	private void MoveToPointWithFormation(Vector3 point, FireTeamFormation formation)
 	{
 		// Set the destination of the fire team to the cover point,
 		// while setting them to the cover formation.
 		ChangeFireTeamFormationCommand formationCommand =
-			new ChangeFireTeamFormationCommand (FireTeamFormation.COVER);
+			new ChangeFireTeamFormationCommand (formation);
 		fireTeam.executeCommand (formationCommand);
-		MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (coverPoint);
+		MoveFireTeamCommand moveCommand = new MoveFireTeamCommand (point);
 		fireTeam.executeCommand (moveCommand);
 	}
 
@@ -144,6 +155,16 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		if (numberOfSupportAllies < numberOfEnemies) {
 			return true;
 		}
+		return false;
+	}
+
+	private bool IsTeamInCritialCondition()
+	{
+		// If the number of fire team allies in the fire team is half or less of its
+		// maximum team size, consider the team to be in critical condition.
+		if (fireTeam.MemberCount <= FireTeam.kMaxFireTeamMembers) {
+			return true;
+		} 
 		return false;
 	}
 
@@ -210,6 +231,24 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		return candidateCoverPoints;
 	}
 
+	private Vector3 GetClosestTeamBase()
+	{
+		Vector3 closestTeamBasePosition = Vector3.zero;
+		float closestTeamBaseDistance = -1.0f;
+		foreach (TeamBase teamBase in fireTeam.TeamBases) {
+			if (teamBase != null) {
+				float distance = Vector3.Distance (teamBase.transform.position,
+					fireTeam.CurrentAnchorPosition);
+				if (closestTeamBaseDistance < 0 || distance < closestTeamBaseDistance) {
+					// Set the team base position as the new closest team base position.
+					closestTeamBasePosition = teamBase.transform.position;
+					closestTeamBaseDistance = distance;
+				}
+			}
+		}
+		return closestTeamBasePosition;
+	}
+
 	private bool IsCoverPointFarEnoughFromEnemies(Vector3 coverPointPosition)
 	{
 		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
@@ -239,7 +278,8 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		return closestEnemyDistance;
 	}
 
-	private FireTeam GetClosestEnemyFireTeam(){
+	private FireTeam GetClosestEnemyFireTeam()
+	{
 		Vector3 teamPosition = fireTeam.CurrentAnchorPosition;
 		FireTeam closestEnemyFireTeam = null;
 		float closestDistance = -1.0f;

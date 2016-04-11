@@ -21,6 +21,7 @@ public class FireTeam : Ally
     private Side mSide;
 
 	private Projector mProjector;
+	private List<TeamBase> mTeamBases;
 	private FireTeamFormation mCurrentFireTeamFormation;
 	private Vector3 mDestination;
 	private int mMemberCount;
@@ -51,6 +52,8 @@ public class FireTeam : Ally
 			} else {
 				mProjector.enabled = true;
 			}
+			// Update the list of team bases.
+			UpdateListOfTeamBases();
 		}
 	}
     public List<FireTeamAlly> GetAllMembers()
@@ -71,6 +74,13 @@ public class FireTeam : Ally
 		get
 		{ 
 			return mCurrentFireTeamFormation; 
+		}
+	}
+	public  List<TeamBase> TeamBases
+	{
+		get
+		{ 
+			return mTeamBases;
 		}
 	}
 	public  List<FireTeam> EngagedEnemyTeams
@@ -388,7 +398,8 @@ public class FireTeam : Ally
 
 	protected void Initialize ()
 	{
-		teamNumber = 0;
+		teamNumber= 0;
+		mTeamBases = new List<TeamBase>();
 		alliedFireTeams = new List<FireTeam> ();
 		mProjector = gameObject.GetComponentInChildren<Projector>();
 		mDestination = Vector3.zero;
@@ -572,6 +583,17 @@ public class FireTeam : Ally
 		mFireTeamMembers [mMemberCount - 1] = null;
 		// Decrement the non-leader team member counter
 		--mMemberCount;
+	}
+
+	private void UpdateListOfTeamBases(){
+		mTeamBases.Clear (); // clear old list.
+		GameObject[] teamBaseObjects = GameObject.FindGameObjectsWithTag ("Base");
+		foreach (GameObject teamBaseObject in teamBaseObjects) {
+			TeamBase teamBase = teamBaseObject.GetComponent<TeamBase> ();
+			if (teamBase != null && teamBase.teamSide == mSide) {
+				mTeamBases.Add (teamBase);
+			}
+		}
 	}
 		
 	private void SetWedgeSlotPositions()
