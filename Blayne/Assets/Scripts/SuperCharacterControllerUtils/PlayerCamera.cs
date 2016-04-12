@@ -10,7 +10,7 @@ public class PlayerCamera : MonoBehaviour
     public float rotationSpeed = 1.0f;
     public float topDownHeight = 10.0f;
 
-    public GameObject PlayerTarget;    
+    public GameObject PlayerTarget;
 
     private PlayerInputController input;
     private Transform target;
