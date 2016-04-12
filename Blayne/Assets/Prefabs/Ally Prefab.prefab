@@ -202,7 +202,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 153686}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 280.53366, y: 13.274396, z: 322.07}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 446952}
@@ -280,7 +280,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 189598}
-  m_LocalRotation: {x: 0.370059, y: -0.29741102, z: 0.5669448, w: 0.673184}
+  m_LocalRotation: {x: 0.34760824, y: -0.27086177, z: 0.58098066, w: 0.68429816}
   m_LocalPosition: {x: 0, y: 0.28100014, z: 0.6300049}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -568,11 +568,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a7a51de65d0d64ea77216fe88f1f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 11484876, guid: 24a7e16a6faa5c144b7b6f8b90b4e890, type: 2}
+  bulletPrefab: {fileID: 11412766, guid: 5bb10f8b6c11a3a4da0ce0c7ec388eb5, type: 2}
   muzzle: {fileID: 158328}
   fireRate: 1
-  bulletSpeed: 2
-  bulletLifeTime: 2
+  bulletSpeed: 10
+  bulletLifeTime: 10
 --- !u!114 &11494570
 MonoBehaviour:
   m_ObjectHideFlags: 1

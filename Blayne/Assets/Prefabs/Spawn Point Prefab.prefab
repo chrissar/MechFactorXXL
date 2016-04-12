@@ -39,10 +39,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ba26ed7edf4074d94a0e5a74ffdaef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  friendColor: {r: 0, g: 0.006896496, b: 1, a: 0}
+  enemyColor: {r: 1, g: 0, b: 0, a: 0}
   fireTeamPrefab: {fileID: 11444312, guid: c643b298d49819847a783b88feb22f7d, type: 2}
   allyPrefab: {fileID: 11489414, guid: e44b9d9a752cb1041a4ef4c26d98ec83, type: 2}
   teamSide: 0
-  teamNumber: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

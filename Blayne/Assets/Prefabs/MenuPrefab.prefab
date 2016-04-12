@@ -64,7 +64,7 @@ GameObject:
   - 222: {fileID: 22279142}
   - 114: {fileID: 11482184}
   - 114: {fileID: 11429234}
-  - 114: {fileID: 11410724}
+  - 114: {fileID: 11495712}
   m_Layer: 5
   m_Name: Team Attack
   m_TagString: Untagged
@@ -249,17 +249,6 @@ Transform:
   - {fileID: 22474438}
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!114 &11410724
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 116478}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 978e89173c3ed914ba777b6e2c7d2930, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11413446
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -897,6 +886,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Wedge
+--- !u!114 &11495712
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 116478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11197d848748a2d4eabfa119d612d637, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11497298
 MonoBehaviour:
   m_ObjectHideFlags: 1

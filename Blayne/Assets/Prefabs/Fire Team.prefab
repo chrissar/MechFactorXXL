@@ -82,7 +82,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamNumber: 0
-  side: 0
+  alliedFireTeams: []
+  spawnPoint: {x: 0, y: 0, z: 0}
 --- !u!119 &11996902
 Projector:
   m_ObjectHideFlags: 1
