@@ -92,6 +92,7 @@
     <Compile Include="Assets\Scripts\AI\Allies\FireTeam.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\FireTeamAlly.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\FireTeamAllyStateMachine.cs" />
+    <Compile Include="Assets\Scripts\AI\Allies\FireTeamHelper.cs" />
     <Compile Include="Assets\Scripts\AI\Allies\TeamList.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\AimingState.cs" />
     <Compile Include="Assets\Scripts\AI\CombatStates\FiringState.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Assets\Scripts\AI\Commands\TeamAttackEnemyCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\TeamDisengageCommand.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\CombatStates\FireTeamAllyAimingState.cs" />
+    <Compile Include="Assets\Scripts\AI\FireTeamStates\CombatStates\FireTeamAllyFiringState.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\CombatStates\FireTeamAllyIdlingCombatState.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\MovementStates\FireTeamAllyIdlingState.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\MovementStates\FireTeamAllyMovingState.cs" />

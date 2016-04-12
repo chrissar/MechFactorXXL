@@ -13,6 +13,7 @@ public class FireTeamAllyStateMachine
 	public ICombat currentCombatState;
 	public readonly FireTeamAllyAimingState aimingState;
 	public readonly FireTeamAllyIdlingCombatState idlingCombatState;
+    public readonly FireTeamAllyFiringState firingState;
 	public readonly FireTeamAlly mStatePatternFTAlly;
 
 	public FireTeamAllyStateMachine (FireTeamAlly fireTeamAlly)
@@ -26,6 +27,7 @@ public class FireTeamAllyStateMachine
 		suppressedState = new FireTeamAllySuppressedState (mStatePatternFTAlly, this);
 		aimingState = new FireTeamAllyAimingState(mStatePatternFTAlly, this);
 		idlingCombatState = new FireTeamAllyIdlingCombatState(mStatePatternFTAlly, this);
+        firingState = new FireTeamAllyFiringState(mStatePatternFTAlly, this);
 
 		// Set default states.
 		currentMovementState = idlingState;

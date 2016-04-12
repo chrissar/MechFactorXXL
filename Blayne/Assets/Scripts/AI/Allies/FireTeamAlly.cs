@@ -1,4 +1,5 @@
 ﻿using System;
+using Combat;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ public class FireTeamAlly : Ally
 	private bool mIsDetached;
 	private List<FireTeamAlly> mEnemies;
 	private FireTeamAllyStateMachine mStateMachine;
+    private Gun mGun;
 
 	public Vector3 Position
 	{
@@ -103,6 +105,14 @@ public class FireTeamAlly : Ally
 		// Add enemy to the list of engaged enemies.
 		fireTeam.EngagedEnemyTeams.Add(enemy.fireTeam);
 	}
+
+    public void Shoot()
+    {
+        if (mGun != null)
+        {
+            mGun.Shoot();
+        }
+    }
 
 	public void SetEnemies ()
 	{
@@ -205,6 +215,7 @@ public class FireTeamAlly : Ally
 		slotPosition = -1;
 		ClearDetachDestination ();
 		mIsDisabled = false;
+        mGun = GetComponentInChildren<Gun>();
 
 		// Initialize state machine and leader actions helper.
 		mStateMachine = new FireTeamAllyStateMachine(this);
