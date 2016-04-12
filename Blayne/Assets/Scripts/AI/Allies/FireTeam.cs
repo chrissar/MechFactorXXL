@@ -90,8 +90,11 @@ public class FireTeam : Ally
 		set 
 		{	
 			FireTeam fireTeamToAttack = value;
-			// Only set the enemy team if it is on the opposite team.
-			if (fireTeamToAttack != null && fireTeamToAttack.mSide != mSide) {
+			// Only set the enemy team if it is on the opposite team or is null.
+			if (fireTeamToAttack == null) {
+				mEnemyTeamToAttack = null;
+			}
+			else if (fireTeamToAttack.mSide != mSide) {
 				mEnemyTeamToAttack = fireTeamToAttack;
 			} 
 		}
