@@ -88,6 +88,7 @@ public class SpawnPoint : MonoBehaviour
 		mSpawnedFireTeam.AddFireTeamAlly(ally);
 		allyObj.transform.position = mSpawnedFireTeam.GetSlotPosition(ally.slotPosition);
 		ally.StateMachine.currentMovementState.ToMoving();
+		ally.targetEnemyTeam = mSpawnedFireTeam.GetAllyAtSlotPosition (0).targetEnemyTeam;
 		SetTeamColorOfFireTeamAlly (ally);
 	}
 
