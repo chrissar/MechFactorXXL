@@ -197,6 +197,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
+  mEnemies: []
 --- !u!195 &41010351
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -431,6 +432,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
+  mEnemies: []
 --- !u!195 &141571987
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -764,88 +766,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1482842869}
-  - {fileID: 302972312}
   - {fileID: 1762775928}
   - {fileID: 1245835688}
   - {fileID: 965479337}
   m_Father: {fileID: 0}
   m_RootOrder: 7
---- !u!1 &302972311
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 302972312}
-  - 33: {fileID: 302972315}
-  - 136: {fileID: 302972314}
-  - 23: {fileID: 302972313}
-  m_Layer: 0
-  m_Name: Cover1
-  m_TagString: cover
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &302972312
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 302972311}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.9, y: 0.5, z: 10}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_Children: []
-  m_Father: {fileID: 287546803}
-  m_RootOrder: 1
---- !u!23 &302972313
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 302972311}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_Materials:
-  - {fileID: 2100000, guid: 809221c794cc5d843a1f802eeca8eb4f, type: 2}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 1
-  m_ReflectionProbeUsage: 1
-  m_ProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 1
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
---- !u!136 &302972314
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 302972311}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!33 &302972315
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 302972311}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &500313512
 Prefab:
   m_ObjectHideFlags: 0
@@ -1271,7 +1196,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 287546803}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!23 &965479338
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1423,7 +1348,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 287546803}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!23 &1245835689
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1520,6 +1445,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
+  mEnemies: []
 --- !u!23 &1385929980
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1686,7 +1612,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1482842868}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.7, y: 0.5, z: 9.35}
+  m_LocalPosition: {x: 11.5, y: 0.5, z: 9.35}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 287546803}
@@ -1849,6 +1775,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
+  mEnemies: []
 --- !u!195 &1598847198
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2009,6 +1936,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
+  mEnemies: []
 --- !u!195 &1696731543
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2103,7 +2031,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 287546803}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!23 &1762775929
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2200,6 +2128,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
+  mEnemies: []
 --- !u!195 &1829480518
 NavMeshAgent:
   m_ObjectHideFlags: 0

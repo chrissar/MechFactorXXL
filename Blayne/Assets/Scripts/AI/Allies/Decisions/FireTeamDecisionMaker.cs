@@ -35,7 +35,6 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			mNumberOfAlliesInFireTeam != fireTeam.MemberCount) {
 			mNumberOfEngagedEnemies = fireTeam.EngagedEnemyTeams.Count;
 			mNumberOfAlliesInFireTeam = fireTeam.MemberCount;
-
 			// Check if there are any enemies currently in sight of the team.
 			if (mNumberOfEngagedEnemies > 0) {
 				// Set the enemy team as the current target to fire at.
@@ -80,7 +79,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			// If none of the members of the fire team see any enemies, clear the 
 			// list of engaged enemies. Note that allies will face enemies they have 
 			// engaged while within sight range of the enemy.
-			FireTeamAlly ally = IsNoEnemyInSight ();
+			FireTeamAlly ally = GetEnemyInSight ();
 			if (ally == null) {
 				fireTeam.EngagedEnemyTeams.Clear ();
 			}
@@ -97,7 +96,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		}
 	}
 
-	private FireTeamAlly IsNoEnemyInSight()
+	private FireTeamAlly GetEnemyInSight()
 	{
 		// Check if there are any visible enemies around the squad.
 		for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
@@ -105,6 +104,8 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			if(ally != null){
 				if (ally.IsAnyEnemyVisible ()) {
 					return ally; 
+				} else {
+					// print ("ally enemy count :" + ally.mEnemies.Count);
 				}
 			}
 		}

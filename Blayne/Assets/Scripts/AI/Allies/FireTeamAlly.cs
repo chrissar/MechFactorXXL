@@ -152,7 +152,6 @@ public class FireTeamAlly : Ally
 				return true;
 			}
 		}
-
 		return false; // No enemies found.
 	}
 
@@ -168,10 +167,12 @@ public class FireTeamAlly : Ally
 		float distanceToAlly = allyDisplacement.magnitude;
 		float angleToFaceAlly = Vector3.Angle(currentFacingDirection, allyDisplacement);
 		// Visible if within line of sight or is within the sensing proximity.
-		if (distanceToAlly< kSensingProximityRadius || (angleToFaceAlly < kVisionConeRadius &&
+		if (distanceToAlly < kSensingProximityRadius || (angleToFaceAlly < kVisionConeRadius &&
 			Math.Abs(angleToFaceAlly) < kVisionConeHalfAngle)) {
 			return true;
 		}
+		//if (fireTeam.TeamSide == FireTeam.Side.Enemy)
+		//	print ("distance to ally: " + distanceToAlly);
 		return false;
 	}
 

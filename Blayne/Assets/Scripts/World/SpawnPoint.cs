@@ -20,7 +20,7 @@ public class SpawnPoint : MonoBehaviour
     {
         return msTopTeamNumber++;
     }
-    public void Start()
+    public void Awake()
     {
 		TeamList teamList = GameObject.Find ("TeamList").GetComponent<TeamList>() as TeamList;
 
@@ -87,6 +87,7 @@ public class SpawnPoint : MonoBehaviour
 		mSpawnedFireTeam.AddFireTeamAlly(ally);
 		allyObj.transform.position = mSpawnedFireTeam.GetSlotPosition(ally.slotPosition);
 		ally.StateMachine.currentMovementState.ToMoving();
+		ally.targetEnemyTeam = mSpawnedFireTeam.GetAllyAtSlotPosition (0).targetEnemyTeam;
 		SetTeamColorOfFireTeamAlly (ally);
 	}
 

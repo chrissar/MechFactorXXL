@@ -24,7 +24,6 @@ namespace Combat
         }*/
         public void OnCollisionEnter(Collision collision)
         {
-            Debug.Log("collided!");
             Health health = collision.gameObject.GetComponent<Health>();
             if(health)
             {

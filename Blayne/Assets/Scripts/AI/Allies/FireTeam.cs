@@ -228,6 +228,16 @@ public class FireTeam : Ally
 		SetOrientation ();
 	}
 
+	public void SetEnemies()
+	{
+		for (int i = 0; i < kMaxFireTeamMembers; ++i) {
+			FireTeamAlly ally = GetAllyAtSlotPosition (i);
+			if (ally != null) {
+				ally.SetEnemies ();
+			}
+		}
+	}
+
 	public void SetFormation(FireTeamFormation newFireTeamFormation)
 	{
 		mCurrentFireTeamFormation = newFireTeamFormation;
