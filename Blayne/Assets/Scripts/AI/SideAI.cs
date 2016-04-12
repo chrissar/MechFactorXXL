@@ -55,11 +55,11 @@ public class SideAI : MonoBehaviour
 
     private bool IsSquadStrong(FireTeam squad)
     {
-        return squad.NonLeaderMemberCount > 2;
+        return squad.MemberCount > 2;
     }
     private bool IsSquadRetreating(FireTeam squad)
     {
-        return squad.NonLeaderMemberCount <= 2;
+        return squad.MemberCount <= 2;
     }
     private bool IsSquadEngaged(FireTeam squad)
     {
@@ -71,7 +71,7 @@ public class SideAI : MonoBehaviour
     }
     private bool IsSquadDead(FireTeam squad)
     {
-        return squad.NonLeaderMemberCount == 0;
+        return squad.MemberCount == 0;
     }
     private void Attack(FireTeam friend, FireTeam enemy)
     {
