@@ -16,7 +16,9 @@ public class PursueEnemyTeamCommand : Command
 			FireTeam fireTeam = ally as FireTeam;
 
 			// Set the enemy team to pursue.
-			fireTeam.EnemyTeamToPursue = mFireTeamToPursue;
+			if (fireTeam.TeamSide != mFireTeamToPursue.TeamSide) {
+				fireTeam.EnemyTeamToPursue = mFireTeamToPursue;
+			}
 		}
 	}
 }

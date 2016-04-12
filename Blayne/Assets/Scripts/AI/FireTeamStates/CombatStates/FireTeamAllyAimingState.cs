@@ -23,6 +23,8 @@ public class FireTeamAllyAimingState : ICombat
             {
 				// Face the closest team member in the enemy team and transition to firing state.
 				FireTeamHelper.RotateToFaceTarget(mStatePatternFTAlly, closestTeamMember.Position);
+				// The fire team member fired upon should be aware of the enemy attacking it.
+				closestTeamMember.FiredUponByEnemy(mStatePatternFTAlly);
                 ToFiring();
 			}
             else

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class DisengageCommand : Command
 {
@@ -10,6 +11,7 @@ public class DisengageCommand : Command
 
 			// Set the target fire team of the fire team ally.
 			fireTeamAlly.targetEnemyTeam = null;
+			fireTeamAlly.StateMachine.firingState.ToIdling ();
 		}
 	}
 }

@@ -67,13 +67,15 @@ public class FireTeamDecisionMaker : MonoBehaviour
 				}	
 			}
 		}
+		// Reset the flag that indicates that the fire team is being fired upon.
+		fireTeam.isBeingFiredUpon = false;
 	}
 
 	private void UpdateEngagedEnemiesList()
 	{
 		RemoveDestroyedEnemyFireTeams ();
 		// Only check for visible enemies again after reaching the appropriate position.
-		if(fireTeam.IsFireTeamInPosition()){
+		if(fireTeam.IsFireTeamInPosition() && !fireTeam.isBeingFiredUpon){
 			
 			// If none of the members of the fire team see any enemies, clear the 
 			// list of engaged enemies. Note that allies will face enemies they have 

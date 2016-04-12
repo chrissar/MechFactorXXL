@@ -81,7 +81,7 @@ public class FireTeamAlly : Ally
 		FireTeamAlly closestVisibleEnemy = GetClosestNewVisibleEnemy ();
 		if (closestVisibleEnemy != null) {
 			// Notify the fire team leader (located at slot 0 in the fire team) of the sighted enemy.
-			fireTeam.GetAllyAtSlotPosition(0).NotifyOfEnemy(closestVisibleEnemy);
+			NotifyOfEnemy(closestVisibleEnemy);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class FireTeamAlly : Ally
 				continue;
 			}
 			// Only consider visible enemies.
-			if(IsFireTeamAllyVisible(enemy)){
+			if(!IsFireTeamAllyVisible(enemy)){
 				continue;
 			}
 			// If the enemy is the closest enemy so far, set it as the current closest enemy.
@@ -158,6 +158,9 @@ public class FireTeamAlly : Ally
 
 	public bool IsFireTeamAllyVisible(FireTeamAlly fireTeamAlly)
 	{
+		// If this ally is being suppressed by the given fire team ally, 
+		// set it to visible.
+
 		Vector3 allyDisplacement = fireTeamAlly.Position - transform.position;
 		Vector3 currentFacingDirection = transform.rotation * Vector3.forward;
 
@@ -170,6 +173,14 @@ public class FireTeamAlly : Ally
 			return true;
 		}
 		return false;
+	}
+
+	public void FiredUponByEnemy(FireTeamAlly firingEnemyFireTeamAlly)
+	{
+		if (fireTeam.EngagedEnemyTeams.Contains (firingEnemyFireTeamAlly.fireTeam) == false) {
+			fireTeam.isBeingFiredUpon = true; // The fire team decision maker checks this.
+			NotifyOfEnemy (firingEnemyFireTeamAlly);
+		}
 	}
 
 	protected void Initialize()

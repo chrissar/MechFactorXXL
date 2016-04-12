@@ -39,7 +39,9 @@ public class FireTeamAllyFiringState : ICombat
 
     public void ToIdling()
     {
-        
+		mStateMachine.currentCombatState.OnStateExit ();
+		mStateMachine.currentCombatState = mStateMachine.idlingCombatState;
+		mStateMachine.currentCombatState.OnStateEnter();
     }
 
     public void ToReloading()
