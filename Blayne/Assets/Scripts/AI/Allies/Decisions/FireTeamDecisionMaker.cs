@@ -50,11 +50,11 @@ public class FireTeamDecisionMaker : MonoBehaviour
 							FireTeamFormation.COVER);
 					} else {
 						// Cannot take cover, so attack the enemy team.
-						AttackEnemyTeam (engagedEnemyFireTeam);
+						PursueEnemyTeam (engagedEnemyFireTeam);
 					}
 				} else {
 					// Attempt to destroy the enemy team.
-					AttackEnemyTeam (engagedEnemyFireTeam);
+					PursueEnemyTeam (engagedEnemyFireTeam);
 				}
 			} else {
 				// Disengage Enemies.
@@ -120,17 +120,16 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		fireTeam.executeCommand (moveCommand);
 	}
 
-	private void AttackEnemyTeam(FireTeam enemyFireTeam)
+	private void PursueEnemyTeam(FireTeam enemyFireTeam)
 	{
-		ChangeFireTeamFormationCommand formationCommand =
-			new ChangeFireTeamFormationCommand (FireTeamFormation.WEDGE);
-		fireTeam.EnemyTeamToAttack = enemyFireTeam;
+		new ChangeFireTeamFormationCommand (FireTeamFormation.WEDGE).execute(fireTeam);
+		new PursueEnemyTeamCommand (enemyFireTeam).execute(fireTeam);
 	}
 
 	private void DisengageEnemy()
 	{
 		// Order the team to stop engaging any enemies.
-		fireTeam.EnemyTeamToAttack = null;
+		fireTeam.EnemyTeamToPursue = null;
 		DisengageCommand disengageCommand = new DisengageCommand ();
 		IssueCommandToEntireTeam (disengageCommand);
 		// Return to wedge formation.

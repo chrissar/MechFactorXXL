@@ -67,7 +67,7 @@ public class SideAI : MonoBehaviour
     }
     private bool IsSquadInactive(FireTeam squad)
     {
-        return squad.EnemyTeamToAttack;
+        return squad.EnemyTeamToPursue;
     }
     private bool IsSquadDead(FireTeam squad)
     {
