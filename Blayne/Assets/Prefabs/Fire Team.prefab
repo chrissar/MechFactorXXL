@@ -28,7 +28,7 @@ GameObject:
   - 65: {fileID: 6549168}
   m_Layer: 0
   m_Name: Fire Team
-  m_TagString: Untagged
+  m_TagString: squad
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -84,6 +84,7 @@ MonoBehaviour:
   teamNumber: 0
   alliedFireTeams: []
   spawnPoint: {x: 0, y: 0, z: 0}
+  isBeingFiredUpon: 0
 --- !u!119 &11996902
 Projector:
   m_ObjectHideFlags: 1

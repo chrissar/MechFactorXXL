@@ -2,7 +2,7 @@
 
 public class AttackEnemyCommand : Command
 {
-	private FireTeam mFireTeamToAttack;
+	protected FireTeam mFireTeamToAttack;
 
 	public AttackEnemyCommand (FireTeam fireTeamToAttack)
 	{
@@ -11,12 +11,11 @@ public class AttackEnemyCommand : Command
 
 	public override void execute(Ally ally)
 	{
-		if (ally != null && ally is FireTeamAlly) 
+		if (ally && ally is FireTeamAlly) 
 		{
 			FireTeamAlly fireTeamAlly = ally as FireTeamAlly;
-
-			// Set the target fire team of the fire team ally.
-			fireTeamAlly.targetEnemyTeam = mFireTeamToAttack;
+            // Set the target fire team of the fire team ally.
+            fireTeamAlly.targetEnemyTeam = mFireTeamToAttack;
 		}
 	}
 }

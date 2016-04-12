@@ -20,10 +20,8 @@ public class SpawnPoint : MonoBehaviour
     {
         return msTopTeamNumber++;
     }
-    public void Start()
+    public void Awake()
     {
-		TeamList teamList = GameObject.Find ("TeamList").GetComponent<TeamList>() as TeamList;
-
         if (!fireTeamPrefab) throw new UnityException("Fire Team Prefab is null at a Spawn Point");
         if (!allyPrefab) throw new UnityException("Ally Prefab is null at a Spawn Point");
 
@@ -37,10 +35,13 @@ public class SpawnPoint : MonoBehaviour
 		mSpawnedFireTeam.teamNumber = GetNewTeamNumber();
 		mSpawnedFireTeam.spawnPoint = transform.position;
 		SpawnFireTeamAtPosition (mSpawnedFireTeam, fireTeamObject.transform.position);
-
-		// Add team to fire team list;
-		teamList.AddTeamToListWithNumber(mSpawnedFireTeam, mSpawnedFireTeam.teamNumber);
-		teamList.AddTeamsWithSameAlignmentToTeam(mSpawnedFireTeam);
+    }
+    public void Start()
+    {
+        TeamList teamList = GameObject.Find("TeamList").GetComponent<TeamList>() as TeamList;
+        // Add team to fire team list;
+        teamList.AddTeamToListWithNumber(mSpawnedFireTeam, mSpawnedFireTeam.teamNumber);
+        teamList.AddTeamsWithSameAlignmentToTeam(mSpawnedFireTeam);
     }
 
 	private void SpawnFireTeamAtPosition(FireTeam team, Vector3 spawnPosition){

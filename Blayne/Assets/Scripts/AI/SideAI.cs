@@ -13,7 +13,7 @@ public class SideAI : MonoBehaviour
         mFriendlySquads = new List<FireTeam>();
         mEnemySquads = new List<FireTeam>();
         GameObject[] squadObjs = GameObject.FindGameObjectsWithTag("squad");
-
+        
         foreach(GameObject squadObj in squadObjs)
         {
             FireTeam squad = squadObj.GetComponent<FireTeam>();
@@ -39,15 +39,18 @@ public class SideAI : MonoBehaviour
         {
             if(IsSquadDead(squad))
             {
+                Debug.Log("SQUAD DEAD");
                 deadSquads.Add(squad);
             }
             else if(IsSquadRetreating(squad)
                 && IsSquadEngaged(squad))
             {
+                Debug.Log("SQUAD NEED HALP");
                 RequestHelp(squad, team);
             }
             else if(IsSquadInactive(squad))
             {
+                Debug.Log("SQUAD ATTACKING!!!!");
                 Attack(squad, GetRandomEnemySquad(team));
             }
         }
@@ -67,7 +70,7 @@ public class SideAI : MonoBehaviour
     }
     private bool IsSquadInactive(FireTeam squad)
     {
-        return squad.EnemyTeamToPursue;
+        return !squad.EnemyTeamToPursue;
     }
     private bool IsSquadDead(FireTeam squad)
     {
@@ -78,6 +81,13 @@ public class SideAI : MonoBehaviour
         if (friend && enemy)
         {
             new TeamAttackEnemyCommand(enemy).execute(friend);
+        }
+    }
+    private void Approach(FireTeam friend, FireTeam enemy)
+    {
+        if (friend && enemy)
+        {
+            new MoveFireTeamCommand(enemy.transform.position).execute(friend);
         }
     }
     private void RequestHelp(FireTeam squad, List<FireTeam> team)
