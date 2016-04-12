@@ -34,9 +34,7 @@ public class PlayerCamera : MonoBehaviour
         Vector3 pos;
         Quaternion rot;
         if (!GameController.Instance.topDownView)
-        {
-            
-
+        {   
             yRotation += input.Current.MouseInput.y;
 
             Vector3 left = Vector3.Cross(machine.lookDirection, controller.up);
@@ -45,17 +43,41 @@ public class PlayerCamera : MonoBehaviour
             rot = Quaternion.AngleAxis(yRotation, left) * rot;
 
             pos = target.position;
+
             pos -= rot * target.forward * Distance;
             pos += rot * target.up * Height;
             pos += rot * (new Vector3(horizontalOffset, 0, 0));
-        }
 
+            // When I no longer rotate the mesh the above code, and perhaps the two lines at the bottom
+            // causes the camera rotation to break.
+            
+            transform.position = target.position;
+
+            yRotation += input.Current.MouseInput.y;
+
+            left = Vector3.Cross(machine.lookDirection, controller.up);
+
+            transform.rotation = Quaternion.LookRotation(machine.lookDirection, controller.up);
+            transform.rotation = Quaternion.AngleAxis(yRotation, left) * transform.rotation;
+
+            transform.position -= transform.forward * Distance;
+            transform.position += controller.up * Height;
+            transform.position += rot * (new Vector3(horizontalOffset, 0, 0));
+
+
+            //pos = target.position;
+            //pos -= rot * target.forward * Distance;
+            //pos += rot * target.up * Height;
+            //pos += rot * (new Vector3(horizontalOffset, 0, 0));
+
+
+        }
         else
         {
             pos = PlayerTarget.transform.position + Vector3.up * topDownHeight;
             rot = Quaternion.LookRotation(-Vector3.up, Vector3.forward);
         }
-        gameObject.transform.position = Vector3.Lerp(pos, gameObject.transform.position, Time.deltaTime * movementSpeed);
-        gameObject.transform.rotation = Quaternion.Slerp(rot, gameObject.transform.rotation, Time.deltaTime * rotationSpeed);
+        //gameObject.transform.position = Vector3.Lerp(pos, gameObject.transform.position, Time.deltaTime * movementSpeed);
+        //gameObject.transform.rotation = Quaternion.Slerp(rot, gameObject.transform.rotation, Time.deltaTime * rotationSpeed);
     }
 }

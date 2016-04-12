@@ -244,6 +244,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &131554
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400842}
+  m_Layer: 0
+  m_Name: RightHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &134264
 GameObject:
   m_ObjectHideFlags: 1
@@ -699,6 +714,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &189442
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 491774}
+  m_Layer: 0
+  m_Name: HandPlacement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &196116
 GameObject:
   m_ObjectHideFlags: 1
@@ -729,6 +759,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &400842
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 131554}
+  m_LocalRotation: {x: 0.39388326, y: -0.5217346, z: 0.7457795, w: 0.1283045}
+  m_LocalPosition: {x: 0.018, y: -0.156, z: 0.196}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 430476}
+  m_RootOrder: 3
 --- !u!4 &403322
 Transform:
   m_ObjectHideFlags: 1
@@ -907,6 +949,8 @@ Transform:
   m_Children:
   - {fileID: 431510}
   - {fileID: 465840}
+  - {fileID: 491774}
+  - {fileID: 400842}
   m_Father: {fileID: 447060}
   m_RootOrder: 2
 --- !u!4 &431510
@@ -969,7 +1013,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 144998}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 280.53366, y: 12.774394, z: 318.59647}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 448406}
@@ -1271,6 +1315,18 @@ Transform:
   - {fileID: 405004}
   - {fileID: 429296}
   m_Father: {fileID: 494592}
+  m_RootOrder: 2
+--- !u!4 &491774
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 189442}
+  m_LocalRotation: {x: 0.86666775, y: -0.36390188, z: 0.16157371, w: 0.30059355}
+  m_LocalPosition: {x: 0.065, y: -0.485, z: 0.194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 430476}
   m_RootOrder: 2
 --- !u!4 &493360
 Transform:
@@ -1713,7 +1769,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AnimatedMesh: {fileID: 448406}
   gun: {fileID: 11447464}
-  WalkSpeed: 4
+  HandPosition: {fileID: 189442}
+  RightHandPosition: {fileID: 400842}
+  WalkSpeed: 2.5
   RunSpeed: 10
   RotateSpeed: 10
   forwardAmount: 0
@@ -1727,14 +1785,16 @@ MonoBehaviour:
   maxSpeed: 0
   aim: 0
   aimingWeight: 0
+  firing: 0
+  crouch: 0
   cam: {fileID: 0}
-  cube: {fileID: 0}
   spine: {fileID: 478524}
   aimingZ: 177.27
-  aimingY: 233.15
+  aimingY: 182.18
   aimingX: 183.7
   point: 30
   rotation: {x: 0, y: 0, z: 0}
+  debug: 0
 --- !u!136 &13650270
 CapsuleCollider:
   m_ObjectHideFlags: 1

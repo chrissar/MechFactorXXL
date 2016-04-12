@@ -127,6 +127,7 @@
     <Compile Include="Assets\Scripts\AI\PositionStates\CrouchedState.cs" />
     <Compile Include="Assets\Scripts\AI\PositionStates\ProneState.cs" />
     <Compile Include="Assets\Scripts\AI\PositionStates\StandingState.cs" />
+    <Compile Include="Assets\Scripts\AI\SideAI.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\AlertState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\EaseState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\SuppressedState.cs" />

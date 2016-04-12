@@ -910,18 +910,14 @@ Prefab:
       propertyPath: m_RootOrder
       value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 144998, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 11459774, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
       propertyPath: cam
       value: 
       objectReference: {fileID: 1457510105}
-    - target: {fileID: 11459774, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
-      propertyPath: cube
-      value: 
-      objectReference: {fileID: 832574303}
+    - target: {fileID: 144998, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
   m_IsPrefabParent: 0
