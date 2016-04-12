@@ -18,7 +18,7 @@ public class FireTeam : Ally
     }
     public int teamNumber;
 	public List<FireTeam> alliedFireTeams;
-	public SpawnPoint spawnPoint;
+	public Vector3 spawnPoint;
     private Side mSide;
 
 	private Projector mProjector;

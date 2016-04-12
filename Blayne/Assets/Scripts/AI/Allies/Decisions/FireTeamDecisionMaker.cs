@@ -6,10 +6,11 @@ public class FireTeamDecisionMaker : MonoBehaviour
 {
 	private const float mkMaxCoverPointDistance = 20.0f;
 	private const float mkMaxSupportFireTeamDistance = 30.0f;
-	private const float mkCoverMinimumDistanceFromEnemy = 15.0f;
+	private const float mkCoverMinimumDistanceFromEnemy = 10.0f;
 
 	public FireTeam fireTeam;
 	private int mNumberOfEngagedEnemies;
+	private int mNumberOfAlliesInFireTeam;
 
     private GameObject mBestCoverPoint = null;
     public bool CoverExists { get { return mBestCoverPoint != null; } }
@@ -17,6 +18,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	public void Start()
 	{
 		mNumberOfEngagedEnemies = 0;
+		mNumberOfAlliesInFireTeam = FireTeam.kMaxFireTeamMembers;
 	}
 
 	public void Update()
@@ -27,10 +29,14 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			
 		// Update list of engaged enemies.
 		UpdateEngagedEnemiesList();
-
-		// Check if the number of engaged enemies has increased.
-		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count) {
+		// Check if the number of engaged enemies has increased or if the number
+		// of allies in this team has changed.
+		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count ||
+			mNumberOfAlliesInFireTeam != fireTeam.MemberCount) {
 			mNumberOfEngagedEnemies = fireTeam.EngagedEnemyTeams.Count;
+			mNumberOfAlliesInFireTeam = fireTeam.MemberCount;
+
+			// Check if there are any enemies currently in sight of the team.
 			if (mNumberOfEngagedEnemies > 0) {
 				// Set the enemy team as the current target to fire at.
 				FireTeam engagedEnemyFireTeam = FireAtEnemy ();
@@ -40,6 +46,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 					GameObject coverPoint = GetBestCoverPoint ();
 					if (coverPoint != null) {
 						// Move to the cover point, assuming cover formation.
+						print("Move to cover point " + coverPoint.transform.position);
 						MoveToPointWithFormation (coverPoint.transform.position, 
 							FireTeamFormation.COVER);
 					} else {
@@ -57,8 +64,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 				// the team to the closest team base.
 				if (IsTeamInCritialCondition ()) {
 					// Move back to spawn point to respawn destroyed members of the fire team.
-					MoveToPointWithFormation (fireTeam.spawnPoint.transform.position,
-						FireTeamFormation.WEDGE);
+					MoveToPointWithFormation (fireTeam.spawnPoint, FireTeamFormation.WEDGE);
 				}	
 			}
 		}
@@ -69,11 +75,14 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		RemoveDestroyedEnemyFireTeams ();
 		// Only check for visible enemies again after reaching the appropriate position.
 		if(fireTeam.IsFireTeamInPosition()){
+			
 			// If none of the members of the fire team see any enemies, clear the 
 			// list of engaged enemies. Note that allies will face enemies they have 
 			// engaged while within sight range of the enemy.
 			FireTeamAlly ally = IsNoEnemyInSight ();
 			if (ally == null) {
+				if(fireTeam.TeamSide == FireTeam.Side.Friend)
+					print ("Clearing");
 				fireTeam.EngagedEnemyTeams.Clear ();
 			}
 		}
@@ -147,6 +156,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
 			numberOfEnemies += enemyFireTeam.MemberCount;
 		}
+	
 		// For now, assume the enemy is stronger if the fire team is engaging more enemies 
 		// than there are surrounding allies.
 		if (numberOfSupportAllies < numberOfEnemies) {

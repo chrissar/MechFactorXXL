@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FireTeamAlly : Ally
 {
-	public const float kSensingProximityRadius = 15.0f;
+	public const float kSensingProximityRadius = 20.0f;
 	public const float kVisionConeRadius = 30.0f;
 	public const float kVisionConeHalfAngle = 30.0f;
 
@@ -100,7 +100,6 @@ public class FireTeamAlly : Ally
 	}
 
 	public void NotifyOfEnemy(FireTeamAlly enemy){
-		print ("Enemy at " + enemy.Position + " Found by " + gameObject.name);
 		// Add enemy to the list of engaged enemies.
 		fireTeam.EngagedEnemyTeams.Add(enemy.fireTeam);
 	}
