@@ -15,8 +15,6 @@ public class FireTeamAlly : Ally
 	[HideInInspector] public FireTeam fireTeam;
 	[HideInInspector] public FireTeam targetEnemyTeam;
 	private bool mIsDisabled;
-	private Vector3 mDetachDestination;
-	private bool mIsDetached;
 	private List<FireTeamAlly> mEnemies;
 	private FireTeamAllyStateMachine mStateMachine;
     private Gun mGun;
@@ -35,13 +33,6 @@ public class FireTeamAlly : Ally
 			return transform.rotation;
 		}
 	}
-	public Vector3 DetachDestination
-	{
-		get
-		{ 
-			return mDetachDestination;
-		}
-	}
 	public bool IsDisabled
 	{
 		get 
@@ -53,13 +44,6 @@ public class FireTeamAlly : Ally
 			mIsDisabled = value;
 			// Enable/Disable the nav mesh as appropriate.
 			navMeshAgent.enabled = !mIsDisabled;
-		}
-	}
-	public bool IsDetached
-	{
-		get 
-		{
-			return mIsDetached;
 		}
 	}
 
@@ -125,18 +109,6 @@ public class FireTeamAlly : Ally
 				mEnemies.Add (character);
 			}
 		}
-	}
-
-	public void SetDetachDestination(Vector3 detachDestination)
-	{
-		mDetachDestination = detachDestination;
-		mIsDetached = true;
-	}
-
-	public void ClearDetachDestination()
-	{
-		mDetachDestination = Vector3.zero;
-		mIsDetached = false;
 	}
 
 	// Returns the closest enemy to the ally that is visible to the ally. 
@@ -213,7 +185,6 @@ public class FireTeamAlly : Ally
 		targetEnemyTeam = null;
 		fireTeamNumber = -1;
 		slotPosition = -1;
-		ClearDetachDestination ();
 		mIsDisabled = false;
         mGun = GetComponentInChildren<Gun>();
 

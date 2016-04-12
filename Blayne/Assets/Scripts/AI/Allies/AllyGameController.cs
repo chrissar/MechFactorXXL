@@ -27,13 +27,11 @@ public class AllyGameController : MonoBehaviour
 	{
 		// Initialize the team list and create the fire teams to add to it.
 		mTeamList = GameObject.Find ("TeamList").GetComponent<TeamList>() as TeamList;
-		mTestedAllyFireTeamNumber = 0;
-		mTestedEnemyFireTeamNumber = 1;
         if (!fireTeamPrefab) throw new UnityException("No Fire Team Prefab attached to the Ally Game Controller");
 		// Get ally fire team.
-		mAllyFireTeam = mTeamList.getTeamWithNumber(mTestedAllyFireTeamNumber);
+		mAllyFireTeam = mTeamList.getTeamWithNumber(1);
 		// Get enemy fire team.
-		mEnemyFireTeam = mTeamList.getTeamWithNumber(mTestedEnemyFireTeamNumber);
+		mEnemyFireTeam = mTeamList.getTeamWithNumber(0);
 
 		// Add the NPCs to the fire team.
 		// Get NPCs.

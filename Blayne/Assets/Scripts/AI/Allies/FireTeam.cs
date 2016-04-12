@@ -378,11 +378,7 @@ public class FireTeam : Ally
 		// If the ally is detached, check if they are close enough to their detached postion. Otherwise,
 		// check if the ally is close enough to the assigned slot position for that ally.
 		Vector3 allyTarget = Vector3.zero;
-		if (fireTeamAlly.IsDetached) {
-			allyTarget = fireTeamAlly.DetachDestination;
-		} else {
-			allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
-		}
+		allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
 		if (Vector3.Distance (fireTeamAlly.Position, allyTarget) < mkMinDistanceFromSlotPositionNeeded) {
 			return true;
 		}
