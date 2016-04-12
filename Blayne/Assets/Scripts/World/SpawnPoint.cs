@@ -59,7 +59,6 @@ public class SpawnPoint : MonoBehaviour
 
 	public void Update()
 	{
-		return;
 		// If the spawned fire team is in the vicinity of the spawn point, refill any
 		// missign members of the fire team.
 		int missingTeamMembers = FireTeam.kMaxFireTeamMembers - mSpawnedFireTeam.MemberCount;

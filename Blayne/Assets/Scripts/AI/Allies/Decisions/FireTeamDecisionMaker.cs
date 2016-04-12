@@ -46,7 +46,6 @@ public class FireTeamDecisionMaker : MonoBehaviour
 					GameObject coverPoint = GetBestCoverPoint ();
 					if (coverPoint != null) {
 						// Move to the cover point, assuming cover formation.
-						print("Move to cover point " + coverPoint.transform.position);
 						MoveToPointWithFormation (coverPoint.transform.position, 
 							FireTeamFormation.COVER);
 					} else {
@@ -81,8 +80,6 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			// engaged while within sight range of the enemy.
 			FireTeamAlly ally = IsNoEnemyInSight ();
 			if (ally == null) {
-				if(fireTeam.TeamSide == FireTeam.Side.Friend)
-					print ("Clearing");
 				fireTeam.EngagedEnemyTeams.Clear ();
 			}
 		}
@@ -125,6 +122,8 @@ public class FireTeamDecisionMaker : MonoBehaviour
 
 	private void AttackEnemyTeam(FireTeam enemyFireTeam)
 	{
+		ChangeFireTeamFormationCommand formationCommand =
+			new ChangeFireTeamFormationCommand (FireTeamFormation.WEDGE);
 		fireTeam.EnemyTeamToAttack = enemyFireTeam;
 	}
 
@@ -169,7 +168,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	{
 		// If the number of fire team allies in the fire team is half or less of its
 		// maximum team size, consider the team to be in critical condition.
-		if (fireTeam.MemberCount <= FireTeam.kMaxFireTeamMembers) {
+		if (fireTeam.MemberCount <= FireTeam.kMaxFireTeamMembers / 2) {
 			return true;
 		} 
 		return false;
