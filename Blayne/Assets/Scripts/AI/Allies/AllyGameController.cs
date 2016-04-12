@@ -44,9 +44,8 @@ public class AllyGameController : MonoBehaviour
 		mEnemy0 = mEnemyFireTeam.GetAllyAtSlotPosition(0);
 		mEnemy1 = mEnemyFireTeam.GetAllyAtSlotPosition(1);
 
-		// Have the characters set their enemies.
-		mAllyFireTeam.SetEnemies();
-		mEnemyFireTeam.SetEnemies();
+		// Have the teams populate their list of enemies.
+		mTeamList.SetEnemiesForAllTeams();
 
 		// Set default formation.
 		new ChangeFireTeamFormationCommand(FireTeamFormation.WEDGE).execute(mAllyFireTeam);

@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
 
     private SpawnMenu mSpawnMenu;
     private static GameController msInstance;
+	private TeamList mTeamList;
 
     public static GameController Instance
     {
@@ -37,6 +38,14 @@ public class GameController : MonoBehaviour
         {
             mSpawnMenu.enabled = false;
         }
+
+		// Get the team list.
+		mTeamList = GameObject.Find ("TeamList").GetComponent<TeamList>() as TeamList;
+		// Have the teams populate their list of enemies.
+		if (mTeamList != null) 
+		{
+			mTeamList.SetEnemiesForAllTeams ();
+		}
     }
 
     void Update()

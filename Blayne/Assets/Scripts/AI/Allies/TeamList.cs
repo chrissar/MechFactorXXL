@@ -44,5 +44,12 @@ public class TeamList : MonoBehaviour
 			}
 		}
 	}
+
+	public void SetEnemiesForAllTeams()
+	{
+		foreach(KeyValuePair<int, FireTeam> teamEntry in mTeamList){
+			teamEntry.Value.SetEnemies ();
+		}
+	}
 }
 
