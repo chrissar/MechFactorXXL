@@ -26,57 +26,26 @@ public class AllyGameController : MonoBehaviour
 	public void Start()
 	{
 		// Initialize the team list and create the fire teams to add to it.
-		mTeamList = new TeamList ();
-		mTestedAllyFireTeamNumber = 0;
-		mTestedEnemyFireTeamNumber = 1;
+		mTeamList = GameObject.Find ("TeamList").GetComponent<TeamList>() as TeamList;
         if (!fireTeamPrefab) throw new UnityException("No Fire Team Prefab attached to the Ally Game Controller");
-		// Create ally fire team.
-		mAllyFireTeam = Instantiate(fireTeamPrefab);
-		FireTeamDecisionMaker allyFTDecisionMaker = 
-			mAllyFireTeam.gameObject.AddComponent<FireTeamDecisionMaker> ();
-		allyFTDecisionMaker.fireTeam = mAllyFireTeam;
-		mAllyFireTeam.TeamSide = FireTeam.Side.Friend;
-		mAllyFireTeam.teamNumber = mTestedAllyFireTeamNumber;
-		mTeamList.AddTeamToListWithNumber (mAllyFireTeam, mAllyFireTeam.teamNumber);
-		// Create enemy fire team.
-		mEnemyFireTeam = Instantiate(fireTeamPrefab);
-		FireTeamDecisionMaker enemyFTDecisionMaker = 
-			mEnemyFireTeam.gameObject.AddComponent<FireTeamDecisionMaker> ();
-		enemyFTDecisionMaker.fireTeam = mEnemyFireTeam;
-		mEnemyFireTeam.TeamSide = FireTeam.Side.Enemy;
-		mEnemyFireTeam.teamNumber = mTestedEnemyFireTeamNumber;
-		mTeamList.AddTeamToListWithNumber (mEnemyFireTeam, mEnemyFireTeam.teamNumber);
+		// Get ally fire team.
+		mTestedAllyFireTeamNumber = 1;
+		mTestedEnemyFireTeamNumber = 0;
+		mAllyFireTeam = mTeamList.getTeamWithNumber(mTestedAllyFireTeamNumber);
+		// Get enemy fire team.
+		mEnemyFireTeam = mTeamList.getTeamWithNumber(mTestedEnemyFireTeamNumber);
 
 		// Add the NPCs to the fire team.
 		// Get NPCs.
-		mAlly0 = GameObject.Find ("NPC0").GetComponent<FireTeamAlly>() as FireTeamAlly;
-		mAlly1 = GameObject.Find ("NPC1").GetComponent<FireTeamAlly>() as FireTeamAlly;
-		mAlly2 = GameObject.Find ("NPC2").GetComponent<FireTeamAlly>() as FireTeamAlly;
-		mAlly3 = GameObject.Find ("NPC3").GetComponent<FireTeamAlly>() as FireTeamAlly;
-		mEnemy0 = GameObject.Find ("NPC4").GetComponent<FireTeamAlly>() as FireTeamAlly;
-		mEnemy1 = GameObject.Find ("NPC5").GetComponent<FireTeamAlly>() as FireTeamAlly;
+		mAlly0 = mAllyFireTeam.GetAllyAtSlotPosition(0);
+		mAlly1 = mAllyFireTeam.GetAllyAtSlotPosition(1);
+		mAlly2 = mAllyFireTeam.GetAllyAtSlotPosition(2);
+		mAlly3 = mAllyFireTeam.GetAllyAtSlotPosition(3);
+		mEnemy0 = mEnemyFireTeam.GetAllyAtSlotPosition(0);
+		mEnemy1 = mEnemyFireTeam.GetAllyAtSlotPosition(1);
 
-		// Add allies to the friendly fire team, with ally 0 being the leader.
-		mAllyFireTeam.AddFireTeamAlly (mAlly0);
-		mAllyFireTeam.AddFireTeamAlly (mAlly1);
-		mAllyFireTeam.AddFireTeamAlly (mAlly2);
-		mAllyFireTeam.AddFireTeamAlly (mAlly3);
-
-		// Add enemies to the enemy fire team, with enemy 0 being the leader.
-		mEnemyFireTeam.AddFireTeamAlly (mEnemy0);
-		mEnemyFireTeam.AddFireTeamAlly (mEnemy1);
-
-		// Have the fire teams set their allies.
-		mTeamList.AddTeamsWithSameAlignmentToTeam(mAllyFireTeam);
-		mTeamList.AddTeamsWithSameAlignmentToTeam(mEnemyFireTeam);
-
-		// Have the characters set their enemies.
-		mAlly0.SetEnemies();
-		mAlly1.SetEnemies();
-		mAlly2.SetEnemies();
-		mAlly3.SetEnemies();
-		mEnemy0.SetEnemies();
-		mEnemy1.SetEnemies();
+		// Have the teams populate their list of enemies.
+		mTeamList.SetEnemiesForAllTeams();
 
 		// Set default formation.
 		new ChangeFireTeamFormationCommand(FireTeamFormation.WEDGE).execute(mAllyFireTeam);
@@ -139,7 +108,7 @@ public class AllyGameController : MonoBehaviour
 
 	private void UnitRemovalInputs ()
 	{
-		// Accept inputs for testing the removal of the leader.
+		// Accept inputs for testing the removal of the member at slot posiiton 0.
 		if (Input.GetKeyDown (KeyCode.R)) {
 			FireTeam fireTeam = mTeamList.getTeamWithNumber (mTestedAllyFireTeamNumber);
 			// Get member at slot 0.
@@ -156,6 +125,16 @@ public class AllyGameController : MonoBehaviour
 			if (slotPosition1Ally != null) {
 				// Destroy the removed team member in the scene.
 				Destroy (slotPosition1Ally.gameObject);
+			}
+		}
+
+		// Accept inputs for testing the removal of the enemy member at slot posiiton 0.
+		if (Input.GetKeyDown (KeyCode.G)) {
+			// Get member at slot 0.
+			FireTeamAlly enemyToRemove = mEnemyFireTeam.GetAllyAtSlotPosition(0);
+			if (enemyToRemove != null) {
+				// Destroy the old team leader in the scene.
+				Destroy (enemyToRemove.gameObject);
 			}
 		}
 	}

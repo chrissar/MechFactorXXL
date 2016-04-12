@@ -6,10 +6,11 @@ public class FireTeamDecisionMaker : MonoBehaviour
 {
 	private const float mkMaxCoverPointDistance = 20.0f;
 	private const float mkMaxSupportFireTeamDistance = 30.0f;
-	private const float mkCoverMinimumDistanceFromEnemy = 15.0f;
+	private const float mkCoverMinimumDistanceFromEnemy = 10.0f;
 
 	public FireTeam fireTeam;
 	private int mNumberOfEngagedEnemies;
+	private int mNumberOfAlliesInFireTeam;
 
     private GameObject mBestCoverPoint = null;
     public bool CoverExists { get { return mBestCoverPoint != null; } }
@@ -17,6 +18,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	public void Start()
 	{
 		mNumberOfEngagedEnemies = 0;
+		mNumberOfAlliesInFireTeam = FireTeam.kMaxFireTeamMembers;
 	}
 
 	public void Update()
@@ -27,10 +29,13 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			
 		// Update list of engaged enemies.
 		UpdateEngagedEnemiesList();
-
-		// Check if the number of engaged enemies has increased.
-		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count) {
+		// Check if the number of engaged enemies has increased or if the number
+		// of allies in this team has changed.
+		if (mNumberOfEngagedEnemies != fireTeam.EngagedEnemyTeams.Count ||
+			mNumberOfAlliesInFireTeam != fireTeam.MemberCount) {
 			mNumberOfEngagedEnemies = fireTeam.EngagedEnemyTeams.Count;
+			mNumberOfAlliesInFireTeam = fireTeam.MemberCount;
+			// Check if there are any enemies currently in sight of the team.
 			if (mNumberOfEngagedEnemies > 0) {
 				// Set the enemy team as the current target to fire at.
 				FireTeam engagedEnemyFireTeam = FireAtEnemy ();
@@ -44,11 +49,11 @@ public class FireTeamDecisionMaker : MonoBehaviour
 							FireTeamFormation.COVER);
 					} else {
 						// Cannot take cover, so attack the enemy team.
-						AttackEnemyTeam (engagedEnemyFireTeam);
+						PursueEnemyTeam (engagedEnemyFireTeam);
 					}
 				} else {
 					// Attempt to destroy the enemy team.
-					AttackEnemyTeam (engagedEnemyFireTeam);
+					PursueEnemyTeam (engagedEnemyFireTeam);
 				}
 			} else {
 				// Disengage Enemies.
@@ -57,22 +62,24 @@ public class FireTeamDecisionMaker : MonoBehaviour
 				// the team to the closest team base.
 				if (IsTeamInCritialCondition ()) {
 					// Move back to spawn point to respawn destroyed members of the fire team.
-					MoveToPointWithFormation (fireTeam.spawnPoint.transform.position,
-						FireTeamFormation.WEDGE);
+					MoveToPointWithFormation (fireTeam.spawnPoint, FireTeamFormation.WEDGE);
 				}	
 			}
 		}
+		// Reset the flag that indicates that the fire team is being fired upon.
+		fireTeam.isBeingFiredUpon = false;
 	}
 
 	private void UpdateEngagedEnemiesList()
 	{
 		RemoveDestroyedEnemyFireTeams ();
 		// Only check for visible enemies again after reaching the appropriate position.
-		if(fireTeam.IsFireTeamInPosition()){
+		if(fireTeam.IsFireTeamInPosition() && !fireTeam.isBeingFiredUpon){
+			
 			// If none of the members of the fire team see any enemies, clear the 
 			// list of engaged enemies. Note that allies will face enemies they have 
 			// engaged while within sight range of the enemy.
-			FireTeamAlly ally = IsNoEnemyInSight ();
+			FireTeamAlly ally = GetEnemyInSight ();
 			if (ally == null) {
 				fireTeam.EngagedEnemyTeams.Clear ();
 			}
@@ -89,7 +96,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		}
 	}
 
-	private FireTeamAlly IsNoEnemyInSight()
+	private FireTeamAlly GetEnemyInSight()
 	{
 		// Check if there are any visible enemies around the squad.
 		for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
@@ -97,6 +104,8 @@ public class FireTeamDecisionMaker : MonoBehaviour
 			if(ally != null){
 				if (ally.IsAnyEnemyVisible ()) {
 					return ally; 
+				} else {
+					// print ("ally enemy count :" + ally.mEnemies.Count);
 				}
 			}
 		}
@@ -114,15 +123,16 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		fireTeam.executeCommand (moveCommand);
 	}
 
-	private void AttackEnemyTeam(FireTeam enemyFireTeam)
+	private void PursueEnemyTeam(FireTeam enemyFireTeam)
 	{
-		fireTeam.EnemyTeamToAttack = enemyFireTeam;
+		new ChangeFireTeamFormationCommand (FireTeamFormation.WEDGE).execute(fireTeam);
+		new PursueEnemyTeamCommand (enemyFireTeam).execute(fireTeam);
 	}
 
 	private void DisengageEnemy()
 	{
 		// Order the team to stop engaging any enemies.
-		fireTeam.EnemyTeamToAttack = null;
+		fireTeam.EnemyTeamToPursue = null;
 		DisengageCommand disengageCommand = new DisengageCommand ();
 		IssueCommandToEntireTeam (disengageCommand);
 		// Return to wedge formation.
@@ -147,6 +157,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 		foreach (FireTeam enemyFireTeam in fireTeam.EngagedEnemyTeams) {
 			numberOfEnemies += enemyFireTeam.MemberCount;
 		}
+	
 		// For now, assume the enemy is stronger if the fire team is engaging more enemies 
 		// than there are surrounding allies.
 		if (numberOfSupportAllies < numberOfEnemies) {
@@ -159,7 +170,7 @@ public class FireTeamDecisionMaker : MonoBehaviour
 	{
 		// If the number of fire team allies in the fire team is half or less of its
 		// maximum team size, consider the team to be in critical condition.
-		if (fireTeam.MemberCount <= FireTeam.kMaxFireTeamMembers) {
+		if (fireTeam.MemberCount <= FireTeam.kMaxFireTeamMembers / 2) {
 			return true;
 		} 
 		return false;

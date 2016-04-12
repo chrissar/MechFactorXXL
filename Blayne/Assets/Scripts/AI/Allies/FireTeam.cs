@@ -18,7 +18,8 @@ public class FireTeam : Ally
     }
     public int teamNumber;
 	public List<FireTeam> alliedFireTeams;
-	public SpawnPoint spawnPoint;
+	public Vector3 spawnPoint;
+	public bool isBeingFiredUpon;
     private Side mSide;
 
 	private Projector mProjector;
@@ -29,14 +30,13 @@ public class FireTeam : Ally
 	private Vector3[] mRelativeSlotDisplacements;
 	private List<FireTeamAlly> mDisabledTeamMembers;
 	private List<FireTeam> mEngagedEnemyTeams;
-	private FireTeam mEnemyTeamToAttack;
+	private FireTeam mEnemyTeamToPursue;
 	private Vector3 mCurrentAnchorPosition;
 	private Vector3 mNextAnchorPosition; // Slightly ahead of anchor point to set target slot positions.
 	private Quaternion mCurrentOrientation;
 	private float mCurrentSpeed;
 
     private State mCurrentState;
-
 	public Side TeamSide
 	{
 		get
@@ -81,18 +81,21 @@ public class FireTeam : Ally
 			return mEngagedEnemyTeams;
 		}
 	}
-	public  FireTeam EnemyTeamToAttack
+	public  FireTeam EnemyTeamToPursue
 	{
 		get
 		{ 
-			return mEnemyTeamToAttack;
+			return mEnemyTeamToPursue;
 		}
 		set 
 		{	
 			FireTeam fireTeamToAttack = value;
-			// Only set the enemy team if it is on the opposite team.
-			if (fireTeamToAttack != null && fireTeamToAttack.mSide != mSide) {
-				mEnemyTeamToAttack = fireTeamToAttack;
+			// Only set the enemy team if it is on the opposite team or is null.
+			if (fireTeamToAttack == null) {
+				mEnemyTeamToPursue = null;
+			}
+			else if (fireTeamToAttack.mSide != mSide) {
+				mEnemyTeamToPursue = fireTeamToAttack;
 			} 
 		}
 	}
@@ -223,6 +226,16 @@ public class FireTeam : Ally
 		mDestination = destination;
 		SetNextAnchorPointTarget ();
 		SetOrientation ();
+	}
+
+	public void SetEnemies()
+	{
+		for (int i = 0; i < kMaxFireTeamMembers; ++i) {
+			FireTeamAlly ally = GetAllyAtSlotPosition (i);
+			if (ally != null) {
+				ally.SetEnemies ();
+			}
+		}
 	}
 
 	public void SetFormation(FireTeamFormation newFireTeamFormation)
@@ -376,11 +389,7 @@ public class FireTeam : Ally
 		// If the ally is detached, check if they are close enough to their detached postion. Otherwise,
 		// check if the ally is close enough to the assigned slot position for that ally.
 		Vector3 allyTarget = Vector3.zero;
-		if (fireTeamAlly.IsDetached) {
-			allyTarget = fireTeamAlly.DetachDestination;
-		} else {
-			allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
-		}
+		allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
 		if (Vector3.Distance (fireTeamAlly.Position, allyTarget) < mkMinDistanceFromSlotPositionNeeded) {
 			return true;
 		}
@@ -398,7 +407,7 @@ public class FireTeam : Ally
 		mRelativeSlotDisplacements = new Vector3[kMaxFireTeamMembers];
 		mDisabledTeamMembers = new List<FireTeamAlly> ();
 		mEngagedEnemyTeams = new List<FireTeam> ();
-		mEnemyTeamToAttack = null;
+		mEnemyTeamToPursue = null;
 		mCurrentAnchorPosition = Vector3.zero;
 		gameObject.transform.position = mCurrentAnchorPosition;
 		mNextAnchorPosition = mCurrentAnchorPosition;
@@ -412,14 +421,14 @@ public class FireTeam : Ally
 	{
 		// If there is an enemy that the team is currently attacking, set the destination 
 		// of the fire team to the optimal attacking distance from the enemy team.
-		if (mEnemyTeamToAttack != null) {
+		if (mEnemyTeamToPursue != null) {
 			// Move to optimal attack distance along the line between the enemy and the
 			// current anchor position.
-			Vector3 targetDirection = mCurrentAnchorPosition - mEnemyTeamToAttack.mCurrentAnchorPosition;
+			Vector3 targetDirection = mCurrentAnchorPosition - mEnemyTeamToPursue.mCurrentAnchorPosition;
 			targetDirection.Normalize();
 			// To prevent rounding errors, only set the new destination if it is 
 			// sufficiently far from the current destination.
-			Vector3 newDestination =  mEnemyTeamToAttack.mCurrentAnchorPosition +
+			Vector3 newDestination =  mEnemyTeamToPursue.mCurrentAnchorPosition +
 				targetDirection * mkOptimalAttackDistance;
 			if (Vector3.Distance (newDestination, mDestination) > 2.0f) {
 				mDestination = newDestination;

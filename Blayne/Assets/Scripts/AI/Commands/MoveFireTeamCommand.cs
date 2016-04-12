@@ -21,7 +21,7 @@ public class MoveFireTeamCommand : Command
 			FireTeam fireTeam = ally as FireTeam;
 			// Set the destination of the ally's fire team.
 			fireTeam.SetDestination (mMoveTarget);
-			fireTeam.EnemyTeamToAttack = null; // clear enemy to attack.
+			fireTeam.EnemyTeamToPursue = null; // clear enemy to attack.
 
 			// Set the fire team members to the move state.
 			for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {

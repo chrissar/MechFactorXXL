@@ -314,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 101972021c649d444ba6687f53042fed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shootKey: 32
 --- !u!114 &11488682
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -325,10 +326,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a7a51de65d0d64ea77216fe88f1f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 11484876, guid: 24a7e16a6faa5c144b7b6f8b90b4e890, type: 2}
+  bulletPrefab: {fileID: 11412766, guid: 5bb10f8b6c11a3a4da0ce0c7ec388eb5, type: 2}
   muzzle: {fileID: 150522}
   fireRate: 1
-  bulletSpeed: 2
+  bulletSpeed: 5
   bulletLifeTime: 2
 --- !u!1001 &100100000
 Prefab:
