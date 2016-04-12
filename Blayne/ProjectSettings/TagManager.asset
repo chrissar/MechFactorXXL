@@ -9,6 +9,7 @@ TagManager:
   - Smelly
   - Fire
   - cover
+  - squad
   layers:
   - Default
   - TransparentFX

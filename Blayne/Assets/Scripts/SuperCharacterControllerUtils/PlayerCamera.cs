@@ -13,7 +13,6 @@ public class PlayerCamera : MonoBehaviour
     public GameObject PlayerTarget;
 
     private PlayerInputController input;
-    private Transform target;
     private PlayerMachine machine;
     private float yRotation;
 
@@ -25,25 +24,23 @@ public class PlayerCamera : MonoBehaviour
         input = PlayerTarget.GetComponent<PlayerInputController>();
         machine = PlayerTarget.GetComponent<PlayerMachine>();
         controller = PlayerTarget.GetComponent<SuperCharacterController>();
-        target = PlayerTarget.transform;
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void FixedUpdate ()
     {
         Vector3 pos;
         Quaternion rot;
         if (!GameController.Instance.topDownView)
         {
-            
 
+            Transform target = PlayerTarget.transform;
             yRotation += input.Current.MouseInput.y;
 
             Vector3 left = Vector3.Cross(machine.lookDirection, controller.up);
 
             rot = Quaternion.LookRotation(machine.lookDirection, controller.up);
             rot = Quaternion.AngleAxis(yRotation, left) * rot;
-
             pos = target.position;
             pos -= rot * target.forward * Distance;
             pos += rot * target.up * Height;
