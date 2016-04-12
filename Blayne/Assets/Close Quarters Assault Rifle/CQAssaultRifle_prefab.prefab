@@ -674,7 +674,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 11484876}
   muzzle: {fileID: 197528}
   fireRate: 5
-  bulletSpeed: 2
+  bulletSpeed: 5
   bulletLifeTime: 2
 --- !u!114 &11484876
 MonoBehaviour:

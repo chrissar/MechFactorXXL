@@ -101,7 +101,6 @@
     <Compile Include="Assets\Scripts\AI\Commands\AttackEnemyCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ChangeFireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\Command.cs" />
-    <Compile Include="Assets\Scripts\AI\Commands\DetachMoveFireTeamAllyCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\DisengageCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\FireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
@@ -129,6 +128,7 @@
     <Compile Include="Assets\Scripts\AI\PositionStates\CrouchedState.cs" />
     <Compile Include="Assets\Scripts\AI\PositionStates\ProneState.cs" />
     <Compile Include="Assets\Scripts\AI\PositionStates\StandingState.cs" />
+    <Compile Include="Assets\Scripts\AI\SideAI.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\AlertState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\EaseState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\SuppressedState.cs" />
