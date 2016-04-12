@@ -36,7 +36,6 @@ public class FireTeam : Ally
 	private float mCurrentSpeed;
 
     private State mCurrentState;
-
 	public Side TeamSide
 	{
 		get

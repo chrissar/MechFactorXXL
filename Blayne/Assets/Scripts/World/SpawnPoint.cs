@@ -13,10 +13,13 @@ public class SpawnPoint : MonoBehaviour
     public FireTeam fireTeamPrefab;
     public FireTeamAlly allyPrefab;
     public FireTeam.Side teamSide;
-    public int teamNumber;
 
 	private FireTeam mSpawnedFireTeam;
-
+    private static int msTopTeamNumber = 0;
+    private static int GetNewTeamNumber()
+    {
+        return msTopTeamNumber++;
+    }
     public void Start()
     {
 		TeamList teamList = GameObject.Find ("TeamList").GetComponent<TeamList>() as TeamList;
@@ -28,12 +31,12 @@ public class SpawnPoint : MonoBehaviour
 		fireTeamObject.transform.position = gameObject.transform.position;
 		mSpawnedFireTeam = fireTeamObject.GetComponent<FireTeam>();
 		mSpawnedFireTeam.TeamSide = teamSide;
-		mSpawnedFireTeam.teamNumber = teamNumber;
+		mSpawnedFireTeam.teamNumber = GetNewTeamNumber();
 		mSpawnedFireTeam.spawnPoint = this;
 		SpawnFireTeamAtPosition (mSpawnedFireTeam, fireTeamObject.transform.position);
 
 		// Add team to fire team list;
-		teamList.AddTeamToListWithNumber(mSpawnedFireTeam, teamNumber);
+		teamList.AddTeamToListWithNumber(mSpawnedFireTeam, mSpawnedFireTeam.teamNumber);
     }
 
 	private void SpawnFireTeamAtPosition(FireTeam team, Vector3 spawnPosition){
