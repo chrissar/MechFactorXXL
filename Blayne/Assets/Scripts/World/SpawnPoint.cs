@@ -30,13 +30,17 @@ public class SpawnPoint : MonoBehaviour
         GameObject fireTeamObject = Instantiate(fireTeamPrefab.gameObject);
 		fireTeamObject.transform.position = gameObject.transform.position;
 		mSpawnedFireTeam = fireTeamObject.GetComponent<FireTeam>();
+		FireTeamDecisionMaker decisionMaker = 
+			mSpawnedFireTeam.gameObject.AddComponent<FireTeamDecisionMaker> ();
+		decisionMaker.fireTeam = mSpawnedFireTeam;
 		mSpawnedFireTeam.TeamSide = teamSide;
 		mSpawnedFireTeam.teamNumber = GetNewTeamNumber();
-		mSpawnedFireTeam.spawnPoint = this;
+		mSpawnedFireTeam.spawnPoint = transform.position;
 		SpawnFireTeamAtPosition (mSpawnedFireTeam, fireTeamObject.transform.position);
 
 		// Add team to fire team list;
 		teamList.AddTeamToListWithNumber(mSpawnedFireTeam, mSpawnedFireTeam.teamNumber);
+		teamList.AddTeamsWithSameAlignmentToTeam(mSpawnedFireTeam);
     }
 
 	private void SpawnFireTeamAtPosition(FireTeam team, Vector3 spawnPosition){
@@ -60,7 +64,6 @@ public class SpawnPoint : MonoBehaviour
 	{
 		// If the spawned fire team is in the vicinity of the spawn point, refill any
 		// missign members of the fire team.
-
 		int missingTeamMembers = FireTeam.kMaxFireTeamMembers - mSpawnedFireTeam.MemberCount;
 		// Only try to fill the team if it is incomplete.
 		if (missingTeamMembers > 0) {
@@ -68,7 +71,6 @@ public class SpawnPoint : MonoBehaviour
 				// Check if any members of the fire team are close to the spawn point.
 				FireTeamAlly ally = mSpawnedFireTeam.GetAllyAtSlotPosition (i);
 				if (Vector3.Distance (ally.Position, transform.position) < mkRefillRadius) {
-					print ("Refilling team");
 					// Refill the fire team to full.
 					for (int j = 0; j < missingTeamMembers; ++j) {
 						CreateNewFireTeamAlly();

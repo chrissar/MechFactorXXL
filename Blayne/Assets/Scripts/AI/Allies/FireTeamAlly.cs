@@ -1,10 +1,11 @@
 ﻿using System;
+using Combat;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FireTeamAlly : Ally
 {
-	public const float kSensingProximityRadius = 15.0f;
+	public const float kSensingProximityRadius = 20.0f;
 	public const float kVisionConeRadius = 30.0f;
 	public const float kVisionConeHalfAngle = 30.0f;
 
@@ -18,6 +19,7 @@ public class FireTeamAlly : Ally
 	private bool mIsDetached;
 	private List<FireTeamAlly> mEnemies;
 	private FireTeamAllyStateMachine mStateMachine;
+    private Gun mGun;
 
 	public Vector3 Position
 	{
@@ -100,10 +102,17 @@ public class FireTeamAlly : Ally
 	}
 
 	public void NotifyOfEnemy(FireTeamAlly enemy){
-		print ("Enemy at " + enemy.Position + " Found by " + gameObject.name);
 		// Add enemy to the list of engaged enemies.
 		fireTeam.EngagedEnemyTeams.Add(enemy.fireTeam);
 	}
+
+    public void Shoot()
+    {
+        if (mGun != null)
+        {
+            mGun.Shoot();
+        }
+    }
 
 	public void SetEnemies ()
 	{
@@ -206,6 +215,7 @@ public class FireTeamAlly : Ally
 		slotPosition = -1;
 		ClearDetachDestination ();
 		mIsDisabled = false;
+        mGun = GetComponentInChildren<Gun>();
 
 		// Initialize state machine and leader actions helper.
 		mStateMachine = new FireTeamAllyStateMachine(this);

@@ -6,8 +6,8 @@ public class FireTeamAllyIdlingCombatState : ICombat
 	private readonly FireTeamAlly mStatePatternFTAlly;
 	private FireTeamAllyStateMachine mStateMachine;
 
-	public FireTeamAllyIdlingCombatState (FireTeamAlly statePatternFTAlly, 
-		FireTeamAllyStateMachine stateMachine){
+	public FireTeamAllyIdlingCombatState (FireTeamAlly statePatternFTAlly, FireTeamAllyStateMachine stateMachine)
+    {
 		mStatePatternFTAlly = statePatternFTAlly;
 		mStateMachine = stateMachine;
 	}
@@ -15,13 +15,12 @@ public class FireTeamAllyIdlingCombatState : ICombat
 	public void UpdateState()
 	{
 		// Check if a unit in the target enemy team is within max attack range.
-		if (mStatePatternFTAlly.targetEnemyTeam != null) {
-			FireTeamAlly closestTeamMember = 
-				GetClosestTeamMemberInFireTeam (mStatePatternFTAlly.targetEnemyTeam);
+		if (mStatePatternFTAlly.targetEnemyTeam != null)
+        {
+			FireTeamAlly closestTeamMember = FireTeamHelper.GetClosestTeamMemberInFireTeam(mStatePatternFTAlly, mStatePatternFTAlly.targetEnemyTeam);
 			// If the enemy is sufficiently close, move to aiming state.
-			if (closestTeamMember != null &&
-				Vector3.Distance (mStatePatternFTAlly.Position, 
-					closestTeamMember.Position) < FireTeamAlly.kVisionConeRadius) {
+			if (closestTeamMember != null && Vector3.Distance (mStatePatternFTAlly.Position, closestTeamMember.Position) < FireTeamAlly.kVisionConeRadius)
+            {
 				ToAiming();
 			} 
 		} 
@@ -57,24 +56,5 @@ public class FireTeamAllyIdlingCombatState : ICombat
 	public void ToFiring()
 	{
 
-	}
-
-	private FireTeamAlly GetClosestTeamMemberInFireTeam(FireTeam fireTeam)
-	{
-		FireTeamAlly closestTeamMember = null;
-		float closestDistance = -1.0f;
-		// Find the member of the fire team that is closest to the state machine's fire team ally.
-		for (int i = 0; i < FireTeam.kMaxFireTeamMembers; ++i) {
-			FireTeamAlly teamMember = fireTeam.GetAllyAtSlotPosition (i);
-			if (teamMember != null) {
-				float distance = Vector3.Distance (mStatePatternFTAlly.Position, teamMember.Position);
-				if (closestDistance < 0.0f || distance < closestDistance) {
-					// Set the member as the closest team member found so far.
-					closestTeamMember = teamMember;
-					closestDistance = distance;
-				}
-			}
-		}
-		return closestTeamMember;
 	}
 }
