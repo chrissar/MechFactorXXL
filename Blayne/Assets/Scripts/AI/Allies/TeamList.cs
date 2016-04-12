@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TeamList
+public class TeamList : MonoBehaviour
 {
 	private Dictionary<int, FireTeam> mTeamList;
 
-	public TeamList ()
+	public void Awake()
 	{
 		mTeamList = new Dictionary<int, FireTeam> ();
 	}
@@ -25,9 +25,19 @@ public class TeamList
 		return fireTeam;
 	}
 
-	public void addTeamsWithSameAlignmentToTeam(FireTeam fireTeam)
+	public List<FireTeam> GetTeamsWithGivenAlignment(FireTeam.Side teamSide)
 	{
 		List<FireTeam> fireTeamsOfGivenAlignment = new List<FireTeam>();
+		foreach(KeyValuePair<int, FireTeam> teamEntry in mTeamList){
+			if (teamEntry.Value.TeamSide == teamSide) {
+				fireTeamsOfGivenAlignment.Add (teamEntry.Value);
+			}
+		}
+		return fireTeamsOfGivenAlignment;
+	}
+
+	public void AddTeamsWithSameAlignmentToTeam(FireTeam fireTeam)
+	{
 		foreach(KeyValuePair<int, FireTeam> teamEntry in mTeamList){
 			if (teamEntry.Value.TeamSide == fireTeam.TeamSide) {
 				fireTeam.alliedFireTeams.Add (teamEntry.Value);

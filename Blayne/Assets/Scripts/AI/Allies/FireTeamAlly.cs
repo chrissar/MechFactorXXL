@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum FireTeamRole {LEADER, NON_LEADER};
-
 public class FireTeamAlly : Ally
 {
-	public const float kSensingProximityRadius = 5.0f;
+	public const float kSensingProximityRadius = 15.0f;
 	public const float kVisionConeRadius = 30.0f;
 	public const float kVisionConeHalfAngle = 30.0f;
 
-	[HideInInspector] public FireTeamRole fireTeamRole;
 	[HideInInspector] public int fireTeamNumber;
 	[HideInInspector] public int slotPosition;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
@@ -88,6 +85,12 @@ public class FireTeamAlly : Ally
 		}
 	}
 
+	public void OnDestroy()
+	{
+		// Remove self from fire team.
+		fireTeam.RemoveFireTeamAlly(this);
+	}
+
 	public void checkForVisibleEnemies(){
 		FireTeamAlly closestVisibleEnemy = GetClosestNewVisibleEnemy ();
 		if (closestVisibleEnemy != null) {
@@ -129,48 +132,63 @@ public class FireTeamAlly : Ally
 
 	// Returns the closest enemy to the ally that is visible to the ally. 
 	// Can return null if no enemies are visible.
-	public FireTeamAlly GetClosestNewVisibleEnemy (){
+	public FireTeamAlly GetClosestNewVisibleEnemy ()
+	{
 		FireTeamAlly closestEnemy = null;
 		float closestEnemyDistance = -1.0f;
 		foreach (FireTeamAlly enemy in mEnemies) {
+			// Do not consider destroyed enemies.
+			if (enemy == null) {
+				continue;
+			}
 			// Only consider enemies that the team is not already engaging.
 			if (fireTeam.EngagedEnemyTeams.Contains (enemy.fireTeam)) {
 				continue;
 			}
-			Vector3 enemyPosition = enemy.Position;
-			// Get angle between the ally and the enemy as well as the distance between them.
-			float angleToFaceEnemy = Vector3.Angle(enemyPosition, transform.position);
-			float distanceToEnemy = Vector3.Distance (enemyPosition, transform.position);
-			// Only consider enemies that are in line of sight of the ally or which 
-			// are within the sensing proximity of the ally.
-			if (distanceToEnemy < kSensingProximityRadius || (distanceToEnemy < kVisionConeRadius && 
-				Math.Abs(angleToFaceEnemy) < kVisionConeHalfAngle)) {
-				// Check if the enemy is the closest enemy found so far.
-				if (closestEnemy == null || distanceToEnemy < closestEnemyDistance) {
-					closestEnemy = enemy;
-					closestEnemyDistance = distanceToEnemy;
-				}
+			// Only consider visible enemies.
+			if(IsFireTeamAllyVisible(enemy)){
+				continue;
+			}
+			// If the enemy is the closest enemy so far, set it as the current closest enemy.
+			float distanceToEnemy = Vector3.Distance(enemy.Position, transform.position);
+			if(closestEnemyDistance < 0 || distanceToEnemy < closestEnemyDistance){
+				closestEnemy = enemy;
+				closestEnemyDistance = distanceToEnemy;
 			}
 		}
 
 		return closestEnemy;
 	}
 		
-	public bool IsEnemyVisible (){
+	public bool IsAnyEnemyVisible ()
+	{
 		foreach (FireTeamAlly enemy in mEnemies) {
-			Vector3 enemyPosition = enemy.Position;
-			// Get angle between the ally and the enemy as well as the distance between them.
-			float angleToFaceEnemy = Vector3.Angle(enemyPosition, transform.position);
-			float distanceToEnemy = Vector3.Distance (enemyPosition, transform.position);
-			// Only consider enemies that are in line of sight of the ally or which 
-			// are within the sensing proximity of the ally.
-			if (distanceToEnemy < kSensingProximityRadius || (distanceToEnemy < kVisionConeRadius && 
-				Math.Abs(angleToFaceEnemy) < kVisionConeHalfAngle)) {
+			// Do not consider destroyed enemies.
+			if (enemy == null) {
+				continue;
+			}
+			if(IsFireTeamAllyVisible(enemy)){
 				return true;
 			}
 		}
 
 		return false; // No enemies found.
+	}
+
+	public bool IsFireTeamAllyVisible(FireTeamAlly fireTeamAlly)
+	{
+		Vector3 allyDisplacement = fireTeamAlly.Position - transform.position;
+		Vector3 currentFacingDirection = transform.rotation * Vector3.forward;
+
+		// Get angle between the ally and the enemy as well as the distance between them.
+		float distanceToAlly = allyDisplacement.magnitude;
+		float angleToFaceAlly = Vector3.Angle(currentFacingDirection, allyDisplacement);
+		// Visible if within line of sight or is within the sensing proximity.
+		if (distanceToAlly< kSensingProximityRadius || (angleToFaceAlly < kVisionConeRadius &&
+			Math.Abs(angleToFaceAlly) < kVisionConeHalfAngle)) {
+			return true;
+		}
+		return false;
 	}
 
 	protected void Initialize()
@@ -181,7 +199,6 @@ public class FireTeamAlly : Ally
 		navMeshAgent.updateRotation = true;
 
 		// Initialize member variables.
-		fireTeamRole = FireTeamRole.NON_LEADER;
 		fireTeam = null;
 		mEnemies = new List<FireTeamAlly> ();
 		targetEnemyTeam = null;

@@ -122,7 +122,6 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
-  isDisabled: 0
 --- !u!195 &41010351
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -232,7 +231,7 @@ MonoBehaviour:
   defaultColor: {r: 0.6627451, g: 0.27058825, b: 0.09803922, a: 1}
   disabledColor: {r: 0.21410036, g: 0.74509805, b: 0.8235294, a: 0}
   mainCamera: {fileID: 1963958883}
-  fireTeamPrefab: {fileID: 11444312, guid: 191710eacc329c64488d5e7ca1873a99, type: 2}
+  fireTeamPrefab: {fileID: 11444312, guid: c643b298d49819847a783b88feb22f7d, type: 2}
 --- !u!4 &42070733
 Transform:
   m_ObjectHideFlags: 0
@@ -244,7 +243,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
 --- !u!1001 &75218091
 Prefab:
   m_ObjectHideFlags: 0
@@ -328,7 +327,6 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
-  isDisabled: 0
 --- !u!195 &141571987
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -667,7 +665,7 @@ Transform:
   - {fileID: 1245835688}
   - {fileID: 965479337}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
 --- !u!1 &302972311
 GameObject:
   m_ObjectHideFlags: 0
@@ -847,7 +845,7 @@ Transform:
   m_Children:
   - {fileID: 1696731541}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
 --- !u!1 &965479336
 GameObject:
   m_ObjectHideFlags: 0
@@ -1399,7 +1397,6 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
-  isDisabled: 0
 --- !u!195 &1598847198
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1479,6 +1476,33 @@ Transform:
   - {fileID: 1402247989}
   m_Father: {fileID: 1687634460}
   m_RootOrder: 0
+--- !u!1 &1669283713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 1824229203}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1669283714}
+  m_Layer: 0
+  m_Name: Missing Prefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1669283714
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 1824229203}
+  m_GameObject: {fileID: 1669283713}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
 --- !u!1 &1687634459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,7 +1533,7 @@ Transform:
   - {fileID: 141571991}
   - {fileID: 1385929978}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!1 &1696731540
 GameObject:
   m_ObjectHideFlags: 0
@@ -1561,7 +1585,6 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   fireTeam: {fileID: 0}
   targetEnemyTeam: {fileID: 0}
-  isDisabled: 0
 --- !u!195 &1696731543
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1823,7 +1846,7 @@ Transform:
   m_LocalScale: {x: 40, y: 1, z: 40}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
 --- !u!1001 &1855266824
 Prefab:
   m_ObjectHideFlags: 0
@@ -1930,7 +1953,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!1 &1963958879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2016,7 +2039,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
 --- !u!1 &2100315220
 GameObject:
   m_ObjectHideFlags: 0
