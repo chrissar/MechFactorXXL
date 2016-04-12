@@ -69,6 +69,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\DesertFortressPack\Scripts\open_door.cs" />
     <Compile Include="Assets\FightingUnityChan_FreeAsset\FightingUnityChan_FreeAsset\Scripts\CameraController.cs" />
     <Compile Include="Assets\FightingUnityChan_FreeAsset\FightingUnityChan_FreeAsset\Scripts\IdleChangerFighting.cs" />
     <Compile Include="Assets\Mecanim Warrior Anim Free\Script\PlayGUI.cs" />
