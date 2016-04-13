@@ -432,6 +432,7 @@ public class FireTeam : Ally
 				targetDirection * mkOptimalAttackDistance;
 			if (Vector3.Distance (newDestination, mDestination) > 2.0f) {
 				mDestination = newDestination;
+				SetOrientation (); // Update the team orientation.
 			}
 		}
 	}
