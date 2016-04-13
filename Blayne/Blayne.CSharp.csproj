@@ -106,6 +106,7 @@
     <Compile Include="Assets\Scripts\AI\Commands\FireTeamFormationCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\ICommandable.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\MoveFireTeamCommand.cs" />
+    <Compile Include="Assets\Scripts\AI\Commands\PursueEnemyTeamCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\TeamAttackEnemyCommand.cs" />
     <Compile Include="Assets\Scripts\AI\Commands\TeamDisengageCommand.cs" />
     <Compile Include="Assets\Scripts\AI\FireTeamStates\CombatStates\FireTeamAllyAimingState.cs" />

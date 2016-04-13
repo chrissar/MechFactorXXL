@@ -22,7 +22,9 @@ public class PlayerInputController : MonoBehaviour {
         Vector2 mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
         bool mouseAim = Input.GetMouseButton(1) || Input.GetMouseButtonDown(1);
-        bool mouseFire = Input.GetMouseButton(0) || Input.GetMouseButtonDown(0);
+        bool mouseFire = Input.GetMouseButtonDown(0);
+
+        bool crouch = Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftControl);
 
         //Vector2 rightStickInput = new Vector2(Input.GetAxisRaw("RightH"), Input.GetAxisRaw("RightV"));
         Vector2 rightStickInput = Vector2.zero;
@@ -42,7 +44,8 @@ public class PlayerInputController : MonoBehaviour {
             JumpInput = jumpInput,
             SprintInput = sprintInput,
             MouseAim = mouseAim,
-            MouseFire = mouseFire
+            MouseFire = mouseFire,
+            Crouch = crouch
         };
 	}
 }
@@ -55,4 +58,5 @@ public struct PlayerInput
     public bool SprintInput;
     public bool MouseAim;
     public bool MouseFire;
+    public bool Crouch;
 }
