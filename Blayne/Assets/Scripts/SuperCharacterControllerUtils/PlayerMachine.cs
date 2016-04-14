@@ -50,7 +50,7 @@ public class PlayerMachine : SuperStateMachine {
 
     private Quaternion previousRotation;
 
-    public Transform cam; //reference to our case
+    public PlayerCamera cam; //reference to our case
 
     // IK Stuff
     public Transform spine;
@@ -66,9 +66,15 @@ public class PlayerMachine : SuperStateMachine {
     void Start () {
         // Put any code here you want to run ONCE, when the object is initialized
         //Setup our camera reference
-        if (Camera.main != null)
+        if (cam == null)
         {
-            cam = Camera.main.transform;
+            if (Camera.main != null)
+            {
+                GameObject mCam = Camera.main.transform.gameObject;
+                mCam.AddComponent<PlayerCamera>();
+                mCam.GetComponent<PlayerCamera>().PlayerTarget = this.gameObject;
+                cam = mCam.GetComponent<PlayerCamera>();
+            }
         }
 
         input = gameObject.GetComponent<PlayerInputController>();
@@ -207,7 +213,7 @@ public class PlayerMachine : SuperStateMachine {
         {
             Vector3 eulerAngleOffset = Vector3.zero;
             eulerAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
-            Ray ray = new Ray(cam.position, cam.forward);
+            Ray ray = new Ray(cam.transform.position, cam.transform.forward);
             Vector3 lookPosition = ray.GetPoint(point);
             spine.LookAt(lookPosition);            
             spine.Rotate(eulerAngleOffset, Space.Self);
