@@ -109,6 +109,9 @@
     <Compile Include="Assets\RigifyToUnity\Scripts\Editor\RigifyToUnityPrefs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Destroyed_city_FREE\Destroyed_city_FREE_Info.txt" />
+    <None Include="Assets\Destroyed_city_FREE\Shaders\AlphaTest-DiffuseDoubleSide.shader" />
+    <None Include="Assets\Environment\Contractors\RuinedCar\Shaders\Normal-BumpSpec.shader" />
     <None Include="Assets\RigifyToUnity\Readme.txt" />
     <None Include="Assets\RigifyToUnity\Release Notes.txt" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\ChromaticAberrationShader.shader" />
