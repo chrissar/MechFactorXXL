@@ -56,25 +56,11 @@ public class FireTeamDecisionMaker : MonoBehaviour
 					PursueEnemyTeam (engagedEnemyFireTeam);
 				}
 			}
-            
-
-            /*else {
-				// Disengage Enemies.
-				DisengageEnemy();
-                Debug.Log("SHOULD I RETREAT?!");
-				// If the team is in critial condition, move 
-				// the team to the closest team base.
-				if (IsTeamInCritialCondition ()) {
-                    Debug.Log("RETREATING BITCHES!!!!");
-                    // Move back to spawn point to respawn destroyed members of the fire team.
-                    MoveToPointWithFormation (fireTeam.spawnPoint, FireTeamFormation.WEDGE);
-				}	
-			}*/
         }
         if (IsTeamInCritialCondition())
         {
             // Move back to spawn point to respawn destroyed members of the fire team.
-            MoveToPointWithFormation(fireTeam.spawnPoint, FireTeamFormation.WEDGE);
+			MoveToPointWithFormation(fireTeam.spawnPoint, FireTeamFormation.FILE);
         }
         // Reset the flag that indicates that the fire team is being fired upon.
         fireTeam.isBeingFiredUpon = false;

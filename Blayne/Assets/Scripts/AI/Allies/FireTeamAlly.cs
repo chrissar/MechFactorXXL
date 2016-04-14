@@ -6,10 +6,14 @@ using UnityEngine;
 public class FireTeamAlly : Ally
 {
 	public const float kSensingProximityRadius = 20.0f;
-	public const float kVisionConeRadius = 30.0f;
+	public const float kVisionConeRadius = 50.0f;
 	public const float kVisionConeHalfAngle = 30.0f;
 
-	[HideInInspector] public int fireTeamNumber;
+    public bool debugGunLOS = false;
+    public bool debugSpineLOS = false;
+    public bool debugTLOS = false;
+
+    [HideInInspector] public int fireTeamNumber;
 	[HideInInspector] public int slotPosition;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
 	[HideInInspector] public FireTeam fireTeam;
@@ -19,7 +23,55 @@ public class FireTeamAlly : Ally
 	private FireTeamAllyStateMachine mStateMachine;
     private Gun mGun;
 
-	public Vector3 Position
+    Animator animator;
+    public bool aim = false;
+    public bool firing = false;
+    public bool crouch = false;
+    public bool grounded = true;
+
+    public float rotateAmount = 0f;
+    public float forwardAmount = 0f;
+    public float sidewaysAmount = 0f;
+
+    public GameObject LeftHandAimingPosition;
+    public GameObject LeftHandIdlePosition;
+
+    Vector3 movement;
+    Vector3 prevPos;
+    Vector3 newPos;
+    Vector3 fwd;
+    Vector3 side;
+
+    float currentRotation;
+    float previousRotation;
+
+    // IK Stuff
+    public Transform spine;
+    public float aimingZ = 200;
+    public float aimingY = 200;
+    public float aimingX = 200;
+    public float point;
+    float IKWeight = 0;
+
+    public FireTeamAlly currentTarget;
+    Vector3 lookPosition;
+
+    void SetUpAnimator()
+    {
+        animator = GetComponent<Animator>();
+
+        foreach (var childAnimator in GetComponentsInChildren<Animator>())
+        {
+            if (childAnimator != animator)
+            {
+                animator.avatar = childAnimator.avatar;
+                Destroy(childAnimator);
+                break;
+            }
+        }
+    }
+
+    public Vector3 Position
 	{
 		get
 		{ 
@@ -58,20 +110,214 @@ public class FireTeamAlly : Ally
 	public void Awake()
 	{
 		Initialize ();
-	}
+        SetUpAnimator();
+        SetTargetToDefault();
+    }
 
-	public void Update()
+    void OnAnimatorIK()
+    {
+        Transform LHP;
+
+        if (aim)
+        {
+            LHP = LeftHandAimingPosition.transform;
+        }
+        else
+        {
+            LHP = LeftHandIdlePosition.transform;
+        }
+
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, IKWeight);
+        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, IKWeight);
+
+        Vector3 pos = LHP.transform.TransformPoint(Vector3.zero);
+
+        animator.SetIKPosition(AvatarIKGoal.LeftHand, LHP.transform.position);
+        animator.SetIKRotation(AvatarIKGoal.LeftHand, LHP.transform.rotation);
+
+        // right hand
+        //animator.SetIKPositionWeight(AvatarIKGoal.RightHand, IKWeight);
+        //animator.SetIKRotationWeight(AvatarIKGoal.RightHand, IKWeight);
+
+        //Vector3 rhp = LeftHandPosition.transform.TransformPoint(Vector3.zero);
+
+        //animator.SetIKPosition(AvatarIKGoal.RightHand, LeftHandPosition.transform.position);
+        //animator.SetIKRotation(AvatarIKGoal.RightHand, LeftHandPosition.transform.rotation);
+    }
+
+    public void Update()
 	{
-		if (!mIsDisabled) {
+        IKWeight = Mathf.MoveTowards(IKWeight, (true) ? 1.0f : 0.0f, Time.deltaTime * 5);
+
+        newPos = transform.position;
+        movement = (newPos - prevPos);
+        currentRotation = transform.rotation.eulerAngles.y;
+
+        if (!mIsDisabled) {
 			// Check for visible enemies.
 			checkForVisibleEnemies ();
 
 			// Update movement.
 			mStateMachine.UpdateStates ();
+            crouch = false;
+
+            if (fireTeam.CurrentFireTeamFormation == FireTeamFormation.COVER)
+            {
+                crouch = true;
+            }
+            else
+            {
+                crouch = false;
+            }
+
+            if (mStateMachine.currentStatusState == mStateMachine.suppressedState)
+            {
+                aim = false;
+                crouch = true;
+            }
+
+            if (mStateMachine.currentCombatState == mStateMachine.aimingState ||
+                mStateMachine.currentCombatState == mStateMachine.firingState)
+            {
+                aim = true;
+            }
+            else
+            {
+                aim = false;
+            }
+
+            if (mStateMachine.currentCombatState == mStateMachine.firingState)
+            {
+                //firing = true;
+            }
+
+            if (mStateMachine.currentMovementState == mStateMachine.movingState)
+            {
+                if (currentRotation > previousRotation)
+                {
+
+                    float amount = currentRotation / 360;
+                    amount = ((currentRotation - previousRotation) / 90);
+                    rotateAmount = 0.65f;
+                    rotateAmount = amount;
+                }
+                else if (currentRotation < previousRotation)
+                {
+                    rotateAmount = -0.65f;
+                    float amount = (previousRotation - currentRotation) / 90;
+                    rotateAmount = -amount;
+                }
+                else
+                {
+                    rotateAmount = 0.0f;
+                }
+
+                if (Vector3.Dot(side, movement) < 0)
+                {
+                    sidewaysAmount = -1.0f;
+                }
+                else if (Vector3.Dot(side, movement) > 0)
+                {
+                    sidewaysAmount = 1.0f;
+                }                 
+                else
+                {
+                    sidewaysAmount = 0.0f;
+                }
+
+                if (Vector3.Dot(fwd, movement) < 0)
+                {
+                    forwardAmount = -0.65f;
+                }
+                else if (Vector3.Dot(fwd, movement) > 0)
+                {
+                    forwardAmount = 0.65f;
+                }                    
+                else
+                {
+                    forwardAmount = 0.0f;
+                }                    
+            }
+            else if (mStateMachine.currentMovementState == mStateMachine.idlingState)
+            {
+                forwardAmount = 0.0f;
+                sidewaysAmount = 0.0f;
+                aim = false;
+                crouch = false;
+            }
 		}
 	}
 
-	public void OnDestroy()
+    public void LateUpdate()
+    {
+        previousRotation = currentRotation;
+        prevPos = newPos;
+        fwd = transform.forward;
+        side = transform.right;
+
+        if (currentTarget != null && aim)
+        {
+            Vector3 eulerAngleOffset = Vector3.zero;
+            eulerAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
+            spine.LookAt(currentTarget.transform.position);
+            spine.Rotate(eulerAngleOffset, Space.Self);
+        }
+
+        if (fireTeam.TeamSide == FireTeam.Side.Enemy)
+        {
+            if (debugSpineLOS)
+                Debug.DrawRay(spine.transform.position, spine.transform.forward * 40, Color.black);
+
+            if (debugTLOS)
+                Debug.DrawRay(transform.position, transform.forward * 40, Color.red);
+
+            if (debugGunLOS)
+                Debug.DrawRay(mGun.muzzle.transform.position, mGun.muzzle.transform.forward * 40, Color.green);
+        }            
+        else
+        {
+            if (debugSpineLOS)
+                Debug.DrawRay(spine.transform.position, spine.transform.forward * 40, Color.white);
+
+            if (debugTLOS)
+                Debug.DrawRay(transform.position, transform.forward * 40, Color.blue);
+
+            // doesn't work for some strange reason.            
+            if (debugGunLOS)
+                Debug.DrawRay(mGun.muzzle.transform.forward, mGun.muzzle.transform.forward * 40, Color.magenta);
+        }           
+
+        UpdateAnimator();
+    }
+
+    void SetTargetToDefault()
+    {
+        Vector3 eulerAngleOffset = Vector3.zero;
+        eulerAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
+        Ray ray = new Ray(transform.position, transform.forward);
+        lookPosition = ray.GetPoint(30);
+        spine.LookAt(lookPosition);
+        spine.Rotate(eulerAngleOffset, Space.Self);
+    }
+
+    void UpdateAnimator()
+    {
+        if (firing)
+        {
+            firing = false;
+            animator.SetTrigger("Fire 0");
+        }
+
+        animator.SetBool("Crouch", crouch);
+        animator.SetFloat("Sideways", sidewaysAmount, 0.1f, Time.deltaTime);
+        animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
+        animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
+        animator.SetBool("Aim", aim);
+        animator.SetBool("Grounded", grounded);
+        animator.SetLayerWeight(1, 1);
+    }
+
+    public void OnDestroy()
 	{
 		// Remove self from fire team.
 		fireTeam.RemoveFireTeamAlly(this);

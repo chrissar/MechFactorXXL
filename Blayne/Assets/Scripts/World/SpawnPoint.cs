@@ -13,8 +13,12 @@ public class SpawnPoint : MonoBehaviour
     public FireTeam fireTeamPrefab;
     public FireTeamAlly allyPrefab;
     public FireTeam.Side teamSide;
+ 
+    public Material enemy;
+    public Material friendly;
 
-	private FireTeam mSpawnedFireTeam;
+    private FireTeam mSpawnedFireTeam;
+	private Renderer mRenderer;
     private static int msTopTeamNumber = 0;
     private static int GetNewTeamNumber()
     {
@@ -22,6 +26,7 @@ public class SpawnPoint : MonoBehaviour
     }
     public void Awake()
     {
+
         if (!fireTeamPrefab) throw new UnityException("Fire Team Prefab is null at a Spawn Point");
         if (!allyPrefab) throw new UnityException("Ally Prefab is null at a Spawn Point");
 
@@ -56,6 +61,7 @@ public class SpawnPoint : MonoBehaviour
 			FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
 			team.AddFireTeamAlly(ally);
 			ally.StateMachine.currentMovementState.ToMoving();
+			// print ("Ally : " + ally.fireTeam.TeamSide);
 			SetTeamColorOfFireTeamAlly (ally);
 		}
 	}
@@ -76,6 +82,8 @@ public class SpawnPoint : MonoBehaviour
 					for (int j = 0; j < missingTeamMembers; ++j) {
 						CreateNewFireTeamAlly();
 					}
+					// Don't add any more characters to the fire team.
+					break;
 				}
 			}
 		}
@@ -83,7 +91,7 @@ public class SpawnPoint : MonoBehaviour
 
 	private void CreateNewFireTeamAlly()
 	{
-		GameObject allyObj = Instantiate(allyPrefab.gameObject);
+        GameObject allyObj = Instantiate(allyPrefab.gameObject);
 		FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
 		mSpawnedFireTeam.AddFireTeamAlly(ally);
 		allyObj.transform.position = mSpawnedFireTeam.GetSlotPosition(ally.slotPosition);
@@ -94,12 +102,13 @@ public class SpawnPoint : MonoBehaviour
 
 	private void SetTeamColorOfFireTeamAlly(FireTeamAlly fireTeamAlly)
 	{
-		Renderer renderer = fireTeamAlly.GetComponent<Renderer> ();
-		if (renderer != null) {
+		mRenderer = fireTeamAlly.transform.FindChild("CorrectedKataphrakt3-Rigged Attempt 2").
+			FindChild("upper torso").GetComponent<Renderer>();
+		if (mRenderer != null) {
 			if (mSpawnedFireTeam.TeamSide == FireTeam.Side.Friend) {
-				renderer.material.color = friendColor;
+				mRenderer.sharedMaterial = new Material (friendly);
 			} else {
-				renderer.material.color = enemyColor;
+				mRenderer.sharedMaterial = new Material (enemy);
 			}
 		}
 	}

@@ -10,11 +10,15 @@ public class PlayerMachine : SuperStateMachine {
 
     public Transform AnimatedMesh;
     public Combat.Gun gun;
+    public GameObject HandPosition;
+    public Transform RightHandPosition;
     Animator animator;
 
     public float WalkSpeed = 4.0f;
+    public float crouchSpeed = 2.0f;
     public float RunSpeed = 10.0f;
     public float RotateSpeed = 10.0f;
+    public float movementSpeed = 0;
     [HideInInspector]public float forwardAmount = 0;
     [HideInInspector]public float sidewaysAmount = 0;
     [HideInInspector]public float rotateAmount = 0;
@@ -24,9 +28,12 @@ public class PlayerMachine : SuperStateMachine {
     public float JumpHeight = 3.0f;
     public float Gravity = 25.0f;
     public float maxSpeed;
+    float IKweight;
 
     public bool aim;
     public float aimingWeight;
+    public bool firing = false;
+    public bool crouch = false;
     float cameraSpeedOffset;
 
     // Add more states by comma separating them
@@ -43,8 +50,7 @@ public class PlayerMachine : SuperStateMachine {
 
     private Quaternion previousRotation;
 
-    public Transform cam; //reference to our case
-    public Transform cube;
+    public PlayerCamera cam; //reference to our case
 
     // IK Stuff
     public Transform spine;
@@ -55,12 +61,20 @@ public class PlayerMachine : SuperStateMachine {
 
     public Vector3 rotation;
 
+    public bool debug = false;
+
     void Start () {
         // Put any code here you want to run ONCE, when the object is initialized
         //Setup our camera reference
-        if (Camera.main != null)
+        if (cam == null)
         {
-            cam = Camera.main.transform;
+            if (Camera.main != null)
+            {
+                GameObject mCam = Camera.main.transform.gameObject;
+                mCam.AddComponent<PlayerCamera>();
+                mCam.GetComponent<PlayerCamera>().PlayerTarget = this.gameObject;
+                cam = mCam.GetComponent<PlayerCamera>();
+            }
         }
 
         input = gameObject.GetComponent<PlayerInputController>();
@@ -98,6 +112,22 @@ public class PlayerMachine : SuperStateMachine {
 
     void UpdateAnimator()
     {
+        if (firing)
+        {
+            firing = false;
+            animator.SetTrigger("Fire 0");
+        }
+
+        if (!MaintainingGround())
+        {         
+            animator.SetBool("Grounded", false);
+        }
+            
+
+        if (AcquiringGround())
+            animator.SetBool("Grounded", true);
+
+        animator.SetBool("Crouch", crouch);
         animator.SetFloat("Sideways", sidewaysAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Turn", rotateAmount, 0.1f, Time.deltaTime);
@@ -111,7 +141,8 @@ public class PlayerMachine : SuperStateMachine {
         lookDirection = Quaternion.AngleAxis(input.Current.MouseInput.x * RotateSpeed, controller.up) * lookDirection;
         // Put any code in here you want to run BEFORE the state's update function.
         // This is run regardless of what state you're in
-        aim = input.Current.MouseAim;
+        if (!debug)
+            aim = input.Current.MouseAim;
 
         aimingWeight = Mathf.MoveTowards(aimingWeight, (aim && !input.Current.SprintInput) ? 1.0f : 0.0f, Time.deltaTime * 5);
 
@@ -131,26 +162,70 @@ public class PlayerMachine : SuperStateMachine {
         // Move the player by our velocity every frame
         transform.position += moveDirection * controller.deltaTime;
 
-        previousRotation = AnimatedMesh.rotation;
+        //previousRotation = AnimatedMesh.rotation;
+        previousRotation = gameObject.transform.rotation;
 
         // Rotate our mesh to face where we are "looking"
-        AnimatedMesh.rotation = Quaternion.LookRotation(lookDirection, controller.up);
+        //AnimatedMesh.rotation = Quaternion.LookRotation(lookDirection, controller.up);
+        gameObject.transform.rotation = Quaternion.LookRotation(lookDirection, controller.up);
 
         rotateAmount = Input.GetAxis("Mouse X") * 0.1f;
 
         UpdateAnimator();
     }
 
+    void CorrectIK()
+    {
+
+    }
+
+    void Update()
+    {
+        IKweight = Mathf.MoveTowards(IKweight, (aim) ? 1.0f : 0.0f, Time.deltaTime * 5);
+    }
+
+    void OnAnimatorIK()
+    {
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, IKweight);
+        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, IKweight);
+
+        Vector3 pos = HandPosition.transform.TransformPoint(Vector3.zero);
+
+        animator.SetIKPosition(AvatarIKGoal.LeftHand, HandPosition.transform.position);
+        animator.SetIKRotation(AvatarIKGoal.LeftHand, HandPosition.transform.rotation);
+
+        // right hand
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, IKweight);
+        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, IKweight);
+
+        Vector3 rhp = HandPosition.transform.TransformPoint(Vector3.zero);
+
+        animator.SetIKPosition(AvatarIKGoal.RightHand, RightHandPosition.transform.position);
+        animator.SetIKRotation(AvatarIKGoal.RightHand, RightHandPosition.transform.rotation);
+    }
+
     void LateUpdate()
     {
+        if (!debug)
+            crouch = input.Current.Crouch;
+
         if (aim)
         {
             Vector3 eulerAngleOffset = Vector3.zero;
             eulerAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
-            Ray ray = new Ray(cam.position, cam.forward);
+            Ray ray = new Ray(cam.transform.position, cam.transform.forward);
             Vector3 lookPosition = ray.GetPoint(point);
             spine.LookAt(lookPosition);            
             spine.Rotate(eulerAngleOffset, Space.Self);
+
+            if (debug)
+            {
+                if (Input.GetKeyDown(KeyCode.CapsLock))
+                {                    
+                    Debug.DrawRay(transform.position, transform.forward * 30, Color.red, 60);
+                    Debug.DrawRay(cam.transform.position, cam.transform.forward * 30, Color.green, 60);
+                }
+            }
         }
         else
         {
@@ -183,6 +258,21 @@ public class PlayerMachine : SuperStateMachine {
 
         Vector3 local = Vector3.zero;
 
+        if (crouch)
+        {
+            if (isRunning)
+                movementSpeed = crouchSpeed * 2;
+            else
+                movementSpeed = crouchSpeed;
+        }
+        else
+        {
+            if (!isRunning)
+                movementSpeed = WalkSpeed;
+            else
+                movementSpeed = RunSpeed;
+        }   
+
         if (input.Current.MoveInput.x != 0)
         {
             local += right * input.Current.MoveInput.x;
@@ -199,10 +289,16 @@ public class PlayerMachine : SuperStateMachine {
             if (isRunning)
                 forwardAmount = input.Current.MoveInput.z;
             else
-                forwardAmount = input.Current.MoveInput.z / 2;
+                forwardAmount = map(input.Current.MoveInput.z, 0, 1, 0, 0.5f);
+                //forwardAmount = input.Current.MoveInput.z / 1.5f;
         }
 
-        return local.normalized;
+        return local.normalized * movementSpeed;
+    }
+
+    float map(float s, float a1, float a2, float b1, float b2)
+    {
+        return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
     }
 
     // Calculate the initial velocity of a jump based off gravity and desired maximum height attained
@@ -258,7 +354,9 @@ public class PlayerMachine : SuperStateMachine {
         {
             forwardAmount = 0;
         }
+
         Shoot();
+
         // Apply friction to slow us to a halt
         moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, 10.0f * controller.deltaTime);
     }
@@ -267,8 +365,10 @@ public class PlayerMachine : SuperStateMachine {
         if(aim && input.Current.MouseFire)
         {
             gun.Shoot();
+            firing = true; // for one frame.            
         }
     }
+
     void Idle_LateUpdate()
     {
 
@@ -297,7 +397,7 @@ public class PlayerMachine : SuperStateMachine {
 
         if (input.Current.MoveInput != Vector3.zero)
         {
-            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(true) * RunSpeed, RunAcceleration * controller.deltaTime);
+            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(true), RunAcceleration * controller.deltaTime);
             if (!input.Current.SprintInput)
             {
                 currentState = PlayerStates.Walk;
@@ -310,6 +410,7 @@ public class PlayerMachine : SuperStateMachine {
             currentState = PlayerStates.Idle;
             return;
         }
+
         Shoot();
     }
 
@@ -336,7 +437,7 @@ public class PlayerMachine : SuperStateMachine {
 
         if (input.Current.MoveInput != Vector3.zero)
         {
-            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(false) * WalkSpeed, WalkAcceleration * controller.deltaTime);
+            moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(false), WalkAcceleration * controller.deltaTime);
             if (input.Current.SprintInput)
             {
                 currentState = PlayerStates.Run;
@@ -349,6 +450,7 @@ public class PlayerMachine : SuperStateMachine {
             currentState = PlayerStates.Idle;
             return;
         }
+
         Shoot();
     }
 
@@ -377,7 +479,7 @@ public class PlayerMachine : SuperStateMachine {
             return;            
         }
 
-        planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement(false) * WalkSpeed, JumpAcceleration * controller.deltaTime);
+        planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement(false), JumpAcceleration * controller.deltaTime);
         verticalMoveDirection -= controller.up * Gravity * controller.deltaTime;
 
         moveDirection = planarMoveDirection + verticalMoveDirection;

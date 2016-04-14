@@ -10,6 +10,8 @@ TagManager:
   - Fire
   - cover
   - squad
+  - NPC
+  - Base
   layers:
   - Default
   - TransparentFX
@@ -29,7 +31,7 @@ TagManager:
   - Ethereal
   - Fighters
   - Ground
-  - 
+  - Bullet
   - 
   - 
   - 
