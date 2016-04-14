@@ -16,6 +16,7 @@ public class SideAI : MonoBehaviour
         
         foreach(GameObject squadObj in squadObjs)
         {
+            Debug.Log("Adding squad: " + squadObj.name);
             FireTeam squad = squadObj.GetComponent<FireTeam>();
             if(squad.TeamSide == FireTeam.Side.Friend)
             {
@@ -39,18 +40,14 @@ public class SideAI : MonoBehaviour
         {
             if(IsSquadDead(squad))
             {
-                Debug.Log("SQUAD DEAD");
                 deadSquads.Add(squad);
             }
-            else if(IsSquadRetreating(squad)
-                && IsSquadEngaged(squad))
+            else if(IsSquadRetreating(squad))
             {
-                Debug.Log("SQUAD NEED HALP");
                 RequestHelp(squad, team);
             }
             else if(IsSquadInactive(squad))
             {
-                Debug.Log("SQUAD ATTACKING!!!!");
                 Attack(squad, GetRandomEnemySquad(team));
             }
         }
@@ -80,6 +77,7 @@ public class SideAI : MonoBehaviour
     {
         if (friend && enemy)
         {
+            
             new TeamAttackEnemyCommand(enemy).execute(friend);
         }
     }
@@ -96,9 +94,24 @@ public class SideAI : MonoBehaviour
         {
             if(IsSquadStrong(friendlySquad))
             {
-                Attack(friendlySquad, GetEngagedEnemy(squad)); 
+                Attack(friendlySquad, GetAttackingSquad(squad)); 
             }
         }
+    }
+    private FireTeam GetAttackingSquad(FireTeam squad)
+    {
+        FireTeam result = null;
+        List<FireTeam> enemyTeam = GetEnemyTeam(squad);
+        foreach(FireTeam enemySquad in enemyTeam)
+        {
+            if(enemySquad.EnemyTeamToPursue == squad)
+            {
+                result = enemySquad;
+                break;
+            }
+        }
+        //Debug.Log("Requesting help for attacking squad: " + result.gameObject.name);
+        return result;
     }
     private FireTeam GetEngagedEnemy(FireTeam squad)
     {
@@ -107,6 +120,10 @@ public class SideAI : MonoBehaviour
     private List<FireTeam> GetEnemyTeam(List<FireTeam> team)
     {
         return team == mFriendlySquads ? mEnemySquads : mFriendlySquads;
+    }
+    private List<FireTeam> GetEnemyTeam(FireTeam squad)
+    {
+        return squad.TeamSide == FireTeam.Side.Friend ? mFriendlySquads : mEnemySquads;
     }
     private FireTeam GetRandomEnemySquad(List<FireTeam> team)
     {
