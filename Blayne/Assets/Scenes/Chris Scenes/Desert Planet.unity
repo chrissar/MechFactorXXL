@@ -142,45 +142,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 6400000, guid: 8821ad28ac68c504d93afa76ac01e689, type: 2}
       propertyPath: m_Convex
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2300002, guid: 8821ad28ac68c504d93afa76ac01e689, type: 2}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8821ad28ac68c504d93afa76ac01e689, type: 2}
   m_IsPrefabParent: 0
-<<<<<<< HEAD:Blayne/Assets/Scenes/Chris Scenes/Training.unity
---- !u!1 &19745080 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 100000, guid: 8821ad28ac68c504d93afa76ac01e689, type: 2}
-  m_PrefabInternal: {fileID: 19745079}
---- !u!114 &19745081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 19745080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a5a6afaf80069348aa068ae586fb3ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  drawMeshTreeOnStart: 0
---- !u!64 &19745082
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 19745080}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Convex: 0
-  m_Mesh: {fileID: 4300000, guid: 297de7af8513b4a4aaaf057ae1dda467, type: 3}
-=======
 --- !u!1001 &71963025
 Prefab:
   m_ObjectHideFlags: 0
@@ -235,7 +201,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9bbb38583e205a441b1d543e01ae49c5, type: 3}
   m_IsPrefabParent: 0
->>>>>>> 703f67e4e5916d17698bf72b9c5cb9246d7ca38b:Blayne/Assets/Scenes/Chris Scenes/Desert Planet.unity
 --- !u!1001 &88478854
 Prefab:
   m_ObjectHideFlags: 0
