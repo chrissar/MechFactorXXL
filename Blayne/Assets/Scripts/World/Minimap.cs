@@ -34,11 +34,12 @@ public class Minimap : MonoBehaviour
         mCanvas = transform.parent.GetComponent<Canvas>();
         GameObject mImage = new GameObject();
         mImage.AddComponent<Image>();
-        Rect rect = new Rect(0, 0, 10, 10);
+        Rect rect = new Rect(0, 0, 512, 512);
         mSprite = Sprite.Create(texture, rect, new Vector2(0, 0));
         mImage.GetComponent<Image>().sprite = mSprite;
 
         mImage.transform.parent = transform;
+        mImage.transform.localPosition = Vector3.zero;
         //rect = mImage.GetComponent<Rect>();
 
     }

@@ -141,17 +141,7 @@ public class PlayerMachine : SuperStateMachine {
         lookDirection = Quaternion.AngleAxis(input.Current.MouseInput.x * RotateSpeed, controller.up) * lookDirection;
         // Put any code in here you want to run BEFORE the state's update function.
         // This is run regardless of what state you're in
-        if (!debug)
-            aim = input.Current.MouseAim;
 
-        aimingWeight = Mathf.MoveTowards(aimingWeight, (aim && !input.Current.SprintInput) ? 1.0f : 0.0f, Time.deltaTime * 5);
-
-        Vector3 normalState = new Vector3(0, 0, 0);
-        Vector3 aimingState = new Vector3(0, 0, 1.0f);
-
-        Vector3 pos = Vector3.Lerp(normalState, aimingState, aimingWeight);
-
-        cam.transform.localPosition = pos;
     }
 
     protected override void LateGlobalSuperUpdate()
@@ -182,6 +172,7 @@ public class PlayerMachine : SuperStateMachine {
     void Update()
     {
         IKweight = Mathf.MoveTowards(IKweight, (aim) ? 1.0f : 0.0f, Time.deltaTime * 5);
+
     }
 
     void OnAnimatorIK()
@@ -206,6 +197,19 @@ public class PlayerMachine : SuperStateMachine {
 
     void LateUpdate()
     {
+        if (!debug)
+            aim = input.Current.MouseAim;
+
+        aimingWeight = Mathf.MoveTowards(aimingWeight, (aim && !input.Current.SprintInput) ? 1.0f : 0.0f, Time.deltaTime * 5);
+
+        Vector3 normalState = new Vector3(0, 0, 0);
+        Vector3 aimingState = new Vector3(0, 0, 1.0f);
+
+        Vector3 pos = Vector3.Lerp(normalState, aimingState, aimingWeight);
+
+        cam.transform.localPosition = pos;
+
+
         if (!debug)
             crouch = input.Current.Crouch;
 
