@@ -133,6 +133,7 @@
      <Compile Include="Assets\Scripts\SuperCharacterController\Core\SuperStateMachine.cs" />
      <Compile Include="Assets\Scripts\SuperCharacterController\DebugDraw.cs" />
      <Compile Include="Assets\Scripts\SuperCharacterController\Math3d.cs" />
+     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\AIMachine.cs" />
      <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Gravity.cs" />
      <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\CustomController.cs" />
      <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\Moodie\Easing.cs" />
