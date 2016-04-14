@@ -592,26 +592,38 @@ public class FireTeam : Ally
 	{
 		// Set the relative displacements of each of the slots from the anchor point.
 		mRelativeSlotDisplacements[0] = new Vector3(0, 0, 0);
-		mRelativeSlotDisplacements [1] = new Vector3 (-5.0f, 0, -5.0f);
-		mRelativeSlotDisplacements [2] = new Vector3 (-5.0f, 0, 5.0f);
-		mRelativeSlotDisplacements [3] = new Vector3 (-10.0f, 0, 10.0f);
+        if (kMaxFireTeamMembers > 1 )
+        {
+		    mRelativeSlotDisplacements [1] = new Vector3 (-5.0f, 0, -5.0f);
+		    mRelativeSlotDisplacements [2] = new Vector3 (-5.0f, 0, 5.0f);
+		    mRelativeSlotDisplacements [3] = new Vector3 (-10.0f, 0, 10.0f);
+        }
+
 	}
 
 	private void SetFileSlotPositions()
 	{
 		// Set the relative displacements of each of the slots from the anchor point.
 		mRelativeSlotDisplacements[0] = new Vector3(0, 0, 0);
-		mRelativeSlotDisplacements [1] = new Vector3 (-5.0f, 0, 0);
-		mRelativeSlotDisplacements [2] = new Vector3 (-10.0f, 0, 0);
-		mRelativeSlotDisplacements [3] = new Vector3 (-15.0f, 0, 0);
+        if (kMaxFireTeamMembers > 1)
+        {
+            mRelativeSlotDisplacements [1] = new Vector3 (-5.0f, 0, 0);
+		    mRelativeSlotDisplacements [2] = new Vector3 (-10.0f, 0, 0);
+		    mRelativeSlotDisplacements [3] = new Vector3 (-15.0f, 0, 0);
+        }
+
 	}
 
 	private void SetCoverSlotPositions()
 	{
 		// Set the relative displacements of each of the slots from the anchor point.
 		mRelativeSlotDisplacements[0] = new Vector3(1.5f, 0, 1.5f);
-		mRelativeSlotDisplacements [1] = new Vector3 (-1.5f, 0, 1.5f);
-		mRelativeSlotDisplacements [2] = new Vector3 (1.5f, 0, -1.5f);
-		mRelativeSlotDisplacements [3] = new Vector3 (-1.5f, 0, -1.5f);
+        if (kMaxFireTeamMembers > 1)
+        {
+		    mRelativeSlotDisplacements [1] = new Vector3 (-1.5f, 0, 1.5f);
+		    mRelativeSlotDisplacements [2] = new Vector3 (1.5f, 0, -1.5f);
+		    mRelativeSlotDisplacements [3] = new Vector3 (-1.5f, 0, -1.5f);
+        }
+
 	}
 }

@@ -13,7 +13,7 @@ GameObject:
   - 54: {fileID: 5403536}
   - 114: {fileID: 11412766}
   - 136: {fileID: 13629440}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,10 +102,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.021676017
+  m_Radius: 0.01083801
   m_Height: 0.0098351
   m_Direction: 1
-  m_Center: {x: -4.656613e-10, y: 0.0000000020954758, z: 0.021676017}
+  m_Center: {x: -4.656613e-10, y: 0.0000000020954758, z: 0.03345}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

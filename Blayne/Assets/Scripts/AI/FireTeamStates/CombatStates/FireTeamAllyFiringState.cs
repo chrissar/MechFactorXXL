@@ -15,7 +15,15 @@ public class FireTeamAllyFiringState : ICombat
 
     public void OnStateEnter()
     {
-        mStatePatternFTAlly.Shoot();
+
+        if (mStatePatternFTAlly.currentTarget != null)
+        {
+            mStatePatternFTAlly.Shoot();
+        }
+        else
+        {
+            ToAiming();
+        }
     }
 
     public void OnStateExit()

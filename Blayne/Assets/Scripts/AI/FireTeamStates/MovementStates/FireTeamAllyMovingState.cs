@@ -4,6 +4,7 @@ public class FireTeamAllyMovingState : IMovement
 {
 	private readonly FireTeamAlly mStatePatternFTAlly;
 	private FireTeamAllyStateMachine mStateMachine;
+ 
 
 	public FireTeamAllyMovingState (FireTeamAlly statePatternFTAlly, FireTeamAllyStateMachine stateMachine){
 		mStatePatternFTAlly = statePatternFTAlly;
@@ -17,7 +18,7 @@ public class FireTeamAllyMovingState : IMovement
 			// If the ally is detached, move to the detach destination.
 			mStatePatternFTAlly.navMeshAgent.destination =
 				mStatePatternFTAlly.fireTeam.GetSlotPosition (mStatePatternFTAlly.slotPosition);
-		} else {
+		} else {            
 			ToIdling ();
 		}
 	}

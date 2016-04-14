@@ -13,8 +13,11 @@ public class SpawnPoint : MonoBehaviour
     public FireTeam fireTeamPrefab;
     public FireTeamAlly allyPrefab;
     public FireTeam.Side teamSide;
+    public Renderer renderer;
+    public Material enemy;
+    public Material friendly;
 
-	private FireTeam mSpawnedFireTeam;
+    private FireTeam mSpawnedFireTeam;
     private static int msTopTeamNumber = 0;
     private static int GetNewTeamNumber()
     {
@@ -22,8 +25,12 @@ public class SpawnPoint : MonoBehaviour
     }
     public void Awake()
     {
+
         if (!fireTeamPrefab) throw new UnityException("Fire Team Prefab is null at a Spawn Point");
         if (!allyPrefab) throw new UnityException("Ally Prefab is null at a Spawn Point");
+
+        renderer = allyPrefab.transform.FindChild("CorrectedKataphrakt3-Rigged Attempt 2").
+            FindChild("upper torso").GetComponent<Renderer>();
 
         GameObject fireTeamObject = Instantiate(fireTeamPrefab.gameObject);
 		fireTeamObject.transform.position = gameObject.transform.position;
@@ -83,7 +90,8 @@ public class SpawnPoint : MonoBehaviour
 
 	private void CreateNewFireTeamAlly()
 	{
-		GameObject allyObj = Instantiate(allyPrefab.gameObject);
+        Debug.Log("Adding member: " + teamSide);
+        GameObject allyObj = Instantiate(allyPrefab.gameObject);
 		FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
 		mSpawnedFireTeam.AddFireTeamAlly(ally);
 		allyObj.transform.position = mSpawnedFireTeam.GetSlotPosition(ally.slotPosition);
@@ -94,13 +102,13 @@ public class SpawnPoint : MonoBehaviour
 
 	private void SetTeamColorOfFireTeamAlly(FireTeamAlly fireTeamAlly)
 	{
-		Renderer renderer = fireTeamAlly.GetComponent<Renderer> ();
+        //Renderer renderer = fireTeamAlly.GetComponent<Renderer> ();
 		if (renderer != null) {
 			if (mSpawnedFireTeam.TeamSide == FireTeam.Side.Friend) {
-				renderer.material.color = friendColor;
+				renderer.sharedMaterial = new Material(friendly);
 			} else {
-				renderer.material.color = enemyColor;
-			}
+                renderer.sharedMaterial = new Material(enemy);
+            }
 		}
 	}
 }

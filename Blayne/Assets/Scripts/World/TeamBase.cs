@@ -64,6 +64,7 @@ public class TeamBase : MonoBehaviour
 
 	private void CreateNewFireTeamAllyForTeam(FireTeam fireTeam)
 	{
+        Debug.Log("Add members in TeamBase.cs");
 		GameObject allyObj = Instantiate(allyPrefab.gameObject);
 		FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
 		fireTeam.AddFireTeamAlly(ally);
