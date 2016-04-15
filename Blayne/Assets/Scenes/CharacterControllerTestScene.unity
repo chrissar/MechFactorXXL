@@ -426,7 +426,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 63}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &236909486
 MonoBehaviour:
@@ -613,10 +613,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
+--- !u!114 &547035848 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11433336, guid: 9edcee5f9cf21ca4ab61b2f9bafce223,
+    type: 2}
+  m_PrefabInternal: {fileID: 1025966166}
+  m_Script: {fileID: 11500000, guid: 3ded0ea888fa27f4e8fa24127954a075, type: 3}
 --- !u!1 &555461766 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 144998, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
   m_PrefabInternal: {fileID: 1548815391}
+--- !u!114 &555461767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 555461766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f08a1d670c3835f4db76a5231b8b8edf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
 --- !u!4 &555461772 stripped
 Transform:
   m_PrefabParentObject: {fileID: 444098, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
@@ -1030,12 +1049,12 @@ GameObject:
   - 124: {fileID: 947879614}
   - 114: {fileID: 947879618}
   m_Layer: 0
-  m_Name: Main Camera (1)
+  m_Name: RenderCam
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!124 &947879614
 Behaviour:
   m_ObjectHideFlags: 0
@@ -1059,7 +1078,7 @@ Camera:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 947879612}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0.019607844}
@@ -1190,15 +1209,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 428968, guid: 9edcee5f9cf21ca4ab61b2f9bafce223, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 301.9
       objectReference: {fileID: 0}
     - target: {fileID: 428968, guid: 9edcee5f9cf21ca4ab61b2f9bafce223, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 52.2
       objectReference: {fileID: 0}
     - target: {fileID: 428968, guid: 9edcee5f9cf21ca4ab61b2f9bafce223, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 252.6
       objectReference: {fileID: 0}
     - target: {fileID: 428968, guid: 9edcee5f9cf21ca4ab61b2f9bafce223, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1630,7 +1649,7 @@ Prefab:
     - target: {fileID: 11459774, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
       propertyPath: cam
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2096845295}
     - target: {fileID: 144998, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
       propertyPath: m_Name
       value: Player
@@ -1643,6 +1662,10 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11459774, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
+      propertyPath: pCam
+      value: 
+      objectReference: {fileID: 547035848}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e7db635556fcd54696805bd2ecf4018, type: 2}
   m_IsPrefabParent: 0
@@ -2384,9 +2407,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   friendlyColor: {r: 0.08824998, g: 0.059364192, b: 0.89705884, a: 0}
   enemyColor: {r: 0.8602941, g: 0.094885364, b: 0.094885364, a: 0}
+  cameraBorderColor: {r: 0, g: 0, b: 0, a: 0}
   minimapPanel: {fileID: 1880113185}
-  texture: {fileID: 2800000, guid: eb0bb3262bf6b564a856c504d8f51a6e, type: 3}
-  mCanvas: {fileID: 0}
+  camera: {fileID: 0}
 --- !u!114 &1880113187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2571,6 +2594,11 @@ Transform:
 Transform:
   m_PrefabParentObject: {fileID: 400006, guid: 96815d93061882649bd1eaf59c5d4a44, type: 2}
   m_PrefabInternal: {fileID: 427483324}
+--- !u!20 &2096845295 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 2024884, guid: 9edcee5f9cf21ca4ab61b2f9bafce223,
+    type: 2}
+  m_PrefabInternal: {fileID: 1025966166}
 --- !u!1001 &2136032146
 Prefab:
   m_ObjectHideFlags: 0

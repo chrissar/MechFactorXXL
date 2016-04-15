@@ -50,7 +50,8 @@ public class PlayerMachine : SuperStateMachine {
 
     private Quaternion previousRotation;
 
-    public PlayerCamera cam; //reference to our case
+    public PlayerCamera pCam; //reference to our case
+    public Camera cam;
 
     // IK Stuff
     public Transform spine;
@@ -66,16 +67,7 @@ public class PlayerMachine : SuperStateMachine {
     void Start () {
         // Put any code here you want to run ONCE, when the object is initialized
         //Setup our camera reference
-        if (cam == null)
-        {
-            if (Camera.main != null)
-            {
-                GameObject mCam = Camera.main.transform.gameObject;
-                cam = mCam.AddComponent<PlayerCamera>();
-                cam.PlayerTarget = this.gameObject;
-                cam.enabled = false;
-            }
-        }
+        if (!cam) throw new UnityException("Player Machine does not have a camera linked");
 
         input = gameObject.GetComponent<PlayerInputController>();
 
