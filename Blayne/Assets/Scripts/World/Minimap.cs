@@ -15,6 +15,10 @@ public class Minimap : MonoBehaviour
 	private int mPanelHalfWidth;
 	private int mPanelHalfHeight;
 
+    public Canvas mCanvas;
+
+    private Sprite mSprite;
+
 	public void Start()
 	{
 		// Initialize panel size and position variables.
@@ -27,7 +31,17 @@ public class Minimap : MonoBehaviour
 		print (mPanelOriginX);
 		print (mPanelOriginY);
 
-	
-	}
+        mCanvas = transform.parent.GetComponent<Canvas>();
+        GameObject mImage = new GameObject();
+        mImage.AddComponent<Image>();
+        Rect rect = new Rect(0, 0, 512, 512);
+        mSprite = Sprite.Create(texture, rect, new Vector2(0, 0));
+        mImage.GetComponent<Image>().sprite = mSprite;
+
+        mImage.transform.parent = transform;
+        mImage.transform.localPosition = Vector3.zero;
+        //rect = mImage.GetComponent<Rect>();
+
+    }
 }
 

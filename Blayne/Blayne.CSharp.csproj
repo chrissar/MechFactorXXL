@@ -180,6 +180,7 @@
     <Compile Include="Assets\Scripts\UI\SpawnMenu.cs" />
     <Compile Include="Assets\Scripts\UI\TeamAttackEnemyMenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\TeamDisengageEnemyMenuAction.cs" />
+    <Compile Include="Assets\Scripts\World\Minimap.cs" />
     <Compile Include="Assets\Scripts\World\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\World\TeamBase.cs" />
     <Compile Include="Assets\Scripts\World\TerrainToNode\GridManager.cs" />
@@ -199,6 +200,7 @@
     <None Include="Assets\Destroyed_city_FREE\Destroyed_city_FREE_Info.txt" />
     <None Include="Assets\Destroyed_city_FREE\Shaders\AlphaTest-DiffuseDoubleSide.shader" />
     <None Include="Assets\Environment\Contractors\RuinedCar\Shaders\Normal-BumpSpec.shader" />
+    <None Include="Assets\MyAssets\Subway Set\README.txt" />
     <None Include="Assets\RigifyToUnity\Readme.txt" />
     <None Include="Assets\RigifyToUnity\Release Notes.txt" />
     <None Include="Assets\Rocks Pack\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\ChromaticAberrationShader.shader" />
