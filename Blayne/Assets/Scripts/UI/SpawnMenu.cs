@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using MenuActions;
 public class SpawnMenu : MonoBehaviour
 {
+    public GameObject debugObject;
     public enum ActionTarget
     {
         Friend,
@@ -151,7 +152,13 @@ public class SpawnMenu : MonoBehaviour
     {
         RaycastHit result;
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
+       // ray.origin = new Vector3(ray.origin.x, viewCamera.transform.parent.transform.position.y, ray.origin.z);
+        Debug.Log("Camera Ray | Origin: " + ray.origin + " Direction: " + ray.direction);
         Physics.Raycast(ray, out result);
+        if (debugObject)
+        {
+            debugObject.transform.position = result.point;
+        }
         return result;
     }
     public void CopySelectionData(

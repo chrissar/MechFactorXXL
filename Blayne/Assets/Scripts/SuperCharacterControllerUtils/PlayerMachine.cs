@@ -71,9 +71,9 @@ public class PlayerMachine : SuperStateMachine {
             if (Camera.main != null)
             {
                 GameObject mCam = Camera.main.transform.gameObject;
-                mCam.AddComponent<PlayerCamera>();
-                mCam.GetComponent<PlayerCamera>().PlayerTarget = this.gameObject;
-                cam = mCam.GetComponent<PlayerCamera>();
+                cam = mCam.AddComponent<PlayerCamera>();
+                cam.PlayerTarget = this.gameObject;
+                cam.enabled = false;
             }
         }
 

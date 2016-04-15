@@ -43,7 +43,9 @@ public class SpawnPoint : MonoBehaviour
     }
     public void Start()
     {
-        TeamList teamList = GameObject.Find("TeamList").GetComponent<TeamList>() as TeamList;
+        GameObject teamListObj = GameObject.Find("TeamList");
+        if (!teamListObj) throw new UnityException("No TeamList object found in the scene. Make sure you instantiated the prefab.");
+        TeamList teamList = teamListObj.GetComponent<TeamList>() as TeamList;
         // Add team to fire team list;
         teamList.AddTeamToListWithNumber(mSpawnedFireTeam, mSpawnedFireTeam.teamNumber);
         teamList.AddTeamsWithSameAlignmentToTeam(mSpawnedFireTeam);

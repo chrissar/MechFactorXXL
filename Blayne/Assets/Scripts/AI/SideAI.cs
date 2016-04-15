@@ -13,7 +13,7 @@ public class SideAI : MonoBehaviour
         mFriendlySquads = new List<FireTeam>();
         mEnemySquads = new List<FireTeam>();
         GameObject[] squadObjs = GameObject.FindGameObjectsWithTag("squad");
-        
+        Debug.Log("Squads in the scene: " + squadObjs.Length);
         foreach(GameObject squadObj in squadObjs)
         {
             Debug.Log("Adding squad: " + squadObj.name);
@@ -27,6 +27,17 @@ public class SideAI : MonoBehaviour
                 mEnemySquads.Add(squad);
             }
         }
+        GameController.Instance.leftTopDownView += () =>
+        {
+            Debug.Log("Releasing control of players in 5 seconds!");
+            foreach (FireTeam squad in mFriendlySquads)
+            {
+                if(squad.ControlledByPlayer)
+                {
+                    squad.ControlledByPlayer = false;
+                }
+            }
+        };
     }
     public void Update()
     {
@@ -38,17 +49,20 @@ public class SideAI : MonoBehaviour
         List<FireTeam> deadSquads = new List<FireTeam>();
         foreach(FireTeam squad in team)
         {
-            if(IsSquadDead(squad))
+            if (!squad.ControlledByPlayer)
             {
-                deadSquads.Add(squad);
-            }
-            else if(IsSquadRetreating(squad))
-            {
-                RequestHelp(squad, team);
-            }
-            else if(IsSquadInactive(squad))
-            {
-                Attack(squad, GetRandomEnemySquad(team));
+                if (IsSquadDead(squad))
+                {
+                    deadSquads.Add(squad);
+                }
+                else if (IsSquadRetreating(squad))
+                {
+                    RequestHelp(squad, team);
+                }
+                else if (IsSquadInactive(squad))
+                {
+                    Attack(squad, GetRandomEnemySquad(team));
+                }
             }
         }
     }
