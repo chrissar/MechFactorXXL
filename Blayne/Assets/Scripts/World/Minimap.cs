@@ -137,7 +137,7 @@ public class Minimap : MonoBehaviour
 		image.sprite = sprite;
 
 		// Add the image object to the transform of this script.
-		image.transform.parent = transform;
+		image.transform.SetParent(transform);
 
 		return image;
 	}
