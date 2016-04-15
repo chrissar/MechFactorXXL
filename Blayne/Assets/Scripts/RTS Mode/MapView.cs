@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class MapView : MonoBehaviour {
+    public TeamList mTeams;
     public Transform playerPos;
     public Image sprite;
     public Image enemy;
@@ -14,12 +16,20 @@ public class MapView : MonoBehaviour {
 
     Vector2 pos;
     public bool isRTS = false;
-
+    List<Image> sprites = new List<Image>();
     public Canvas mCanvas;
 	// Use this for initialization
 	void Start () {
-	
-	}
+
+        foreach (KeyValuePair<int, FireTeam> team in mTeams.getAllTeams())
+        {
+            Image unitSprite = Instantiate(sprite) as Image;
+            unitSprite.transform.localPosition = new Vector3((team.Value.CurrentAnchorPosition.x - width) * ratio,
+    (team.Value.CurrentAnchorPosition.z - height) * ratio, 0);
+            unitSprite.color = Color.green;
+            sprites.Add(unitSprite);
+        }
+    }
     // TODO
     // For each Unit, spawn a sprite icon at it's relative position.
     // When left clicking, switch to top down view camera, ray trace,
@@ -48,6 +58,8 @@ public class MapView : MonoBehaviour {
                     sprite.transform.localPosition = new Vector3((playerPos.position.x - width) * ratio,
                         (playerPos.position.z - height) * ratio, 0);
                 }
+                
+
             }
 
         }
