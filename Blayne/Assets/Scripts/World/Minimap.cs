@@ -38,7 +38,7 @@ public class Minimap : MonoBehaviour
         mSprite = Sprite.Create(texture, rect, new Vector2(0, 0));
         mImage.GetComponent<Image>().sprite = mSprite;
 
-        mImage.transform.parent = transform;
+        mImage.transform.SetParent(transform, false);
         mImage.transform.localPosition = Vector3.zero;
         //rect = mImage.GetComponent<Rect>();
 
