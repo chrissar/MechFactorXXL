@@ -24,8 +24,18 @@ namespace MenuActions
         private void OnClick()
         {
             SpawnMenu.Instance.CopySelectionData(out selectedLocation, out targetLocation, out selectedObject, out targetObject);
+            SetSquadControl(GetSelectedType(), selectedObject);
+            SetSquadControl(GetTargetType(), targetObject);
             Execute();
             SpawnMenu.Instance.ClearMenu();
+        }
+        private void SetSquadControl(SpawnMenu.ActionTarget target, GameObject targetObj)
+        {
+            if(target == SpawnMenu.ActionTarget.FriendGroup)
+            {
+                FireTeam squad = targetObj.GetComponent<FireTeam>();
+                squad.ControlledByPlayer = true;
+            }
         }
         
     }

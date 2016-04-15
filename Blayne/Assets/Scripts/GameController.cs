@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class GameController : MonoBehaviour
 {
     public bool topDownView = false;
     public int numTicketsPerTeam = 10;
-
+    public event Action leftTopDownView;
     private SpawnMenu mSpawnMenu;
     private static GameController msInstance;
 	private TeamList mTeamList;
@@ -62,6 +63,11 @@ public class GameController : MonoBehaviour
 
     private void ToggleCamera()
     {
-        topDownView = (!topDownView);
+        topDownView = !topDownView;
+        if(!topDownView && leftTopDownView != null)
+        {
+            Debug.Log("Launching Left Top Down VIew Event!");
+            leftTopDownView();
+        }
     }
 }

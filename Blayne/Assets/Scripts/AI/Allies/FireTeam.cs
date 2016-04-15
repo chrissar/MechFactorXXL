@@ -10,7 +10,7 @@ public class FireTeam : Ally
 	public const int kMaxFireTeamMembers = 4;
 	private const float mkMinDistanceFromSlotPositionNeeded = 5.0f;
 	private const float mkOptimalAttackDistance = FireTeamAlly.kVisionConeRadius * 0.5f;
-
+    private const float mkPlayerControlDuration = 5.0f;
     public enum Side
     {
         Friend,
@@ -35,6 +35,8 @@ public class FireTeam : Ally
 	private Vector3 mNextAnchorPosition; // Slightly ahead of anchor point to set target slot positions.
 	private Quaternion mCurrentOrientation;
 	private float mCurrentSpeed;
+    private bool mControlledByPlayer;
+    private float mTimeSincePlayerControl;
 
     private State mCurrentState;
 	public Side TeamSide
@@ -106,6 +108,19 @@ public class FireTeam : Ally
 			return mMemberCount;
 		}
 	}
+    public bool ControlledByPlayer
+    {
+        get
+        {
+            return mControlledByPlayer || mTimeSincePlayerControl < mkPlayerControlDuration;
+        }
+        set
+        {
+            Debug.Log("Squad controlled by player: " + value);
+            mControlledByPlayer = value;
+            mTimeSincePlayerControl = 0;
+        }
+    }
 	public Vector3 CurrentAnchorPosition
 	{
 		get
@@ -124,12 +139,15 @@ public class FireTeam : Ally
 
 	public void Awake()
 	{
-		Initialize ();
+        mControlledByPlayer = false;
+        mTimeSincePlayerControl = mkPlayerControlDuration;
+        Initialize ();
         InitializeStateMachine();
 	}
 
 	public void Update()
 	{
+        mTimeSincePlayerControl += Time.deltaTime;
 		UpdateDestination ();
 		UpdateProjector ();
 		UpdateAnchor ();
