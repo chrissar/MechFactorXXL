@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class SpawnPoint : MonoBehaviour
 {
-	private const float mkRefillRadius = 5.0f;
+	private const float mkRefillRadius = FireTeam.kMinDistanceFromSlotPositionNeeded;
 
 	public Color friendColor;
 	public Color enemyColor;
@@ -79,15 +79,20 @@ public class SpawnPoint : MonoBehaviour
 			for (int i = 0; i < mSpawnedFireTeam.MemberCount; ++i) {
 				// Check if any members of the fire team are close to the spawn point.
 				FireTeamAlly ally = mSpawnedFireTeam.GetAllyAtSlotPosition (i);
-				if (Vector3.Distance (ally.Position, transform.position) < mkRefillRadius) {
+				Vector3 planeDisplacement = ally.Position - transform.position;
+				planeDisplacement = new Vector3 (planeDisplacement.x, 0, planeDisplacement.z);
+				if (planeDisplacement.magnitude < mkRefillRadius) {
 					// Refill the fire team to full.
 					for (int j = 0; j < missingTeamMembers; ++j) {
-						CreateNewFireTeamAlly();
+						CreateNewFireTeamAlly ();
 					}
 					// Don't add any more characters to the fire team.
 					break;
 				}
 			}
+			// Since te fire team made it back to the spawn point, reset their 
+			// fomration to wedge formation.
+			mSpawnedFireTeam.SetFormation(FireTeamFormation.WEDGE);
 		}
 	}
 
