@@ -13,7 +13,7 @@ public class SideAI : MonoBehaviour
         mFriendlySquads = new List<FireTeam>();
         mEnemySquads = new List<FireTeam>();
         GameObject[] squadObjs = GameObject.FindGameObjectsWithTag("squad");
-        
+        Debug.Log("Squads in the scene: " + squadObjs.Length);
         foreach(GameObject squadObj in squadObjs)
         {
             Debug.Log("Adding squad: " + squadObj.name);

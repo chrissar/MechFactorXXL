@@ -79,8 +79,8 @@ public class PlayerCamera : MonoBehaviour
         }
         else
         {
-            pos = PlayerTarget.transform.position + Vector3.up * topDownHeight;
-            rot = Quaternion.LookRotation(-Vector3.up, Vector3.forward);
+            transform.position = PlayerTarget.transform.position + Vector3.up * topDownHeight;
+            transform.rotation = Quaternion.LookRotation(-Vector3.up, Vector3.forward);
         }
         //gameObject.transform.position = Vector3.Lerp(pos, gameObject.transform.position, Time.deltaTime * movementSpeed);
         //gameObject.transform.rotation = Quaternion.Slerp(rot, gameObject.transform.rotation, Time.deltaTime * rotationSpeed);
