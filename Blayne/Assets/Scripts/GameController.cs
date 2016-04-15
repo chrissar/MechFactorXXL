@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour
     public bool topDownView = false;
     public int numTicketsPerTeam = 10;
     public event Action leftTopDownView;
+	public MapView mapView;
     private SpawnMenu mSpawnMenu;
     private static GameController msInstance;
 	private TeamList mTeamList;
@@ -51,7 +52,7 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+		if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.M))
         {
             ToggleCamera();
             if (mSpawnMenu != null)

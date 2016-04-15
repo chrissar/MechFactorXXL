@@ -34,9 +34,7 @@ namespace MenuActions
             if(target == SpawnMenu.ActionTarget.FriendGroup)
             {
                 FireTeam squad = targetObj.GetComponent<FireTeam>();
-				if (squad != null) {
-					squad.ControlledByPlayer = true;
-				}
+                squad.ControlledByPlayer = true;
             }
         }
         

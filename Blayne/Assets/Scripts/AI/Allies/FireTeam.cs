@@ -413,8 +413,6 @@ public class FireTeam : Ally
 		planeDisplacement = new Vector3 (planeDisplacement.x, 0, planeDisplacement.z);
 		if (planeDisplacement.magnitude < kMinDistanceFromSlotPositionNeeded) {
 			return true;
-		} else {
-			print (Vector3.Distance (fireTeamAlly.Position, allyTarget));
 		}
 		return false;
 	}

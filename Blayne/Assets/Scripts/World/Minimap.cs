@@ -12,7 +12,7 @@ public class Minimap : MonoBehaviour
 	public Color enemyColor;
 	public Color cameraBorderColor;
 	public RectTransform minimapPanel;
-	public Camera camera;
+	public Camera playerPositionCamera;
 
 	private float mWorldOriginX;
 	private float mWorldOriginZ;
@@ -20,14 +20,13 @@ public class Minimap : MonoBehaviour
 	private float mWorldHeight;
 	private float mPanelWidth;
 	private float mPanelHeight;
-	private Texture2D mFriendlyFireTeamTexture;
 	private Texture2D mFriendlyFireTeamMemberTexture;
-	private Texture2D mEnemyFireTeamTexture;
 	private Texture2D mEnemyFireTeamMemberTexture;
 	private Texture2D mCameraBorderTexture;
 	private Dictionary<int, Image[]> mImageArrays;
 	private Image mCameraImage;
 	private TeamList mTeamList;
+	private Canvas mCanvas;
 
 	public void Start()
 	{
@@ -40,63 +39,36 @@ public class Minimap : MonoBehaviour
 		mWorldOriginX = worldGameObject.transform.position.x;
 		mWorldOriginZ = worldGameObject.transform.position.z;
 
-		// Initialize reusable textures.
-		mFriendlyFireTeamTexture = new Texture2D (mkAllyTextureSize, mkAllyTextureSize);
-		mEnemyFireTeamTexture = new Texture2D (mkAllyTextureSize, mkAllyTextureSize);
-		for (int x = 0; x < mFriendlyFireTeamTexture.width; ++x) {
-			for (int y = 0; y < mFriendlyFireTeamTexture.height; ++y) {
-				mFriendlyFireTeamTexture.SetPixel (x, y, friendlyColor);
-				mEnemyFireTeamTexture.SetPixel (x, y, enemyColor);
-			}
-		}
-		// Set borders of the camera texture.
-		mCameraBorderTexture = new Texture2D (mkCameraBorderSize, mkCameraBorderSize);
-		// Blank the camera border texture.
-		for (int x = 0; x <  mCameraBorderTexture.width; ++x) {
-			for (int y = 0; y < mCameraBorderTexture.height; ++y) {
-				mCameraBorderTexture.SetPixel (x, y, new Color(0, 0, 0, 0));
-			}
-		}
-		// Fill top and bottom sides.
-		for (int x = 0; x < mCameraBorderTexture.width; ++x) {
-			mCameraBorderTexture.SetPixel (x, 0, cameraBorderColor);
-			mCameraBorderTexture.SetPixel (x, 1, cameraBorderColor);
-			mCameraBorderTexture.SetPixel (x, mCameraBorderTexture.height - 2, cameraBorderColor);
-			mCameraBorderTexture.SetPixel (x, mCameraBorderTexture.height -1, cameraBorderColor);
-		}
-		// Fill left and right sides.
-		for (int y = 2; y < mCameraBorderTexture.height - 2; ++y) {
-			mCameraBorderTexture.SetPixel (0, y, cameraBorderColor); 
-			mCameraBorderTexture.SetPixel (1, y, cameraBorderColor);
-			mCameraBorderTexture.SetPixel (mCameraBorderTexture.width - 2, y, cameraBorderColor);
-			mCameraBorderTexture.SetPixel (mCameraBorderTexture.width - 1, y, cameraBorderColor);
-		}
-		// Apply texture changes
-		mFriendlyFireTeamTexture.Apply (); 
-		mEnemyFireTeamTexture.Apply (); 
-		mCameraBorderTexture.Apply();
-
-		// Create camera Image
-		mCameraImage = CreateImage(mCameraBorderTexture, mkCameraBorderSize);
-
+		InitializeTextures ();
+	
 		// Initialize the dictionary of Image arryas as well as the team list.
 		mImageArrays = new Dictionary<int, Image[]>(); // Used to store created image game objects.
 		mTeamList = GameObject.Find("TeamList").GetComponent<TeamList>() as TeamList;
+
+		// Get a reference to the minimap's canvas.
+		mCanvas = transform.parent.GetComponent<Canvas>();
     }
 
 	public void Update()
 	{
-		// Draw the positions of the friendly fire teams on the minimap.
-		List<FireTeam> friendFireTeams = mTeamList.GetTeamsWithGivenAlignment(FireTeam.Side.Friend);
-		DrawMapCoordinatesForFireTeamList (friendFireTeams, mFriendlyFireTeamTexture);
+		if (!GameController.Instance.topDownView) {
+			mCanvas.enabled = true;
+			// Draw the positions of the friendly fire teams on the minimap.
+			List<FireTeam> friendFireTeams = mTeamList.GetTeamsWithGivenAlignment (FireTeam.Side.Friend);
+			DrawMapCoordinatesForFireTeamList (friendFireTeams, mFriendlyFireTeamMemberTexture);
 
-		// Draw the positions of the enemy fire teams on the minimap.
-		List<FireTeam> EnemyFireTeams = mTeamList.GetTeamsWithGivenAlignment(FireTeam.Side.Enemy);
-		DrawMapCoordinatesForFireTeamList (EnemyFireTeams,  mEnemyFireTeamTexture);
+			// Draw the positions of the enemy fire teams on the minimap.
+			List<FireTeam> EnemyFireTeams = mTeamList.GetTeamsWithGivenAlignment (FireTeam.Side.Enemy);
+			DrawMapCoordinatesForFireTeamList (EnemyFireTeams, mEnemyFireTeamMemberTexture);
 
-		// Move the camera border image to the current position of the camera.
-		Vector2 cameraMapCoordinates = ConvertVector3To2DMapCoordinates(camera.transform.position);
-		mCameraImage.transform.localPosition = cameraMapCoordinates;
+			// Move the camera border image to the current position of the camera.
+			Vector2 cameraMapCoordinates = 
+				ConvertVector3To2DMapCoordinates (playerPositionCamera.transform.position);
+			mCameraImage.transform.localPosition = cameraMapCoordinates;
+		} else {
+			// Disable the minimap while in top down view mode.
+			mCanvas.enabled = false;
+		}
 	}
 
 	private void DrawMapCoordinatesForFireTeamList(List<FireTeam> fireTeamList, Texture2D texture)
@@ -191,6 +163,48 @@ public class Minimap : MonoBehaviour
 				images [i] = null;
 			}
 		}
+	}
+
+	private void InitializeTextures()
+	{
+		// Initialize reusable textures.
+		mFriendlyFireTeamMemberTexture = new Texture2D (mkAllyTextureSize, mkAllyTextureSize);
+		mEnemyFireTeamMemberTexture = new Texture2D (mkAllyTextureSize, mkAllyTextureSize);
+		for (int x = 0; x < mFriendlyFireTeamMemberTexture.width; ++x) {
+			for (int y = 0; y < mFriendlyFireTeamMemberTexture.height; ++y) {
+				mFriendlyFireTeamMemberTexture.SetPixel (x, y, friendlyColor);
+				mEnemyFireTeamMemberTexture.SetPixel (x, y, enemyColor);
+			}
+		}
+		// Set borders of the camera texture.
+		mCameraBorderTexture = new Texture2D (mkCameraBorderSize, mkCameraBorderSize);
+		// Blank the camera border texture.
+		for (int x = 0; x <  mCameraBorderTexture.width; ++x) {
+			for (int y = 0; y < mCameraBorderTexture.height; ++y) {
+				mCameraBorderTexture.SetPixel (x, y, new Color(0, 0, 0, 0));
+			}
+		}
+		// Fill top and bottom sides.
+		for (int x = 0; x < mCameraBorderTexture.width; ++x) {
+			mCameraBorderTexture.SetPixel (x, 0, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (x, 1, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (x, mCameraBorderTexture.height - 2, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (x, mCameraBorderTexture.height -1, cameraBorderColor);
+		}
+		// Fill left and right sides.
+		for (int y = 2; y < mCameraBorderTexture.height - 2; ++y) {
+			mCameraBorderTexture.SetPixel (0, y, cameraBorderColor); 
+			mCameraBorderTexture.SetPixel (1, y, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (mCameraBorderTexture.width - 2, y, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (mCameraBorderTexture.width - 1, y, cameraBorderColor);
+		}
+		// Apply texture changes
+		mFriendlyFireTeamMemberTexture.Apply (); 
+		mEnemyFireTeamMemberTexture.Apply (); 
+		mCameraBorderTexture.Apply();
+
+		// Create camera Image
+		mCameraImage = CreateImage(mCameraBorderTexture, mkCameraBorderSize);
 	}
 }
 

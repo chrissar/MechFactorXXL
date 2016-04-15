@@ -15,6 +15,7 @@ public class PlayerCamera : MonoBehaviour
     public float minZoom = 0.3f;
     public float maxZoom = 3;
     public GameObject PlayerTarget;
+	public Camera mainCamera;
 
     private PlayerInputController input;
     private PlayerMachine machine;
@@ -42,6 +43,7 @@ public class PlayerCamera : MonoBehaviour
         currentMousePos = Input.mousePosition;   
         if (!GameController.Instance.topDownView)
         {
+			machine.cam.enabled = true;
             mZoom = 1.0f;            
             mPannedOffset = Vector3.zero;
 
@@ -66,18 +68,8 @@ public class PlayerCamera : MonoBehaviour
         }
         else
         {
-            mZoom -= Input.mouseScrollDelta.y * 0.1f;
-            mZoom = Mathf.Clamp((mZoom) * zoomingSpeed, minZoom, maxZoom);
-            if (Input.GetMouseButton(2))
-            {
-                Debug.Log("PANNING!!!!!");
-                Vector3 deltaMouse = currentMousePos - lastMousePos;
-                mPannedOffset += new Vector3(deltaMouse.x, 0, deltaMouse.y) * panningSpeed * mZoom;
-            }
-            transform.position = PlayerTarget.transform.position + Vector3.up * topDownHeight * mZoom - mPannedOffset;
-            transform.rotation = Quaternion.LookRotation(-Vector3.up, Vector3.forward);
+			// Disable the main camera while in top down view mode.
+			machine.cam.enabled = false;
         }
-        //gameObject.transform.position = Vector3.Lerp(pos, gameObject.transform.position, Time.deltaTime * movementSpeed);
-        //gameObject.transform.rotation = Quaternion.Slerp(rot, gameObject.transform.rotation, Time.deltaTime * rotationSpeed);
     }
 }
