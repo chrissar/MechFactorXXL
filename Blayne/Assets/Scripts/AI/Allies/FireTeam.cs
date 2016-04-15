@@ -8,7 +8,7 @@ public class FireTeam : Ally
 {
 
 	public const int kMaxFireTeamMembers = 4;
-	private const float mkMinDistanceFromSlotPositionNeeded = 25.0f;
+	public const float kMinDistanceFromSlotPositionNeeded = 5.0f;
 	private const float mkOptimalAttackDistance = FireTeamAlly.kVisionConeRadius * 0.5f;
     private const float mkPlayerControlDuration = 5.0f;
     public enum Side
@@ -242,7 +242,6 @@ public class FireTeam : Ally
 	public void SetDestination(Vector3 destination)
 	{
 		mDestination = destination;
-		print (mDestination);
 		SetNextAnchorPointTarget ();
 		SetOrientation ();
 	}
@@ -408,9 +407,14 @@ public class FireTeam : Ally
 		// If the ally is detached, check if they are close enough to their detached postion. Otherwise,
 		// check if the ally is close enough to the assigned slot position for that ally.
 		Vector3 allyTarget = Vector3.zero;
+
 		allyTarget = GetSlotPosition (fireTeamAlly.slotPosition);
-		if (Vector3.Distance (fireTeamAlly.Position, allyTarget) < mkMinDistanceFromSlotPositionNeeded) {
+		Vector3 planeDisplacement = fireTeamAlly.Position - allyTarget;
+		planeDisplacement = new Vector3 (planeDisplacement.x, 0, planeDisplacement.z);
+		if (planeDisplacement.magnitude < kMinDistanceFromSlotPositionNeeded) {
 			return true;
+		} else {
+			print (Vector3.Distance (fireTeamAlly.Position, allyTarget));
 		}
 		return false;
 	}

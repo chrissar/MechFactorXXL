@@ -11,6 +11,11 @@ public class TeamList : MonoBehaviour
 		mTeamList = new Dictionary<int, FireTeam> ();
 	}
 
+    public Dictionary<int, FireTeam> getAllTeams()
+    {
+        return mTeamList;
+    }
+
 	public void AddTeamToListWithNumber(FireTeam teamToAdd, int teamNumber)
 	{
 		if (teamToAdd != null && teamNumber >= 0) {
