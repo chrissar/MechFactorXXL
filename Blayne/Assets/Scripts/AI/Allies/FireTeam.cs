@@ -8,7 +8,7 @@ public class FireTeam : Ally
 {
 
 	public const int kMaxFireTeamMembers = 4;
-	private const float mkMinDistanceFromSlotPositionNeeded = 5.0f;
+	private const float mkMinDistanceFromSlotPositionNeeded = 25.0f;
 	private const float mkOptimalAttackDistance = FireTeamAlly.kVisionConeRadius * 0.5f;
     private const float mkPlayerControlDuration = 5.0f;
     public enum Side
@@ -242,6 +242,7 @@ public class FireTeam : Ally
 	public void SetDestination(Vector3 destination)
 	{
 		mDestination = destination;
+		print (mDestination);
 		SetNextAnchorPointTarget ();
 		SetOrientation ();
 	}
