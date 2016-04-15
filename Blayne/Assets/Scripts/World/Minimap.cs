@@ -5,11 +5,14 @@ using UnityEngine.UI;
 
 public class Minimap : MonoBehaviour
 {
-	private const int mkTextureSize = 2;
+	private const int mkAllyTextureSize = 2;
+	private const int mkCameraBorderSize = 16;
 
 	public Color friendlyColor;
 	public Color enemyColor;
+	public Color cameraBorderColor;
 	public RectTransform minimapPanel;
+	public Camera camera;
 
 	private float mWorldOriginX;
 	private float mWorldOriginZ;
@@ -17,14 +20,13 @@ public class Minimap : MonoBehaviour
 	private float mWorldHeight;
 	private float mPanelWidth;
 	private float mPanelHeight;
-
-    private Canvas mCanvas;
-    private Sprite mSprite;
 	private Texture2D mFriendlyFireTeamTexture;
 	private Texture2D mFriendlyFireTeamMemberTexture;
 	private Texture2D mEnemyFireTeamTexture;
 	private Texture2D mEnemyFireTeamMemberTexture;
+	private Texture2D mCameraBorderTexture;
 	private Dictionary<int, Image[]> mImageArrays;
+	private Image mCameraImage;
 	private TeamList mTeamList;
 
 	public void Start()
@@ -39,17 +41,45 @@ public class Minimap : MonoBehaviour
 		mWorldOriginZ = worldGameObject.transform.position.z;
 
 		// Initialize reusable textures.
-		mFriendlyFireTeamTexture = new Texture2D (mkTextureSize, mkTextureSize);
-		mEnemyFireTeamTexture = new Texture2D (mkTextureSize, mkTextureSize);
-		for (int x = 0; x < mkTextureSize; ++x) {
-			for (int y = 0; y < mkTextureSize; ++y) {
+		mFriendlyFireTeamTexture = new Texture2D (mkAllyTextureSize, mkAllyTextureSize);
+		mEnemyFireTeamTexture = new Texture2D (mkAllyTextureSize, mkAllyTextureSize);
+		for (int x = 0; x < mFriendlyFireTeamTexture.width; ++x) {
+			for (int y = 0; y < mFriendlyFireTeamTexture.height; ++y) {
 				mFriendlyFireTeamTexture.SetPixel (x, y, friendlyColor);
 				mEnemyFireTeamTexture.SetPixel (x, y, enemyColor);
 			}
 		}
-		mFriendlyFireTeamTexture.Apply (); // Apply texture changes
-		mEnemyFireTeamTexture.Apply (); // Apply texture changes
+		// Set borders of the camera texture.
+		mCameraBorderTexture = new Texture2D (mkCameraBorderSize, mkCameraBorderSize);
+		// Blank the camera border texture.
+		for (int x = 0; x <  mCameraBorderTexture.width; ++x) {
+			for (int y = 0; y < mCameraBorderTexture.height; ++y) {
+				mCameraBorderTexture.SetPixel (x, y, new Color(0, 0, 0, 0));
+			}
+		}
+		// Fill top and bottom sides.
+		for (int x = 0; x < mCameraBorderTexture.width; ++x) {
+			mCameraBorderTexture.SetPixel (x, 0, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (x, 1, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (x, mCameraBorderTexture.height - 2, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (x, mCameraBorderTexture.height -1, cameraBorderColor);
+		}
+		// Fill left and right sides.
+		for (int y = 2; y < mCameraBorderTexture.height - 2; ++y) {
+			mCameraBorderTexture.SetPixel (0, y, cameraBorderColor); 
+			mCameraBorderTexture.SetPixel (1, y, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (mCameraBorderTexture.width - 2, y, cameraBorderColor);
+			mCameraBorderTexture.SetPixel (mCameraBorderTexture.width - 1, y, cameraBorderColor);
+		}
+		// Apply texture changes
+		mFriendlyFireTeamTexture.Apply (); 
+		mEnemyFireTeamTexture.Apply (); 
+		mCameraBorderTexture.Apply();
 
+		// Create camera Image
+		mCameraImage = CreateImage(mCameraBorderTexture, mkCameraBorderSize);
+
+		// Initialize the dictionary of Image arryas as well as the team list.
 		mImageArrays = new Dictionary<int, Image[]>(); // Used to store created image game objects.
 		mTeamList = GameObject.Find("TeamList").GetComponent<TeamList>() as TeamList;
     }
@@ -63,6 +93,10 @@ public class Minimap : MonoBehaviour
 		// Draw the positions of the enemy fire teams on the minimap.
 		List<FireTeam> EnemyFireTeams = mTeamList.GetTeamsWithGivenAlignment(FireTeam.Side.Enemy);
 		DrawMapCoordinatesForFireTeamList (EnemyFireTeams,  mEnemyFireTeamTexture);
+
+		// Move the camera border image to the current position of the camera.
+		Vector2 cameraMapCoordinates = ConvertVector3To2DMapCoordinates(camera.transform.position);
+		mCameraImage.transform.localPosition = cameraMapCoordinates;
 	}
 
 	private void DrawMapCoordinatesForFireTeamList(List<FireTeam> fireTeamList, Texture2D texture)
@@ -73,7 +107,6 @@ public class Minimap : MonoBehaviour
 			// Get the image array in the dictionary of images. If there is no image array
 			// for the given key, create one.
 			Image[] images = GetImagesWithKey (key);
-			print(images);
 			if (images == null) {
 				images = new Image[FireTeam.kMaxFireTeamMembers];
 				mImageArrays.Add (key, images);
@@ -111,8 +144,7 @@ public class Minimap : MonoBehaviour
 			
 			Image image = images [i];
 			if (image == null) {
-				print ("creating: " + i);
-				image = CreateFireTeamMemberImage (texture);
+				image = CreateImage (texture, mkAllyTextureSize);
 				images [i] = image;
 			}
 
@@ -120,15 +152,15 @@ public class Minimap : MonoBehaviour
 		 	image.transform.localPosition = mapCoordinates;
 		}
 	}
-
-	private Image CreateFireTeamMemberImage(Texture2D texture)
+		
+	private Image CreateImage(Texture2D texture, int textureSize)
 	{	
 		// Initialize an image for the fire team member.
 		// Create the new sprite image object
 		GameObject imageObject = new GameObject();
 		Image image = imageObject.AddComponent<Image>();
-		image.rectTransform.sizeDelta = new Vector2 (mkTextureSize, mkTextureSize);
-		Rect rect = new Rect(0, 0, mkTextureSize, mkTextureSize);
+		image.rectTransform.sizeDelta = new Vector2 (textureSize, textureSize);
+		Rect rect = new Rect(0, 0, textureSize, textureSize);
 		Sprite sprite =	Sprite.Create(texture, rect, new Vector2(0, 0));
 		image.sprite = sprite;
 
@@ -141,8 +173,8 @@ public class Minimap : MonoBehaviour
 	private Vector2 ConvertVector3To2DMapCoordinates(Vector3 vector3ToConvert)
 	{
 		// Convert from world coordinates to minimap coordinates.
-		float newXCoord = (vector3ToConvert.x - mWorldOriginX) * mPanelWidth / mWorldWidth;
-		float newYCoord = (vector3ToConvert.z - mWorldOriginZ) * mPanelHeight / mWorldHeight;
+		float newXCoord = Mathf.Floor((vector3ToConvert.x - mWorldOriginX) * mPanelWidth / mWorldWidth);
+		float newYCoord = Mathf.Floor((vector3ToConvert.z - mWorldOriginZ) * mPanelHeight / mWorldHeight);
 		return new Vector2 (newXCoord, newYCoord);
 	}
 
