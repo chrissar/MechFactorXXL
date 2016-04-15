@@ -54,7 +54,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 101040}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 280.23, y: 14.78, z: 314.77}
+  m_LocalPosition: {x: 301.9, y: 52.2, z: 252.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 415530}
@@ -126,6 +126,10 @@ MonoBehaviour:
   rotationSpeed: 1
   topDownHeight: 10
   crouchHeight: 1.5
+  panningSpeed: 2
+  zoomingSpeed: 1
+  minZoom: 0.3
+  maxZoom: 3
   PlayerTarget: {fileID: 0}
 --- !u!124 &12431672
 Behaviour:

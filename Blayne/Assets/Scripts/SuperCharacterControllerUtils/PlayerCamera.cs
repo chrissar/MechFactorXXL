@@ -24,6 +24,7 @@ public class PlayerCamera : MonoBehaviour
     private SuperCharacterController controller;
     private Vector3 lastMousePos;
     private Vector3 currentMousePos;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -41,34 +42,19 @@ public class PlayerCamera : MonoBehaviour
         currentMousePos = Input.mousePosition;   
         if (!GameController.Instance.topDownView)
         {
-            mZoom = 1.0f;
+            mZoom = 1.0f;            
             mPannedOffset = Vector3.zero;
+
             Transform target = PlayerTarget.transform;
-
-            yRotation += input.Current.MouseInput.y;
-
-            Vector3 left = Vector3.Cross(machine.lookDirection, controller.up);
-
-            rot = Quaternion.LookRotation(machine.lookDirection, controller.up);
-            rot = Quaternion.AngleAxis(yRotation, left) * rot;
-            pos = target.position;
-
-            pos -= rot * target.forward * Distance;
-            pos += rot * target.up * Height;
-            pos += rot * (new Vector3(horizontalOffset, 0, 0));
-
-            // When I no longer rotate the mesh the above code, and perhaps the two lines at the bottom
-            // causes the camera rotation to break.
-            
             transform.position = target.position;
 
             yRotation += input.Current.MouseInput.y;
 
-            left = Vector3.Cross(machine.lookDirection, controller.up);
-
+            Vector3 left = Vector3.Cross(machine.lookDirection, controller.up);
+            rot = Quaternion.LookRotation(machine.lookDirection, controller.up);
+            rot = Quaternion.AngleAxis(yRotation, left) * rot;
             transform.rotation = Quaternion.LookRotation(machine.lookDirection, controller.up);
             transform.rotation = Quaternion.AngleAxis(yRotation, left) * transform.rotation;
-
             transform.position -= transform.forward * Distance;
 
             if (machine.crouch)
@@ -77,14 +63,6 @@ public class PlayerCamera : MonoBehaviour
                 transform.position += controller.up * Height;
 
             transform.position += rot * (new Vector3(horizontalOffset, 0, 0));
-
-
-            //pos = target.position;
-            //pos -= rot * target.forward * Distance;
-            //pos += rot * target.up * Height;
-            //pos += rot * (new Vector3(horizontalOffset, 0, 0));
-
-
         }
         else
         {

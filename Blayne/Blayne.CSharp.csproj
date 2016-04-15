@@ -145,6 +145,7 @@
     <Compile Include="Assets\Scripts\Combat\TestGunController.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\RTS Mode\DrawMap.cs" />
+    <Compile Include="Assets\Scripts\RTS Mode\MapView.cs" />
     <Compile Include="Assets\Scripts\StateMachine\State.cs" />
     <Compile Include="Assets\Scripts\StateMachine\StateTransition.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterController\Core\BSPTree.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\SimpleStateMachine.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\TestIK.cs" />
     <Compile Include="Assets\Scripts\UI\ChangeFormationMenuAction.cs" />
+    <Compile Include="Assets\Scripts\UI\IsClickable.cs" />
     <Compile Include="Assets\Scripts\UI\MenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\MoveTeamMenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\SpawnMenu.cs" />
