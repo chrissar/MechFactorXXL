@@ -4,16 +4,18 @@ using System.Collections;
 
 public class CrossHairScript : MonoBehaviour
 {
-    private RawImage crossHair;
+    public CanvasGroup canvasGroup;
 	// Use this for initialization
 	void Start ()
     {
-        crossHair = gameObject.GetComponent<RawImage>();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        crossHair.enabled = !GameController.Instance.topDownView && Input.GetMouseButton(1);
-	}
+        if (!GameController.Instance.topDownView && Input.GetMouseButton(1))
+            canvasGroup.alpha = 1;
+        else
+            canvasGroup.alpha = 0;
+    }
 }

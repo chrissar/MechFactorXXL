@@ -69,8 +69,11 @@ public class PlayerMachine : SuperStateMachine {
     public Vector3 rotation;
 
     public bool debug = false;
+    CursorLockMode wantedMode;
 
     void Start () {
+        Cursor.lockState = wantedMode;
+        Cursor.visible = false;
         muzzleFlash = Resources.Load("effects/impactDirt")
     as GameObject;
 
