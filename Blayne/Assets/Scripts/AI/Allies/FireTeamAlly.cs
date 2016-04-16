@@ -1,5 +1,6 @@
 ﻿using System;
 using Combat;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class FireTeamAlly : Ally
 {
     public AudioSource mGunSound;
     public AudioSource walking;
+    private float audioStepLengthWalk = 0.75f;
 
     public const float kSensingProximityRadius = 20.0f;
 	public const float kVisionConeRadius = 50.0f;
@@ -36,7 +38,7 @@ public class FireTeamAlly : Ally
     public float forwardAmount = 0f;
     public float sidewaysAmount = 0f;
 
-    public bool step;
+    private bool step = true;
 
     public GameObject LeftHandAimingPosition;
     public GameObject LeftHandIdlePosition;
@@ -193,6 +195,8 @@ public class FireTeamAlly : Ally
 
             if (mStateMachine.currentCombatState == mStateMachine.firingState)
             {
+                if (!mGunSound.isPlaying)
+                    mGunSound.Play();
                 //firing = true;
             }
 
@@ -232,10 +236,16 @@ public class FireTeamAlly : Ally
 
                 if (Vector3.Dot(fwd, movement) < 0)
                 {
+                    if (step)
+                        Walk();
+
                     forwardAmount = -0.65f;
                 }
                 else if (Vector3.Dot(fwd, movement) > 0)
                 {
+                    if (step)
+                        Walk();
+
                     forwardAmount = 0.65f;
                 }                    
                 else
@@ -311,7 +321,7 @@ public class FireTeamAlly : Ally
         {
             firing = false;
             animator.SetTrigger("Fire 0");
-            mGunSound.Play();
+            
         }
 
         animator.SetBool("Crouch", crouch);

@@ -16,6 +16,7 @@ public class PlayerMachine : SuperStateMachine {
     public GameObject HandPosition;
     public Transform RightHandPosition;
     Animator animator;
+    public GameObject muzzleFlash;
 
     public float WalkSpeed = 4.0f;
     public float crouchSpeed = 2.0f;
@@ -70,6 +71,9 @@ public class PlayerMachine : SuperStateMachine {
     public bool debug = false;
 
     void Start () {
+        muzzleFlash = Resources.Load("effects/impactDirt")
+    as GameObject;
+
         // Put any code here you want to run ONCE, when the object is initialized
         //Setup our camera reference
         if (!cam) throw new UnityException("Player Machine does not have a camera linked");
