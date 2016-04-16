@@ -175,6 +175,26 @@ public class PlayerMachine : SuperStateMachine {
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
+        if (Input.GetKeyDown(KeyCode.CapsLock))
+        {
+            if (Cursor.visible == false)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+
+        }
+
         IKweight = Mathf.MoveTowards(IKweight, (aim) ? 1.0f : 0.0f, Time.deltaTime * 5);
 
     }

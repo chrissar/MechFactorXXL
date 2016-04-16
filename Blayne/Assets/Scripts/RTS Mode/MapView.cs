@@ -61,10 +61,14 @@ public class MapView : MonoBehaviour {
 		{
 			canvas.GetComponent<CanvasGroup>().alpha = 0;
 			canvas.GetComponent<CanvasGroup>().interactable = false;
-		}
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
 		else
 		{
-			canvas.GetComponent<CanvasGroup>().alpha = 1;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            canvas.GetComponent<CanvasGroup>().alpha = 1;
 			canvas.GetComponent<CanvasGroup>().interactable = true;
 			if (playerPos != null && mapImage != null)
 			{
