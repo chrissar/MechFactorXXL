@@ -112,6 +112,7 @@
      <Compile Include="Assets\Scripts\AI\StatusStates\EaseState.cs" />
      <Compile Include="Assets\Scripts\AI\StatusStates\SuppressedState.cs" />
      <Compile Include="Assets\Scripts\Character\CharacterMovement.cs" />
+     <Compile Include="Assets\Scripts\Character\FlashlightController.cs" />
      <Compile Include="Assets\Scripts\Character\IKController.cs" />
      <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Combat\Bullet.cs" />
