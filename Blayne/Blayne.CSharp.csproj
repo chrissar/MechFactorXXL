@@ -176,6 +176,7 @@
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\SimpleStateMachine.cs" />
     <Compile Include="Assets\Scripts\SuperCharacterControllerUtils\TestIK.cs" />
     <Compile Include="Assets\Scripts\UI\ChangeFormationMenuAction.cs" />
+    <Compile Include="Assets\Scripts\UI\CrossHairScript.cs" />
     <Compile Include="Assets\Scripts\UI\IsClickable.cs" />
     <Compile Include="Assets\Scripts\UI\MenuAction.cs" />
     <Compile Include="Assets\Scripts\UI\MoveTeamMenuAction.cs" />
