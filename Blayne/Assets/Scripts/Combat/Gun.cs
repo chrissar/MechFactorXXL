@@ -12,6 +12,7 @@ namespace Combat
         public int fireRate;
         public float bulletSpeed;
         public float bulletLifeTime;
+        public bool CanShoot = true;
 
         private float mTimeToNextShot = 0;
         public void Shoot()
@@ -28,13 +29,18 @@ namespace Combat
                     as GameObject;
                 //bulletObj.transform.localScale = gameObject.transform.localScale;
                 Bullet bullet = bulletObj.GetComponent<Bullet>();
-                bullet.GetComponent<Rigidbody>().AddForce(muzzle.transform.forward * bulletSpeed, ForceMode.Impulse);
+                bullet.GetComponent<Rigidbody>().AddForce(muzzle.transform.forward * bulletSpeed * 50, ForceMode.Impulse);
                 Destroy(bulletObj, bulletLifeTime);
+                CanShoot = false;
             }
         }
         public void Update()
         {
             mTimeToNextShot -= Time.deltaTime;
+            if (mTimeToNextShot <= 0)
+            {
+                CanShoot = true;
+            }
         }
     }
 }

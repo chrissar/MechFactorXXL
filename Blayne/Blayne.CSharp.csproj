@@ -136,6 +136,8 @@
     <Compile Include="Assets\Scripts\AI\StatusStates\EaseState.cs" />
     <Compile Include="Assets\Scripts\AI\StatusStates\SuppressedState.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterMovement.cs" />
+    <Compile Include="Assets\Scripts\Character\Effects.cs" />
+    <Compile Include="Assets\Scripts\Character\FlashlightController.cs" />
     <Compile Include="Assets\Scripts\Character\IKController.cs" />
     <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Combat\Bullet.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="Assets\Scripts\Combat\HealthIndicator.cs" />
     <Compile Include="Assets\Scripts\Combat\TestGunController.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
+    <Compile Include="Assets\Scripts\ParticleDestroy.cs" />
     <Compile Include="Assets\Scripts\RTS Mode\DrawMap.cs" />
     <Compile Include="Assets\Scripts\RTS Mode\MapView.cs" />
     <Compile Include="Assets\Scripts\StateMachine\State.cs" />

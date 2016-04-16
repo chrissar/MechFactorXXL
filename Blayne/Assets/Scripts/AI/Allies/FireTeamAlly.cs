@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class FireTeamAlly : Ally
 {
-	public const float kSensingProximityRadius = 20.0f;
+    public AudioSource mGunSound;
+    public AudioSource walking;
+
+    public const float kSensingProximityRadius = 20.0f;
 	public const float kVisionConeRadius = 50.0f;
 	public const float kVisionConeHalfAngle = 30.0f;
 
@@ -32,6 +35,8 @@ public class FireTeamAlly : Ally
     public float rotateAmount = 0f;
     public float forwardAmount = 0f;
     public float sidewaysAmount = 0f;
+
+    public bool step;
 
     public GameObject LeftHandAimingPosition;
     public GameObject LeftHandIdlePosition;
@@ -306,6 +311,7 @@ public class FireTeamAlly : Ally
         {
             firing = false;
             animator.SetTrigger("Fire 0");
+            mGunSound.Play();
         }
 
         animator.SetBool("Crouch", crouch);
@@ -344,7 +350,21 @@ public class FireTeamAlly : Ally
         }
     }
 
-	public void SetEnemies ()
+    
+    IEnumerator WaitForFootSteps(float stepsLength)
+    {
+        step = false;
+        yield return new WaitForSeconds(stepsLength);
+        step = true;
+    }
+
+    void Walk()
+    {
+        walking.Play();
+        StartCoroutine(WaitForFootSteps(audioStepLengthWalk));
+    }
+
+    public void SetEnemies ()
 	{
 		GameObject[] characterGameObjects = GameObject.FindGameObjectsWithTag ("NPC");
 		foreach (GameObject characterGameObject in characterGameObjects) {

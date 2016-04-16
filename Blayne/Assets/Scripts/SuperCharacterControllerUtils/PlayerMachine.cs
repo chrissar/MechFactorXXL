@@ -7,6 +7,9 @@ using System.Collections;
 [RequireComponent(typeof(SuperCharacterController))]
 [RequireComponent(typeof(PlayerInputController))]
 public class PlayerMachine : SuperStateMachine {
+    public AudioSource gunSound;
+    public AudioSource walking;
+    private bool step = true;
 
     public Transform AnimatedMesh;
     public Combat.Gun gun;
@@ -19,6 +22,8 @@ public class PlayerMachine : SuperStateMachine {
     public float RunSpeed = 10.0f;
     public float RotateSpeed = 10.0f;
     public float movementSpeed = 0;
+    float audioStepLengthWalk = 0.75f;
+    float audioStepLengthRun = 0.30f;
     [HideInInspector]public float forwardAmount = 0;
     [HideInInspector]public float sidewaysAmount = 0;
     [HideInInspector]public float rotateAmount = 0;
@@ -344,6 +349,8 @@ public class PlayerMachine : SuperStateMachine {
 
         if (moveDirection.magnitude > 0)
         {
+            if (step)
+                Walk();
             forwardAmount = moveDirection.magnitude / maxSpeed;
         }
         else
@@ -360,8 +367,13 @@ public class PlayerMachine : SuperStateMachine {
     {
         if(aim && input.Current.MouseFire)
         {
-            gun.Shoot();
-            firing = true; // for one frame.            
+            if (gun.CanShoot)
+            {
+                gun.Shoot();
+                firing = true; // for one frame.           
+                gunSound.Play();
+            }
+
         }
     }
 
@@ -398,6 +410,11 @@ public class PlayerMachine : SuperStateMachine {
             {
                 currentState = PlayerStates.Walk;
                 return;
+            }
+            else
+            {
+                if (step)
+                    PlayRun();
             }
         }
         else
@@ -436,9 +453,20 @@ public class PlayerMachine : SuperStateMachine {
             moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement(false), WalkAcceleration * controller.deltaTime);
             if (input.Current.SprintInput)
             {
+                if (step)
+                    PlayRun();
                 currentState = PlayerStates.Run;
                 return;
             }
+            else
+            {
+                if (step)
+                    Walk();
+                //
+                //if (!walking.isPlaying)
+                //  walking.Play();
+            }
+
         }
         else
         {
@@ -448,6 +476,25 @@ public class PlayerMachine : SuperStateMachine {
         }
 
         Shoot();
+    }
+
+    IEnumerator WaitForFootSteps(float stepsLength)
+    {
+        step = false;
+        yield return new WaitForSeconds(stepsLength);
+        step = true;
+    }
+
+    void Walk()
+    {
+        walking.Play();
+        StartCoroutine(WaitForFootSteps(audioStepLengthWalk));
+    }
+
+    void PlayRun()
+    {
+        walking.Play();
+        StartCoroutine(WaitForFootSteps(audioStepLengthRun));
     }
 
     void Walk_ExitState()
