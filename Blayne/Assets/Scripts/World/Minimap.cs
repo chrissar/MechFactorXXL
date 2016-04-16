@@ -31,13 +31,13 @@ public class Minimap : MonoBehaviour
 	public void Start()
 	{
 		// Initialize panel size and position variables.
-		GameObject worldGameObject = GameObject.Find("Water"); // "Water" sets the world bounds.
-		mWorldWidth = worldGameObject.transform.localScale.x * 10; // Unit plane is 10x10.
-		mWorldHeight = worldGameObject.transform.localScale.z * 10; // Unit plane is 10x10.
+		Terrain terrain = GameObject.Find("Terrain").GetComponent<Terrain>() as Terrain; 
+		mWorldWidth = terrain.terrainData.heightmapWidth; 
+		mWorldHeight = terrain.terrainData.heightmapHeight;
 		mPanelWidth = minimapPanel.rect.width;
 		mPanelHeight = minimapPanel.rect.height;
-		mWorldOriginX = worldGameObject.transform.position.x;
-		mWorldOriginZ = worldGameObject.transform.position.z;
+		mWorldOriginX = mWorldWidth / 2 ;
+		mWorldOriginZ = mWorldHeight / 2;
 
 		InitializeTextures ();
 	

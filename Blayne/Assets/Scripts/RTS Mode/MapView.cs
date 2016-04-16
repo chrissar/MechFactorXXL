@@ -4,23 +4,24 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class MapView : MonoBehaviour {
-    public Transform playerPos;
+	public Transform playerPos;
 	public Image playerSprite;
-    public Image mapImage;
-    public Image enemy;
+	public Image mapImage;
+	public Image enemy;
 
-    float width = 256;
-    float height = 256;
+	float width = 256;
+	float height = 256;
 
-    float ratio = 1.32f;
+	float ratio = 1.32f;
 
-    Vector2 pos;
+	Vector2 pos;
 
 	private const int mkAllyTextureSize = 2;
 
 	public Color friendlyColor;
 	public Color enemyColor;
 	public Camera topDownCamera;
+	public Canvas canvas;
 
 	private Image mPanelImage;
 	private float mWorldOriginX;
@@ -34,17 +35,16 @@ public class MapView : MonoBehaviour {
 	private Dictionary<int, Image[]> mImageArrays;
 	private TeamList mTeamList;
 
-    public Canvas mCanvas;
 	// Use this for initialization
 	void Start () {
 		// Initialize map view size and position variables.
-		GameObject worldGameObject = GameObject.Find("Water"); // "Water" sets the world bounds.
+		Terrain terrain = GameObject.Find("Terrain").GetComponent<Terrain>() as Terrain;
 		Vector3 cameraPositionOnScreen= topDownCamera.WorldToScreenPoint(topDownCamera.transform.position); 
 		GetWorldWidthAndHeight ();
 		mMapImageWidth = Screen.width;
 		mMapImageHeight =  Screen.height;
-		mWorldOriginX = worldGameObject.transform.position.x;
-		mWorldOriginZ = worldGameObject.transform.position.z;
+		mWorldOriginX = terrain.terrainData.heightmapWidth / 2;
+		mWorldOriginZ = terrain.terrainData.heightmapHeight / 2;
 
 		InitializeTextures ();
 
@@ -52,26 +52,26 @@ public class MapView : MonoBehaviour {
 		mImageArrays = new Dictionary<int, Image[]>(); // Used to store created image game objects.
 		mTeamList = GameObject.Find("TeamList").GetComponent<TeamList>() as TeamList;
 	}
-    // TODO
-    // For each Unit, spawn a sprite icon at it's relative position.
-	
+	// TODO
+	// For each Unit, spawn a sprite icon at it's relative position.
+
 	// Update is called once per frame
 	void Update () {
 		if (!GameController.Instance.topDownView)
-        {
-            mCanvas.GetComponent<CanvasGroup>().alpha = 0;
-            mCanvas.GetComponent<CanvasGroup>().interactable = false;
-        }
-        else
-        {
-            mCanvas.GetComponent<CanvasGroup>().alpha = 1;
-            mCanvas.GetComponent<CanvasGroup>().interactable = true;
-            if (playerPos != null && mapImage != null)
-            {
+		{
+			canvas.GetComponent<CanvasGroup>().alpha = 0;
+			canvas.GetComponent<CanvasGroup>().interactable = false;
+		}
+		else
+		{
+			canvas.GetComponent<CanvasGroup>().alpha = 1;
+			canvas.GetComponent<CanvasGroup>().interactable = true;
+			if (playerPos != null && mapImage != null)
+			{
 				playerSprite.transform.localPosition = ConvertVector3To2DMapCoordinates(playerPos.position);
-            }
+			}
 			DrawFireTeamMembersOnMap ();
-        }
+		}
 	}
 
 	private void DrawFireTeamMembersOnMap()

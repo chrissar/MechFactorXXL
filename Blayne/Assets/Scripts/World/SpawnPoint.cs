@@ -63,7 +63,6 @@ public class SpawnPoint : MonoBehaviour
 			FireTeamAlly ally = allyObj.GetComponent<FireTeamAlly>();
 			team.AddFireTeamAlly(ally);
 			ally.StateMachine.currentMovementState.ToMoving();
-			// print ("Ally : " + ally.fireTeam.TeamSide);
 			SetTeamColorOfFireTeamAlly (ally);
 		}
 	}
